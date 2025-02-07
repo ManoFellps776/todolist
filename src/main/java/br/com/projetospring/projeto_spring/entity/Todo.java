@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
+
 @Entity
 @Table(name = "todos")
 public class Todo {
@@ -28,6 +29,7 @@ public class Todo {
         this.realizado = realizado;
         this.prioridade = prioridade;
     }
+    
     public Long getId() {
         return id;
     }
