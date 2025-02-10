@@ -38,14 +38,13 @@ public class TodoController {
         return todoService.list();
     }
     @PutMapping ("/{id}")
-    List<Todo> update(@RequestBody @Valid Todo todo){
-        return todoService.update(todo);
- 
-    }
+    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo todo) {
+    Todo updatedTodo = todoService.updateTodo(id, todo); // ✅ Certifique-se de passar ID e Todo
+    return ResponseEntity.ok(updatedTodo);
+}
     @DeleteMapping("/{id}")
-    public ResponseEntity <Void> delete(@PathVariable Long id){
-        this.todoService.delete(id);
-        return ResponseEntity.noContent().build();
+    List<Todo> delete(@PathVariable("id") Long id){
+        return todoService.delete(id);
     }
 
     
