@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Negócios</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>AGENDA DE NEGÓCIOS</h1>
+  <form id="task-form">
+    <input type="text" id="nome" placeholder="Nome" required />
+    <input type="text" id="descricao" placeholder="Descrição" required />
+    <input type="number" id="prioridade" placeholder="Prioridade" required />
+    <input type="date" id="data" required />
+    <input type="number" step="0.01" id="valor" placeholder="Total em R$" required />
+    <input type="number" step="0.01" id="juros" placeholder="Juros R$" required />
+    <label style="grid-column: span 2;"><input type="checkbox" id="realizado" /> Realizado</label>
+    <button type="submit" style="grid-column: span 2;">Adicionar</button>
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th><th>Descrição</th><th>Prioridade</th><th>Data</th><th>Valor (R$)</th><th>Juros (R$)</th><th>Realizado</th><th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="task-table-body"></tbody>
+  </table>
+  <script>
+    const API_URL = 'http://localhost:8080/todos';
+    const form = document.getElementById('task-form');
+    const nome = document.getElementById('nome');
+    const descricao = document.getElementById('descricao');
+    const prioridade = document.getElementById('prioridade');
+    const data = document.getElementById('data');
+    const valor = document.getElementById('valor');
+    const juros = document.getElementById('juros');
+    const realizado = document.getElementById('realizado');
+    const tableBody = document.getElementById('task-table-body');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const tarefa = {
+        nome: nome.value,
+        descricao: descricao.value,
+        prioridade: parseInt(prioridade.value),
+        data: data.value,
+        valor: parseFloat(valor.value),
+        juros: parseFloat(juros.value),
+        realizado: realizado.checked
+      };
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tarefa)
+      });
+      form.reset();
+      loadTasks();
+    });
+
+    async function loadTasks() {
+      const res = await fetch(API_URL);
+      const tarefas = await res.json();
+      tableBody.innerHTML = '';
+      tarefas.forEach(todo => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${todo.nome}</td>
+          <td>${todo.descricao}</td>
+          <td>${todo.prioridade}</td>
+          <td>${todo.data || '-'}</td>
+          <td>R$ ${todo.valor != null ? todo.valor.toFixed(2) : '0.00'}</td>
+          <td>R$ ${todo.juros != null ? todo.juros.toFixed(2) : '0.00'}</td>
+         <td>${todo.realizado === true || todo.realizado === 'true' ? '✅' : '❌'}</td>
+          <td class="actions">
+            <button class="edit" onclick="editTask(${todo.id}, '${todo.nome}', '${todo.descricao}', ${todo.prioridade}, '${todo.data}', ${todo.valor},${todo.juros}, ${todo.realizado})">Editar</button>
+            <button class="delete" onclick="deleteTask(${todo.id})">Excluir</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    async function deleteTask(id) {
+      if (confirm('Excluir esta tarefa?')) {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        loadTasks();
+      }
+    }
+
+    async function editTask(id, nomeAtual, descricaoAtual, prioridadeAtual, dataAtual, valorAtual,jurosAtual, realizadoAtual) {
+      const novoNome = prompt('Editar nome:', nomeAtual);
+      const novaDescricao = prompt('Editar descrição:', descricaoAtual);
+      const novaPrioridade = prompt('Editar prioridade:', prioridadeAtual);
+      const novaData = prompt('Editar data (YYYY-MM-DD):', dataAtual);
+      const novoValor = prompt('Editar valor (R$):', valorAtual);
+      const novoJuros = prompt('Editar juros (R$):', jurosAtual);
+      const novoRealizado = confirm('Marcar como realizado?');
+
+      const tarefaAtualizada = {
+        nome: novoNome,
+        descricao: novaDescricao,
+        prioridade: parseInt(novaPrioridade),
+        data: novaData,
+        valor: parseFloat(novoValor),
+        juros: parseFloat(novoJuros),
+        realizado: novoRealizado
+      };
+
+      await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tarefaAtualizada)
+      });
+
+      loadTasks();
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>

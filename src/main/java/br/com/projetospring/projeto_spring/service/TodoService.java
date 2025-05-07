@@ -1,5 +1,6 @@
 package br.com.projetospring.projeto_spring.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public TodoService(TodoRepository todoRepository) {
 @Transactional
 public List<Todo> create(Todo todo){
     todoRepository.save(todo);
+    todo.setJuros(todo.getValor().multiply(BigDecimal.valueOf(0.25)));
+
     return list();
 
 }
@@ -40,7 +43,10 @@ public Todo updateTodo(Long id, Todo todo) {
                 existingTodo.setNome(todo.getNome());
                 existingTodo.setDescricao(todo.getDescricao());
                 existingTodo.setPrioridade(todo.getPrioridade());
-                existingTodo.setRealizado(false);
+                existingTodo.setValor(todo.getValor());
+                existingTodo.setRealizado(todo.isRealizado());
+                existingTodo.setJuros(todo.getValor().multiply(BigDecimal.valueOf(0.25)));
+
                 return todoRepository.save(existingTodo);
             })
             .orElseThrow(() -> new RuntimeException("Todo não encontrado!"));

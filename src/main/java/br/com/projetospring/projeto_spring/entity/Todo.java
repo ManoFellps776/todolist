@@ -1,5 +1,8 @@
 package br.com.projetospring.projeto_spring.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,16 +23,24 @@ public class Todo {
     @NotBlank
     private String descricao;
     private boolean realizado;
+    private BigDecimal valor;
     private int prioridade;
+    private LocalDate data;
+    private BigDecimal juros;
 
     public Todo() {
     }
     
-    public Todo(String nome, String descricao, boolean realizado, int prioridade) {
+    public Todo(String nome, String descricao, boolean realizado,BigDecimal valor, int prioridade,LocalDate data, BigDecimal juros) {
         this.nome = nome;
         this.descricao = descricao;
         this.realizado = realizado;
+        this.valor = valor;
         this.prioridade = prioridade;
+        this.data = data;
+        this.juros = juros;
+
+        
     }
     
     public Long getId() {
@@ -56,12 +67,36 @@ public class Todo {
     public void setRealizado(boolean realizado) {
         this.realizado = realizado;
     }
+    
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public void setValor(BigDecimal valor) {
+        this.valor = valor;
+    }
     public int getPrioridade() {
         return prioridade;
     }
     public void setPrioridade(int prioridade) {
         this.prioridade = prioridade;
     }
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+    
+    public BigDecimal getJuros() {
+        return juros;
+    }
+
+    public void setJuros(BigDecimal juros) {
+        this.juros = juros;
+    }
+    
     
         
     
