@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Agenda de Negócios</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admstyle.css">
 </head>
 <body>
+  <section class="botoes" >
+  
+    <button class="btn" onclick="voltarInicio() ">Início</button>
+    <button class="btn" onclick="voltarCadastro()">Cadastrar Usuário</button>
+    <button class="btn" onclick="mostrarLogin()">Área do admin</button>
+    <button class="btn" id="botaoToggleTabela" onclick="minTable()">Diminui Tabela</button>
+  </section>
+  <link rel="stylesheet" href="admstyle.css">
   <h1>AGENDA DE NEGÓCIOS</h1>
+  
   <form id="task-form">
     <input type="text" id="nome" placeholder="Nome" required />
     <input type="text" id="descricao" placeholder="Descrição" required />
@@ -17,15 +26,67 @@
     <label style="grid-column: span 2;"><input type="checkbox" id="realizado" /> Realizado</label>
     <button type="submit" style="grid-column: span 2;">Adicionar</button>
   </form>
+  <section id="form-Table">
   <table>
+    
     <thead>
       <tr>
+        
         <th>Nome</th><th>Descrição</th><th>Prioridade</th><th>Data</th><th>Valor (R$)</th><th>Juros (R$)</th><th>Realizado</th><th>Ações</th>
+        
       </tr>
     </thead>
-    <tbody id="task-table-body"></tbody>
+    <tbody id="task-table-body">
+    </tbody>
+  </table>
+  
+  
+  </section> 
+  <div id="mensagem-status" style="text-align:center; margin-top: 10px; font-weight: bold;"></div>
   </table>
   <script>
+    function minTable() {
+  const table = document.getElementById('form-Table');
+  const botao = document.getElementById('botaoToggleTabela');
+
+  const visivel = window.getComputedStyle(table).display !== 'none';
+
+  if (visivel) {
+    table.style.display = 'none';
+    botao.textContent = 'Mostrar Tabela';
+  } else {
+    table.style.display = 'block';
+    botao.textContent = 'Diminui Tabela';
+  }
+}
+
+    function voltarInicio() {
+     
+      sessionStorage.setItem("voltarInicio", "true");
+      const confirmarSaida = confirm("Você tem certeza que deseja sair do admin e voltar para o início?");
+  
+  if (confirmarSaida) {
+    window.location.href = "index.html";
+      sessionStorage.setItem("voltarInicio", "true");
+  } else {
+    // Se clicar em "Cancelar", não faz nada
+    return;
+  }
+    }
+    function voltarCadastro(){
+
+      sessionStorage.setItem("abrirCadastro", "true");
+      const confirmarSaida = confirm("Você tem certeza que deseja sair do login e voltar para o cadastro?");
+  
+  if (confirmarSaida) {
+    window.location.href = "index.html";
+      sessionStorage.setItem("abrirCadastro", "true");
+  } else {
+    // Se clicar em "Cancelar", não faz nada
+    return;
+  }
+
+    }
     const API_URL = 'http://localhost:8080/todos';
     const form = document.getElementById('task-form');
     const nome = document.getElementById('nome');
@@ -38,24 +99,47 @@
     const tableBody = document.getElementById('task-table-body');
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const tarefa = {
-        nome: nome.value,
-        descricao: descricao.value,
-        prioridade: parseInt(prioridade.value),
-        data: data.value,
-        valor: parseFloat(valor.value),
-        juros: parseFloat(juros.value),
-        realizado: realizado.checked
-      };
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tarefa)
-      });
+  e.preventDefault();
+
+  const tarefa = {
+    nome: nome.value,
+    descricao: descricao.value,
+    prioridade: parseInt(prioridade.value),
+    data: data.value,
+    valor: parseFloat(valor.value),
+    juros: parseFloat(juros.value),
+    realizado: realizado.checked
+  };
+
+  const mensagem = document.getElementById('mensagem-status');
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tarefa)
+    });
+
+    if (res.ok) {
+      mensagem.textContent = '✅ Tarefa foi salva com sucesso!';
+      mensagem.style.color = 'green';
       form.reset();
       loadTasks();
-    });
+    } else {
+      mensagem.textContent = '❌ Erro ao adicionar tarefa.';
+      mensagem.style.color = 'red';
+    }
+  } catch (error) {
+    mensagem.textContent = '❌ Erro de conexão com o servidor.';
+    mensagem.style.color = 'red';
+  }
+
+  // 🕒 Remove a mensagem após 3 segundos
+  setTimeout(() => {
+    mensagem.textContent = '';
+  }, 3000);
+});
+
 
     async function loadTasks() {
       const res = await fetch(API_URL);

@@ -23,6 +23,26 @@ form button {
   font-size: 16px;
 }
 
+.botoes {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.btn {
+  background-color: #99c24d;
+  color: #fff;
+  text-decoration: none;
+  padding: 15px 30px;
+  margin: 10px;
+  display: inline-block;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background-color: #7ca740;
+}
+
 /* 👇 Fonte menor só no campo JUROS */
 #juros {
   font-size: 12px;
