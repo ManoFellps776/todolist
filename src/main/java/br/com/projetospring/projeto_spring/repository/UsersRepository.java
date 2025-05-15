@@ -6,6 +6,9 @@ import br.com.projetospring.projeto_spring.entity.Users;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
     Users findByUsers(String users);
+    
 
     Users findByEmail(String email);
+
+    Users findByUsersAndSenha(String users, String senha);
 }

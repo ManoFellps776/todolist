@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Bem-vindo ao Sistema</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Agenda de Negócios</h1>
+    <p>Organize suas tarefas, acompanhe pagamentos e gerencie prioridades com segurança.</p>
+  </header>
+
+  <main>
+    <section class="botoes">
+      <button class="btn" onclick="voltarInicio()">Início</button>
+      <button class="btn" onclick="mostrarCadastro()">Cadastrar Usuário</button>
+      <button class="btn" onclick="mostrarLogin()">Área do admin</button>
+    </section>
+
+    <section id="form-admin" style="display: none; text-align: center; margin-top: 20px;">
+      <h3>Login de Administrador</h3>
+      <form onsubmit="validarLogin(event)">
+        <input type="text" id="usuario" placeholder="Usuário" required /><br><br>
+        <input type="password" id="senhaCadastro" placeholder="Senha" required /><br><br>
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+    </section>
+    <section id="form-cadastro" style="text-align: center; margin-top: 20px;">
+      <h3>Formulário de Cadastro</h3>
+      <form onsubmit="validarCadastro(event)">
+        <input type="text" id="nome" placeholder="Nome completo" required /><br><br>
+        <input type="email" id="email1" placeholder="Email" required /><br><br>
+        <input type="password" id="senhaCadastro1" placeholder="Senha" required /><br><br>
+        <input type="password" id="confirmarSenha" placeholder="Confirmar Senha" required /><br><br>
+        <button type="submit" class="btn">Cadastrar</button>
+      </form>
+    </section>
+
+    <section class="info">
+      <h2>Sobre o Sistema</h2>
+      <p>Este sistema foi desenvolvido para facilitar o controle de tarefas e pagamentos com funcionalidades simples e diretas.</p>
+
+      <h3>Termos de Uso</h3>
+      <p>Ao utilizar este sistema, você concorda com os termos descritos no contrato de uso, incluindo a proteção dos seus dados e responsabilidades legais.</p>
+
+      <h3>Contrato</h3>
+      <p>O uso deste sistema é destinado apenas para fins organizacionais. Não nos responsabilizamos por perdas de dados em caso de uso indevido.</p>
+
+      <h3>Créditos</h3>
+      <p>Desenvolvido por Felipe - Projeto pessoal com fins de aprendizado e gestão profissional.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Agenda de Negócios - Todos os direitos reservados.</p>
+  </footer>
+
+  <script src="../backend/script.js"></script>
+</body>
+</html>

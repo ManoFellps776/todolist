@@ -17,6 +17,7 @@ class ProjetoSpringApplicationTests {
     @Autowired
     private WebTestClient webTestClient;
 
+    @SuppressWarnings("null")
     @Test
     void testCreateTodoSuccess() {
         var todo = new Todo("todo 1", "desc todo 1", false, BigDecimal.valueOf(15.23), 1, LocalDate.now(), BigDecimal.valueOf(3.80));
@@ -47,6 +48,7 @@ class ProjetoSpringApplicationTests {
                 .expectStatus().isBadRequest();
     }
 
+    @SuppressWarnings("null")
     @Test
     void testUpdateTodo() {
         var todo = new Todo("original", "descricao", false, BigDecimal.valueOf(10), 1, LocalDate.now(), BigDecimal.valueOf(2));
@@ -83,6 +85,7 @@ class ProjetoSpringApplicationTests {
                 .jsonPath("$.juros").isEqualTo(24.75);
     }
 
+    @SuppressWarnings("null")
     @Test
     void testDeleteTodo() {
         var todo = new Todo("para deletar", "descricao", false, BigDecimal.valueOf(5), 1, LocalDate.now(), BigDecimal.valueOf(1.25));

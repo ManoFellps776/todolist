@@ -16,7 +16,7 @@ public class LoginController {
 
     @PostMapping
     public String login(@RequestBody Users user) {
-        Users existingUser = usersRepository.findByUsers(user.getUsers());
+        Users existingUser = usersRepository.findByUsersAndSenha(user.getUsers(),user.getSenha());
         if (existingUser != null) {
             return "Login bem-sucedido!";
         } else {
