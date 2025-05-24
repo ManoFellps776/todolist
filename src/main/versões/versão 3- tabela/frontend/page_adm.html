@@ -2,35 +2,22 @@
 
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
 <title>Agenda de Negócios</title>
 <link href="admstyle.css" rel="stylesheet"/>
 </head>
 <body>
     <div class="topbar">
-        <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+        <button class="menu-toggle" onclick="toggleNav()">☰ Menu</button>
     </div>
-    <div class="sidebar" id="sidebar">
-        <h2>Agência</h2>
-        <ul>
-            <li onclick="mostrar('agendaNegocios')">Agenda de negócios</li>
-            <li onclick="mostrar('cadastrarUsuario')">Cadastrar Usuário</li>
-            <li onclick="mostrar('')">Área do admin</li>
-            <li id="botaoToggleTabela" onclick="minTable()">Diminui Tabela</li>
-
-        </ul>
-    </div>
-    <!--
     <div class="nav-menu" id="navMenu">
 <button class="btn" onclick="voltarInicio()">Início</button>
 <button class="btn" onclick="voltarCadastro()">Cadastrar Usuário</button>
 <button class="btn" onclick="mostrarLogin()">Área do admin</button>
 <button class="btn" id="botaoToggleTabela" onclick="minTable()">Diminui Tabela</button>
 </div>
--->
-<div class="main" id="main">
+<div class="main-container">
   <div class="conteudo-wrapper">
-    <div id="agendaNegocios" class="conteudo ativo ">
     <h1>AGENDA DE NEGÓCIOS</h1>
     <form id="task-form" class="table">
       <input id="nome" placeholder="Nome" required type="text"/>
@@ -66,7 +53,12 @@
 </div>
 </div>
 </div>
-</div>
 
-</body>
+<script>
+function toggleNav() {
+    const nav = document.getElementById("navMenu");
+    document.body.classList.toggle("with-menu");
+    nav.classList.toggle("mostrar");
+}
+</script></body>
 </html>

@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Agência de Controle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="topbar">
+        <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li onclick="mostrar('clientes')">Clientes</li>
+            <li onclick="mostrar('projetos')">Projetos</li>
+            <li onclick="mostrar('tarefas')">Tarefas</li>
+            <li onclick="mostrar('financeiro')">Financeiro</li>
+            <li onclick="mostrar('agenda')">Agenda</li>
+            <li onclick="mostrar('areaCliente')">Área do Cliente</li>
+            <li onclick="mostrar('admin')">Administração</li>
+        </ul>
+    </div>
+    <div class="main" id="main">
+        <div id="clientes" class="conteudo ativo">
+            <h3>Gestão de Clientes</h3>
+            <input type="text" placeholder="Nome do cliente" />
+            <input type="email" placeholder="Email" />
+            <button>Salvar Cliente</button>
+            <ul></ul>
+        </div>
+        <div id="projetos" class="conteudo">
+            <h3>Projetos</h3>
+            <input type="text" placeholder="Nome do projeto" />
+            <textarea placeholder="Descrição"></textarea>
+            <button>Criar Projeto</button>
+        </div>
+        <div id="tarefas" class="conteudo">
+            <h3>Tarefas</h3>
+            <input type="text" placeholder="Tarefa" />
+            <select>
+                <option>Pendente</option>
+                <option>Em Andamento</option>
+                <option>Concluída</option>
+            </select>
+            <button>Adicionar</button>
+        </div>
+        <div id="financeiro" class="conteudo">
+            <h3>Financeiro</h3>
+            <input type="number" placeholder="Valor (R$)" />
+            <select>
+                <option>Receita</option>
+                <option>Despesa</option>
+            </select>
+            <button>Lançar</button>
+        </div>
+        <div id="agenda" class="conteudo">
+            <h3>Agenda</h3>
+            <input type="datetime-local" />
+            <input type="text" placeholder="Compromisso" />
+            <button>Agendar</button>
+        </div>
+        <div id="areaCliente" class="conteudo">
+            <h3>Área do Cliente</h3>
+            <p>Espaço reservado para visualização de projetos, aprovações e feedback.</p>
+        </div>
+        <div id="admin" class="conteudo">
+            <h3>Painel Administrativo</h3>
+            <p>Relatórios e controle de permissões.</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+form input,
+form button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.botoes {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.btn {
+  background-color: #99c24d;
+  color: #fff;
+  text-decoration: none;
+  padding: 15px 30px;
+  margin: 10px;
+  display: inline-block;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background-color: #7ca740;
+}
+
+/* 👇 Fonte menor só no campo JUROS */
+#juros {
+  font-size: 12px;
+}
+#prioridade {
+  font-size: 12px;
+}
+#valor {
+  font-size: 12px;
+}
+#descricao {
+  font-size: 12px;
+}
+#nome {
+  font-size: 12px;
+}
+
+/* 👇 Fonte menor na tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.actions button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit {
+  background-color: #ffc107;
+  color: white;
+}
+
+.delete {
+  background-color: #dc3545;
+  color: white;
+}
+.required{
+  font-size: 12px;
+}

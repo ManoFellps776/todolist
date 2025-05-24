@@ -1,8 +1,7 @@
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f4f4;
-    transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
 }
 
 h1 {
@@ -116,65 +115,44 @@ td {
     font-size: 16px;
 }
 
-.sidebar {
-    width: 220px;
-    background: #2c3e50;
-    color: white;
-    height: 100vh;
-    padding: 20px;
+.nav-menu {
     position: fixed;
     top: 50px;
     left: 0;
+    width: 240px;
+    height: 100%;
+    background-color: #34495e;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    padding: 20px 10px;
     z-index: 999;
 }
 
-.sidebar.mostrar {
+.nav-menu.mostrar {
     transform: translateX(0);
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* NOVO */
 }
 
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    padding: 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #34495e;
-}
-
-.sidebar ul li:hover {
-    background-color: #34495e;
-}
-
-.main {
-    margin-left: 0;
-    padding: 80px 30px 30px 30px;
-    transition: margin-left 0.3s ease;
-}
-.main.com-menu {
-    margin-left: 260px;
-}
-
-.conteudo {
-    display: none;
-}
-
-.ativo {
+.nav-menu .btn {
     display: block;
+    width: 100%;
+    margin: 10px 0;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: left;
 }
 
-h3 {
-    color: #2c3e50;
+.main-container {
+    padding: 80px 20px 30px 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .conteudo-wrapper {
     width: 100%;
-    max-width: 900px;
-    margin: auto;
+    max-width: 1000px;
 }
 
 form, table {
@@ -204,4 +182,3 @@ table th, table td {
         max-width: 100%;
     }
 }
-

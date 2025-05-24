@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
     <title>Agência de Controle</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -60,32 +60,10 @@
             <button>Lançar</button>
         </div>
         <div id="agenda" class="conteudo">
-            <div class="calendar-container">
-                <link rel="stylesheet" href="calendario.css">
-    <h3>Agenda</h3>
-    <div class="controls">
-      <select id="monthSelect" onchange="selectMonthYear()">
-        <option value="0">Janeiro</option><option value="1">Fevereiro</option>
-        <option value="2">Março</option><option value="3">Abril</option>
-        <option value="4">Maio</option><option value="5">Junho</option>
-        <option value="6">Julho</option><option value="7">Agosto</option>
-        <option value="8">Setembro</option><option value="9">Outubro</option>
-        <option value="10">Novembro</option><option value="11">Dezembro</option>
-      </select>
-      <select id="yearSelect" onchange="selectMonthYear()"></select>
-      <div class="linha-botoes">
-      <button class="btn" onclick="changeMonth(-1)">&#8592;</button>
-      <button class="btn" onclick="changeMonth(1)">&#8594;</button>
-      </div>
-    </div>
-    <h2 id="monthYearLabel"></h2>
-    <div class="weekdays">
-      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-    </div>
-    <div id="calendar"></div>
-  </div>
-
-  <div id="agendamentoContainer"></div>
+            <h3>Agenda</h3>
+            <input type="datetime-local" />
+            <input type="text" placeholder="Compromisso" />
+            <button>Agendar</button>
         </div>
         <div id="areaCliente" class="conteudo">
             <h3>Área do Cliente</h3>
