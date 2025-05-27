@@ -5,6 +5,7 @@
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agência de Controle</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cadastrarPaciente.css">
 </head>
 <body>
     <div class="topbar">
@@ -14,11 +15,11 @@
         <h2>Agência</h2>
         <ul>
             <li onclick="mostrar('clientes')">Clientes</li>
-            <li onclick="mostrar('projetos')">Projetos</li>
+            <li onclick="mostrar('cadastrarPaciente')">Cadastrar Paciente</li>
             <li onclick="mostrar('tarefas')">Tarefas</li>
             <li onclick="mostrar('financeiro')">Financeiro</li>
             <li onclick="mostrar('agenda')">Agenda</li>
-            <li onclick="mostrar('areaCliente')">Área do Cliente</li>
+            <li onclick="mostrar('editarPaciente')">Área do Cliente</li>
             <li onclick="mostrar('admin')">Administração</li>
         </ul>
     </div>
@@ -33,12 +34,105 @@
         <button type="submit" class="btn">Cadastrar</button>
       </form>
         </div>
-        <div id="projetos" class="conteudo">
-            <h3>Projetos</h3>
-            <input type="text" placeholder="Nome do projeto" />
-            <textarea placeholder="Descrição"></textarea>
-            <button>Criar Projeto</button>
-            <button>Criar Projeto</button>
+        <div id="cadastrarPaciente" class="conteudo">   
+  <div class="container">
+    <h1>Cadastro de Paciente</h1>
+    <form id="cadastroForm">
+      <div class="form-sections">
+        <div class="left-column">
+          <h3>Dados Pessoais</h3>
+          <input type="text" placeholder="Nome Completo" id="nomePaciente" required />
+          <input type="text" placeholder="CPF ou CNPJ" id="cpfCnpj" required />
+          <input type="date" placeholder="Data de Nascimento" id="nascimento" />
+          <select id="estadoCivil" required>
+            <option value="">Estado Civil</option>
+            <option value="Solteiro(a)">Solteiro(a)</option>
+            <option value="Casado(a)">Casado(a)</option>
+            <option value="Divorciado(a)">Divorciado(a)</option>
+            <option value="Viúvo(a)">Viúvo(a)</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <input list="profissoes" id="profissao" name="profissao" placeholder="Digite ou selecione uma profissão" />
+          <datalist id="profissoes">
+            <option value="Médico(a)">
+            <option value="Professor(a)">
+            <option value="Engenheiro(a)">
+            <option value="Advogado(a)">
+            <option value="Estudante">
+            <option value="Autônomo(a)">
+          </datalist>
+          <select id="escolaridade" required>
+            <option value="">Escolaridade</option>
+            <option value="Ensino Fundamental Incompleto">Ensino Fundamental Incompleto</option>
+            <option value="Ensino Fundamental Completo">Ensino Fundamental Completo</option>
+            <option value="Ensino Médio Incompleto">Ensino Médio Incompleto</option>
+            <option value="Ensino Médio Completo">Ensino Médio Completo</option>
+            <option value="Superior Incompleto">Superior Incompleto</option>
+            <option value="Superior Completo">Superior Completo</option>
+            <option value="Pós-graduação/Mestrado/Doutorado">Pós-graduação/Mestrado/Doutorado</option>
+          </select>
+        </div>
+
+        <div class="right-column">
+          <h3>Endereço</h3>
+          
+    <div class="cep-wrapper">
+      <input type="text" placeholder="CEP" id="cep" required />
+      <label class="checkbox-inline">
+        <input type="checkbox" id="naoSeiCep" />
+        <span>Não sei o CEP</span>
+      </label>
+    </div>
+    
+          <select id="estado" required>
+            <option value="">Estado</option>
+            <option value="AC">Acre</option>
+            <option value="AL">Alagoas</option>
+            <option value="AP">Amapá</option>
+            <option value="AM">Amazonas</option>
+            <option value="BA">Bahia</option>
+            <option value="CE">Ceará</option>
+            <option value="DF">Distrito Federal</option>
+            <option value="ES">Espírito Santo</option>
+            <option value="GO">Goiás</option>
+            <option value="MA">Maranhão</option>
+            <option value="MT">Mato Grosso</option>
+            <option value="MS">Mato Grosso do Sul</option>
+            <option value="MG">Minas Gerais</option>
+            <option value="PA">Pará</option>
+            <option value="PB">Paraíba</option>
+            <option value="PR">Paraná</option>
+            <option value="PE">Pernambuco</option>
+            <option value="PI">Piauí</option>
+            <option value="RJ">Rio de Janeiro</option>
+            <option value="RN">Rio Grande do Norte</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="RO">Rondônia</option>
+            <option value="RR">Roraima</option>
+            <option value="SC">Santa Catarina</option>
+            <option value="SP">São Paulo</option>
+            <option value="SE">Sergipe</option>
+            <option value="TO">Tocantins</option>
+          </select>
+          <input type="text" placeholder="Cidade" id="cidade" />
+          <input type="text" placeholder="Bairro" id="bairro" />
+          <input type="text" placeholder="Rua" id="rua" />
+          <input type="text" placeholder="Número" id="numero" />
+        </div>
+      </div>
+
+      <h3>Contato</h3>
+      <input type="text" placeholder="Telefone" id="telefone" />
+      <input type="email" placeholder="Email" id="email" required />
+
+      <h3>Outras Informações</h3>
+      <textarea placeholder="Outras informações importantes" id="outrasInfo"></textarea>
+
+      <button type="submit">Salvar Cadastro</button>
+    </form>
+
+    <div id="resultado"></div>
+  </div>
         </div>
         <div id="tarefas" class="conteudo">
             <h3>Tarefas</h3>
@@ -87,10 +181,39 @@
 
   <div id="agendamentoContainer"></div>
         </div>
-        <div id="areaCliente" class="conteudo">
-            <h3>Área do Cliente</h3>
-            <p>Espaço reservado para visualização de projetos, aprovações e feedback.</p>
-        </div>
+       <div class="conteudo" id="editarPaciente">
+  <div class="container">
+    <h2>Editar Paciente</h2>
+
+    <select id="selectPaciente">
+      <option value="">Selecione um paciente</option>
+    </select>
+
+    <div id="botoesAcao">
+      <button id="btnEditar">Editar Paciente</button>
+      <button onclick="deletarPaciente()">Deletar Paciente</button>
+    </div>
+
+    <form id="editForm"  onsubmit="carregarPacientes(), salvarAlteracoes(event)" >
+      <input id="nomeEd" placeholder="Nome" required type="text" />
+      <input id="cpfCnpjEd" placeholder="CPF ou CNPJ" required type="text" />
+      <input id="nascimentoEd" type="date" />
+      <input id="estadoCivilEd" placeholder="Estado Civil" type="text" />
+      <input id="profissaoEd" placeholder="Profissão" type="text" />
+      <input id="escolaridadeEd" placeholder="Escolaridade" type="text" />
+      <input id="cepEd" placeholder="CEP" type="text" />
+      <input id="estadoEd" placeholder="Estado" type="text" />
+      <input id="cidadeEd" placeholder="Cidade" type="text" />
+      <input id="bairroEd" placeholder="Bairro" type="text" />
+      <input id="ruaEd" placeholder="Rua" type="text" />
+      <input id="numeroRuaEd" placeholder="Número" type="text" />
+      <input id="telefoneEd" placeholder="Telefone" type="text" />
+      <input id="emailEd" placeholder="Email" type="email" />
+      <textarea id="descricaoEd" placeholder="Outras Informações"></textarea>
+      <button type="submit">Salvar Alterações</button>
+    </form>
+  </div>
+</div>
         <div id="admin" class="conteudo">
             <h3>Painel Administrativo</h3>
             <form onsubmit="validarLogin(event)">
@@ -102,5 +225,7 @@
         </div>
     </div>
     <script src="../backend/script.js"></script>
+    <script src="../backend/cadastro.js"></script>
+    <script src="../backend/editarPaciente.js"></script>
 </body>
 </html>

@@ -49,13 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Projetos
-    const projetoBtn = document.querySelector("#projetos button");
-    projetoBtn.addEventListener("click", () => {
-        const nome = document.querySelector("#projetos input[type='text']").value;
-        const descricao = document.querySelector("#projetos textarea").value;
-        alert(`Projeto "${nome}" criado com descrição: ${descricao}`);
-    });
+    // Cadastrar Paciente
 
     // Tarefas
     const tarefaBtn = document.querySelector("#tarefas button");

@@ -195,6 +195,11 @@ table th, table td {
     text-align: center;
     font-size: 15px;
 }
+#mensagem-status{
+  text-align:center;
+  margin-top: 10px;
+  font-weight: bold;
+}
 
 @media screen and (max-width: 768px) {
     .main-container {

@@ -1,0 +1,92 @@
+
+#cadastrarPaciente body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
+#cadastrarPaciente .container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+#cadastrarPaciente h1, #cadastrarPaciente h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+#cadastrarPaciente form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+#cadastrarPaciente .form-sections {
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+#cadastrarPaciente .left-column,
+#cadastrarPaciente .right-column {
+  flex: 1;
+  min-width: 300px;
+}
+#cadastrarPaciente form input,
+#cadastrarPaciente form select,
+#cadastrarPaciente form textarea,
+#cadastrarPaciente form button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+#cadastrarPaciente form textarea {
+  resize: vertical;
+  height: 100px;
+}
+#cadastrarPaciente button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+#cadastrarPaciente button:hover {
+  background-color: #2980b9;
+}
+#cadastrarPaciente #resultado {
+  margin-top: 20px;
+  background: #e8ffe8;
+  padding: 15px;
+  border-radius: 5px;
+  display: none;
+}
+@media (max-width: 768px) {
+  #cadastrarPaciente .form-sections {
+    flex-direction: column;
+  }
+}
+#cadastrarPaciente #telefone,
+#cadastrarPaciente #email {
+  max-width: 48%;
+  display: inline-block;
+}
+#cadastrarPaciente #telefone {
+  margin-right: 4%;
+}
+#cadastrarPaciente .cep-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#cadastrarPaciente .checkbox-inline {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  white-space: nowrap;
+}

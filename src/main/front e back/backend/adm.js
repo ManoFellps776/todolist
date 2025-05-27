@@ -156,6 +156,7 @@ form.addEventListener('submit', async (e) => {
         });
 
         if (res.ok) {
+            alert("Salvo com sucesso.");
             mensagem.textContent = '✅ Tarefa foi salva com sucesso!';
             mensagem.style.color = 'green';
             form.reset();
