@@ -102,14 +102,59 @@ h3 {
   flex-wrap: wrap;
   margin: 20px 0;
 }
-
-#botoesAcao {
-  display: flex;
-  gap: 20px;
+#editarPaciente .lista-personalizada {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.botoes-container button,
-#botoesAcao button {
+#editarPaciente .paciente-lista-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+#editarPaciente .paciente-lista-item span {
+  font-weight: bold;
+  flex: 1;
+}
+
+#editarPaciente .paciente-lista-item button {
+  margin-left: 10px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#editarPaciente .paciente-lista-item .btn-editar {
+  background-color: #4CAF50;
+  color: white;
+}
+#editarPaciente .paciente-lista-item .btn-editar:hover{
+  background-color: #29612b;
+}
+
+#editarPaciente .paciente-lista-item .btn-deletar {
+  background-color: #e53935;
+  color: white;
+}
+#editarPaciente .paciente-lista-item .btn-deletar:hover{
+  background-color: #a72927;
+}
+
+
+
+.botoes-container button {
   width: 180px;
   height: 50px;
   font-size: 16px;
@@ -121,18 +166,17 @@ h3 {
 }
 
 #btnListar {
-  background-color: #3498db;
+  background-color: #8e44ad;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-#btnEditar {
-  background-color: #ffc107;
+#btnListar:hover {
+  background-color: #732d91; /* cor mais escura ao passar o mouse */
 }
-
-#btnDeletar {
-  background-color: #dc3545;
-}
-
-
 
 .paciente-lista-item:hover {
   background-color: #f0f0f0;
@@ -173,20 +217,40 @@ h3 {
     margin-left: auto;
     margin-right: auto;
 }
-.salvar{
-    margin-left: auto;
-    margin-right: auto;
-     width: 180px;
-  height: 50px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background-color: #3498db;
-    
-
+#editarPaciente .botoes-final {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
+
+#editarPaciente .salvar,
+#editarPaciente .voltar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#editarPaciente .salvar {
+  background-color: #3498db;
+  color: white;
+}
+
+#editarPaciente .salvar:hover {
+  background-color: #276d9c;
+}
+
+#editarPaciente .voltar {
+  background-color: #bdc3c7;
+  color: #2c3e50;
+}
+
+#editarPaciente .voltar:hover {
+  background-color: #95a5a6;
+}
+
 
 #editarPaciente {
   font-family: Arial, sans-serif;

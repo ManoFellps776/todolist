@@ -4,133 +4,105 @@ let pacienteSelecionadoId = null;
 
 window.addEventListener('DOMContentLoaded', async () => {
   await carregarPacientes();
-
-  document.getElementById('botoesAcao').style.display = 'none';
   document.getElementById('editForm').style.display = 'none';
-//Selecionar paciente manualmente
 
   document.getElementById('selectPaciente').addEventListener('change', async () => {
-  const id = document.getElementById('selectPaciente').value;
-  const btnEditar = document.getElementById('btnEditar');
-
-  if (id) {
-    pacienteSelecionadoId = Number(id); // garantir que seja número
-    document.getElementById('botoesAcao').style.display = 'block';
-    btnEditar.textContent = 'Editar Paciente';
-
-    try {
+    const id = document.getElementById('selectPaciente').value;
+    if (id) {
+      pacienteSelecionadoId = Number(id);
       const response = await fetch(`http://localhost:8080/pacientes/${pacienteSelecionadoId}`);
-      if (!response.ok) throw new Error('Erro ao buscar paciente');
-      const paciente = await response.json();
-      preencherFormulario(paciente);
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao carregar informações do paciente.");
+      if (response.ok) {
+        const paciente = await response.json();
+        preencherFormulario(paciente);
+      }
+    } else {
+      pacienteSelecionadoId = null;
+      document.getElementById('editForm').style.display = 'none';
+    }
+  });
+
+  document.getElementById('btnListar').addEventListener('click', async () => {
+    const listaContainer = document.getElementById('listaPacientes');
+    const botaoListar = document.getElementById('btnListar');
+    const form = document.getElementById('editForm');
+
+    if (mostrandoLista) {
+      listaContainer.style.display = 'none';
+      botaoListar.textContent = 'Listar Pacientes';
+      mostrandoLista = false;
+      return;
     }
 
-  } else {
-    pacienteSelecionadoId = null;
-    document.getElementById('botoesAcao').style.display = 'none';
-    document.getElementById('editForm').style.display = 'none';
-  }
+    if (form.style.display === 'block') {
+      form.style.display = 'none';
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/pacientes');
+      if (!response.ok) throw new Error('Erro ao carregar pacientes');
+
+      const pacientes = await response.json();
+      listaContainer.innerHTML = '';
+
+      pacientes.forEach(paciente => {
+        const item = document.createElement('div');
+        item.classList.add('paciente-lista-item');
+
+        const nome = document.createElement('span');
+        nome.textContent = paciente.nome;
+
+        const btnEditar = document.createElement('button');
+        btnEditar.textContent = 'Editar';
+        btnEditar.className = 'btn-editar';
+        btnEditar.onclick = async () => {
+          pacienteSelecionadoId = paciente.id;
+          const res = await fetch(`http://localhost:8080/pacientes/${paciente.id}`);
+          if (!res.ok) return alert('Erro ao buscar paciente');
+          const p = await res.json();
+          preencherFormulario(p);
+          document.getElementById('selectPaciente').value = paciente.id;
+          form.style.display = 'block';
+          listaContainer.style.display = 'none';
+          botaoListar.textContent = 'Listar Pacientes';
+          mostrandoLista = false;
+        };
+
+        const btnDeletar = document.createElement('button');
+        btnDeletar.textContent = 'Deletar';
+        btnDeletar.className = 'btn-deletar';
+        btnDeletar.onclick = async () => {
+          const confirmar = confirm(`Deseja realmente deletar o paciente "${paciente.nome}"?`);
+          if (!confirmar) return;
+          try {
+            const resp = await fetch(`http://localhost:8080/pacientes/${paciente.id}`, { method: 'DELETE' });
+            if (!resp.ok) throw new Error('Erro ao deletar');
+            alert('Paciente deletado com sucesso!');
+            await carregarPacientes();
+            listaContainer.style.display = 'none';
+            botaoListar.textContent = 'Listar Pacientes';
+            mostrandoLista = false;
+          } catch (err) {
+            console.error(err);
+            alert('Erro ao deletar paciente.');
+          }
+        };
+
+        item.appendChild(nome);
+        item.appendChild(btnEditar);
+        item.appendChild(btnDeletar);
+        listaContainer.appendChild(item);
+      });
+
+      listaContainer.style.display = 'block';
+      botaoListar.textContent = 'Ocultar Lista';
+      mostrandoLista = true;
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao listar pacientes');
+    }
+  });
 });
 
-
-// Botão de Listar
-document.getElementById('btnListar').addEventListener('click', async () => {
-  const listaContainer = document.getElementById('listaPacientes');
-  const botaoListar = document.getElementById('btnListar');
-  const form = document.getElementById('editForm');
-  const botaoEditar = document.getElementById('btnEditar');
-
-  // Se a lista está visível, fecha
-  if (mostrandoLista) {
-    listaContainer.style.display = 'none';
-    botaoListar.textContent = 'Listar Pacientes';
-    mostrandoLista = false;
-    return;
-  }
-
-  // Fecha edição se estiver aberta
-  if (form.style.display === 'block') {
-    form.style.display = 'none';
-    botaoEditar.textContent = 'Editar Paciente';
-  }
-
-  try {
-    const response = await fetch('http://localhost:8080/pacientes');
-    if (!response.ok) throw new Error('Erro ao carregar pacientes');
-
-    const pacientes = await response.json();
-    listaContainer.innerHTML = ''; // Limpa lista antiga
-
-    pacientes.forEach(paciente => {
-      const item = document.createElement('div');
-      item.textContent = paciente.nome;
-      item.classList.add('paciente-lista-item');
-      item.style.cursor = 'pointer';
-      item.onclick = () => {
-        document.getElementById('selectPaciente').value = paciente.id;
-        pacienteSelecionadoId = paciente.id;
-        document.getElementById('botoesAcao').style.display = 'block';
-        listaContainer.style.display = 'none';
-        botaoListar.textContent = 'Listar Pacientes';
-        mostrandoLista = false;
-        preencherFormulario(paciente);
-      };
-      listaContainer.appendChild(item);
-    });
-
-    listaContainer.style.display = 'block';
-    botaoListar.textContent = 'Ocultar Lista';
-    mostrandoLista = true;
-
-  } catch (error) {
-    console.error(error);
-    alert('Erro ao listar pacientes');
-  }
-});
-
-// Botão de Editar
-document.getElementById('btnEditar').addEventListener('click', async () => {
-  const btnEditar = document.getElementById('btnEditar');
-  const form = document.getElementById('editForm');
-  const listaContainer = document.getElementById('listaPacientes');
-  const botaoListar = document.getElementById('btnListar');
-
-  if (!pacienteSelecionadoId) return;
-
-  // Fecha a lista se estiver aberta
-  if (mostrandoLista) {
-    listaContainer.style.display = 'none';
-    botaoListar.textContent = 'Listar Pacientes';
-    mostrandoLista = false;
-  }
-
-  // Toggle do formulário
-  if (form.style.display === 'block') {
-    form.style.display = 'none';
-    btnEditar.textContent = 'Editar Paciente';
-    return;
-  }
-
-  try {
-    const response = await fetch(`http://localhost:8080/pacientes/${pacienteSelecionadoId}`);
-    if (!response.ok) throw new Error('Erro ao buscar paciente');
-
-    const paciente = await response.json();
-    preencherFormulario(paciente);
-
-    form.style.display = 'block';
-    btnEditar.textContent = 'Fechar Edição';
-
-  } catch (error) {
-    console.error(error);
-    alert('Erro ao carregar dados do paciente');
-  }
-});
-});
-//Carregar paciente
 async function carregarPacientes() {
   try {
     const response = await fetch('http://localhost:8080/pacientes');
@@ -138,7 +110,7 @@ async function carregarPacientes() {
     pacientes = await response.json();
 
     const select = document.getElementById('selectPaciente');
-    select.innerHTML = '<option value="">Selecione um paciente</option>'; // limpa antes de preencher
+    select.innerHTML = '<option value="">Selecione um paciente</option>';
 
     pacientes.forEach(p => {
       const option = document.createElement('option');
@@ -155,15 +127,12 @@ async function carregarPacientes() {
 function preencherFormulario(p) {
   document.getElementById('nomeEd').value = p.nome || '';
   document.getElementById('cpfCnpjEd').value = p.cpf || '';
-
-  // Corrigir o campo de data para o formato YYYY-MM-DD
   if (p.birthday) {
     const dataFormatada = new Date(p.birthday).toISOString().split('T')[0];
     document.getElementById('nascimentoEd').value = dataFormatada;
   } else {
     document.getElementById('nascimentoEd').value = '';
   }
-
   document.getElementById('estadoCivilEd').value = p.estadoCivil || '';
   document.getElementById('profissaoEd').value = p.profissao || '';
   document.getElementById('escolaridadeEd').value = p.escola || '';
@@ -177,9 +146,8 @@ function preencherFormulario(p) {
   document.getElementById('emailEd').value = p.email || '';
   document.getElementById('descricaoEd').value = p.descricao || '';
 }
-//Salvar alteração do paciente
+
 async function salvarAlteracoes(event) {
-    btnEditar.textContent = 'Editar Paciente';
   event.preventDefault();
 
   const pacienteAtualizado = {
@@ -211,7 +179,6 @@ async function salvarAlteracoes(event) {
 
     alert('Paciente atualizado com sucesso!');
     document.getElementById('editForm').style.display = 'none';
-    document.getElementById('botoesAcao').style.display = 'none';
     document.getElementById('selectPaciente').value = '';
     await carregarPacientes();
   } catch (error) {
@@ -219,39 +186,10 @@ async function salvarAlteracoes(event) {
     alert('Erro ao salvar alterações');
   }
 }
-//Deletar cadastro do paciente
-async function deletarPaciente() {
-  const select = document.getElementById('selectPaciente');
-  pacienteSelecionadoId = Number(select.value);
 
-  if (!pacienteSelecionadoId || isNaN(pacienteSelecionadoId)) {
-    alert("Nenhum paciente selecionado!");
-    return;
-  }
-
-  // Pega o nome do paciente direto do <option>
-  const nomeSelecionado = select.options[select.selectedIndex].text;
-
-  const confirmacao = confirm(`Deseja realmente deletar o paciente: "${nomeSelecionado}"?`);
-  if (!confirmacao) return;
-
-  try {
-    const response = await fetch(`http://localhost:8080/pacientes/${pacienteSelecionadoId}`, {
-      method: 'DELETE'
-    });
-
-    if (!response.ok) throw new Error('Erro ao deletar paciente');
-
-    alert(`Paciente "${nomeSelecionado}" deletado com sucesso!`);
-    document.getElementById('editForm').style.display = 'none';
-    document.getElementById('botoesAcao').style.display = 'none';
-    select.value = '';
-    pacienteSelecionadoId = null;
-    await carregarPacientes();
-  } catch (error) {
-    console.error("Erro ao deletar:", error);
-    alert('Erro ao deletar paciente');
-  }
+function voltarEdicao() {
+  document.getElementById('editForm').style.display = 'none';
+  document.getElementById('selectPaciente').value = '';
+  pacienteSelecionadoId = null;
+  document.getElementById('botoesAcao').style.display = 'none';
 }
-
-

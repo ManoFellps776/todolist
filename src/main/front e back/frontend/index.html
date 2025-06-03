@@ -274,12 +274,8 @@
     </select>
     <div class="botoes-container">
     <button id="btnListar">Listar Pacientes</button>
-      <div id="botoesAcao"> 
-      <button id="btnEditar">Editar Paciente</button>
-      <button id="btnDeletar" onclick="deletarPaciente()">Deletar Paciente</button>
     </div>
-    </div>
-<div id="listaPacientes" class="lista-scroll" style="display: none;"></div>
+<div id="listaPacientes" class="lista-scroll lista-personalizada" style="display: none;"></div>
 
      <form id="editForm" onsubmit="salvarAlteracoes(event)">
       <div class="form-sections">
@@ -313,7 +309,11 @@
 
       <textarea id="descricaoEd" placeholder="Outras Informações"></textarea>
 
-      <button class="salvar" type="submit">Salvar Alterações</button>
+      <div class="botoes-final">
+  <button class="salvar" type="submit">Salvar Alterações</button>
+  <button type="button" class="voltar" onclick="voltarEdicao()">Voltar</button>
+</div>
+
     </form>
   </div>
 </div>
