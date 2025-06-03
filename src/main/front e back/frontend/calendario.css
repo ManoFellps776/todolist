@@ -2,6 +2,7 @@
 body {
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
+  font-weight: bold;
 }
 .calendar-container {
   max-width: 900px;
@@ -16,11 +17,13 @@ body {
     margin-bottom: 15px;
   }
 .controls select,.controls button {
+  font-weight: bold;
     padding: 6px 10px;
     font-size: 14px;
   }
   .linha-selects,
   .linha-botoes {
+    font-weight: bold;
     display: flex;
     gap: 10px;
     justify-content: center;
@@ -46,9 +49,19 @@ body {
   cursor: pointer;
   overflow: hidden;
 }
+.day:hover{
+  background:#cacaca;
+  border: 2px solid #bb5151;
+}
+.Dom,.Sab{
+  background:#bb5151;
+}
 .today {
   background-color: #d0e8ff !important;
   border: 2px solid #3399ff;
+}
+.today:hover{
+  border: 2px solid #bb5151;
 }
 .task-item {
   font-size: 11px;
@@ -111,7 +124,7 @@ body {
 .back-btn { background-color: #757575; }
 
 .btn {
-  background-color: #99c24d;
+  background-color: #3498db;
   color: #fff;
   text-decoration: none;
   padding: 15px 30px;
@@ -122,7 +135,7 @@ body {
 }
 
 .btn:hover {
-  background-color: #7ca740;
+  background-color: #56b8fa;
 }
 .actions button {
   margin-right: 5px;
@@ -131,3 +144,92 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
+.task-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+  justify-content: flex-end;
+}
+
+.btn-editar {
+  background-color: #ffeb3b;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.btn-deletar {
+  background-color: #f44336;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.btn-editar:hover {
+  background-color: #fdd835;
+}
+
+.btn-deletar:hover {
+  background-color: #e53935;
+}
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: #000;
+  font-weight: bold;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.save-btn:not(.menu-toggle) {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.save-btn:hover:not(.menu-toggle) {
+    background-color: #38833a;
+}
+
+
+.back-btn {
+  background-color: #3498db;
+  color: #000;
+  font-weight: bold;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.back-btn:not(.menu-toggle) {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.back-btn:hover:not(.menu-toggle) {
+    background-color: #2980b9;
+}
+#pacienteSelect,#taskDesc,#taskTime,#taskColor{
+  font-weight: bold;
+}
+

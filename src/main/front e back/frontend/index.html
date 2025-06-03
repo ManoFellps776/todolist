@@ -6,6 +6,7 @@
     <title>Agência de Controle</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cadastrarPaciente.css">
+    <link rel="stylesheet" href="anamnese.css">
 </head>
 <body>
     <div class="topbar">
@@ -14,13 +15,13 @@
     <div class="sidebar" id="sidebar">
         <h2>Agência</h2>
         <ul>
-            <li onclick="mostrar('clientes')">Clientes</li>
-            <li onclick="mostrar('cadastrarPaciente')">Cadastrar Paciente</li>
-            <li onclick="mostrar('tarefas')">Tarefas</li>
-            <li onclick="mostrar('financeiro')">Financeiro</li>
-            <li onclick="mostrar('agenda')">Agenda</li>
-            <li onclick="mostrar('editarPaciente')">Área do Cliente</li>
-            <li onclick="mostrar('admin')">Administração</li>
+          <li onclick="mostrar('agenda')">Agenda</li>
+          <li onclick="mostrar('editarPaciente')">Área do Paciente</li>
+          <li onclick="mostrar('cadastrarPaciente')">Cadastro</li>
+          <li onclick="mostrar('anamnese')">Anamnese</li>
+          <li onclick="mostrar('financeiro')">Financeiro</li>
+          <!--<li onclick="mostrar('clientes')">Usuário</li>
+            <li onclick="mostrar('admin')">Administração</li>-->
         </ul>
     </div>
     <div class="main" id="main">
@@ -134,16 +135,98 @@
     <div id="resultado"></div>
   </div>
         </div>
-        <div id="tarefas" class="conteudo">
-            <h3>Tarefas</h3>
-            <input type="text" placeholder="Tarefa" />
-            <select>
-                <option>Pendente</option>
-                <option>Em Andamento</option>
-                <option>Concluída</option>
+       <div id="anamnese" class="conteudo">
+  <h1>Anamnese</h1>
+
+  <!-- Selecionar Paciente -->
+  <section class="section">
+    <h2>Selecionar Paciente</h2>
+    <div class="grid">
+      <label>Paciente
+        <select id="pacienteAnamnese"></select>
+      </label>
+    </div>
+  </section>
+
+  <!-- Botões Ações -->
+  <div id="botoesAcaoAnamnese" style="display: none;">
+    <button type="button" onclick="exibirSecaoAnamnese('agendamentos')">Visualizar Agendamentos</button>
+    <button type="button" onclick="exibirSecaoAnamnese('criarAnamnese')">Criar Anamnese</button>
+    <button type="button" onclick="exibirSecaoAnamnese('registroAnamnese')">Ver Registro de Anamnese</button>
+  </div>
+
+  <!-- Agendamentos -->
+  <div id="agendamentos" style="display: none;">
+    <div id="listaAgendamentos"></div>
+  </div>
+
+  <!-- Registros Anteriores -->
+  <div id="registroAnamnese" style="display: none;">
+  <h2>Registros de Anamnese</h2>
+  <div id="visualizacaoAnamnese" style="display: none; border: 1px dashed #aaa; padding: 10px; margin-top: 20px; position: relative;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="text-align: center; flex: 1;">FICHA DE ANAMNESE</h3>
+    <button onclick="fecharVisualizacaoAnamnese()" style="background: transparent; border: none; font-size: 20px; color: red; cursor: pointer;">✖</button>
+  </div>
+  <div id="conteudoVisualizacao"></div>
+</div>
+  <div id="listaRegistros"></div>
+
+</div>
+
+  <!-- Criar Nova Anamnese -->
+  <div id="criarAnamnese" style="display: none;">
+    <form id="formAnamnese">
+      <section class="section">
+        <h2>Dados Pessoais</h2>
+        <div class="grid">
+          <label>Nome <input type="text" name="nomeA" required></label>
+          <label>CPF <input type="text" name="cpfA" required></label>
+          <label>Data de Nascimento <input type="date" name="nascimentoA" required></label>
+          <label>Telefone <input type="tel" name="telefoneA"></label>
+          <label>Email <input type="email" name="emailA"></label>
+          <label>Endereço <input type="text" name="enderecoA"></label>
+          <label>Cidade <input type="text" name="cidadeA"></label>
+          <label>Sexo
+            <select name="sexo">
+              <option value="f">Feminino</option>
+              <option value="m">Masculino</option>
             </select>
-            <button>Adicionar</button>
+          </label>
+          <label>Altura <input type="text" name="altura"></label>
+          <label>Peso Atual <input type="text" name="pesoAtual"></label>
+          <label>Peso Ideal <input type="text" name="pesoIdeal"></label>
         </div>
+      </section>
+
+      <section class="section">
+        <h2>Histórico</h2>
+        <div class="checkbox-group">
+          <div class="checkbox-item"><input type="checkbox" id="agua" name="agua"><label for="agua">Ingestão de Água Diária</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="sono" name="sono"><label for="sono">Horas de Sono</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="atividade" name="atividade"><label for="atividade">Atividade Física</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="etilismo" name="etilismo"><label for="etilismo">Bebidas Alcoólicas</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="intestino" name="intestino"><label for="intestino">Intestino Regular</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="gestante" name="gestante"><label for="gestante">Gestante</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="cirurgias" name="cirurgias"><label for="cirurgias">Cirurgias</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="diabetes" name="diabetes"><label for="diabetes">Diabetes</label></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Outras Informações</h2>
+        <textarea name="obs" placeholder="Outras informações importantes"></textarea>
+      </section>
+
+      <p class="termo">
+        Declaro que as informações acima são verdadeiras, não cabendo ao profissional quaisquer responsabilidades por informações contidas nesta anamnese.
+      </p>
+
+      <button type="submit">Salvar Cadastro</button>
+    </form>
+  </div>
+</div>
+
         <div id="financeiro" class="conteudo">
             <h3>Financeiro</h3>
             <input type="number" placeholder="Valor (R$)" />
@@ -174,43 +257,63 @@
     </div>
     <h2 id="monthYearLabel"></h2>
     <div class="weekdays">
-      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+      <div class="Dom">Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div class="Sab">Sáb</div>
     </div>
     <div id="calendar"></div>
+    
   </div>
 
   <div id="agendamentoContainer"></div>
         </div>
-       <div class="conteudo" id="editarPaciente">
+       <div id="editarPaciente" class="conteudo">
   <div class="container">
     <h2>Editar Paciente</h2>
 
-    <select id="selectPaciente">
+    <select id="selectPaciente" class="selectPaciente">
       <option value="">Selecione um paciente</option>
     </select>
-
-    <div id="botoesAcao">
+    <div class="botoes-container">
+    <button id="btnListar">Listar Pacientes</button>
+      <div id="botoesAcao"> 
       <button id="btnEditar">Editar Paciente</button>
-      <button onclick="deletarPaciente()">Deletar Paciente</button>
+      <button id="btnDeletar" onclick="deletarPaciente()">Deletar Paciente</button>
     </div>
+    </div>
+<div id="listaPacientes" class="lista-scroll" style="display: none;"></div>
 
-    <form id="editForm"  onsubmit="carregarPacientes(), salvarAlteracoes(event)" >
-      <input id="nomeEd" placeholder="Nome" required type="text" />
-      <input id="cpfCnpjEd" placeholder="CPF ou CNPJ" required type="text" />
-      <input id="nascimentoEd" type="date" />
-      <input id="estadoCivilEd" placeholder="Estado Civil" type="text" />
-      <input id="profissaoEd" placeholder="Profissão" type="text" />
-      <input id="escolaridadeEd" placeholder="Escolaridade" type="text" />
-      <input id="cepEd" placeholder="CEP" type="text" />
-      <input id="estadoEd" placeholder="Estado" type="text" />
-      <input id="cidadeEd" placeholder="Cidade" type="text" />
-      <input id="bairroEd" placeholder="Bairro" type="text" />
-      <input id="ruaEd" placeholder="Rua" type="text" />
-      <input id="numeroRuaEd" placeholder="Número" type="text" />
-      <input id="telefoneEd" placeholder="Telefone" type="text" />
-      <input id="emailEd" placeholder="Email" type="email" />
+     <form id="editForm" onsubmit="salvarAlteracoes(event)">
+      <div class="form-sections">
+        <div class="left-column">
+          <input id="nomeEd" placeholder="Nome" required type="text" />
+          <input id="cpfCnpjEd" placeholder="CPF ou CNPJ" required type="text" />
+          <input id="nascimentoEd" type="date" />
+          <input id="estadoCivilEd" placeholder="Estado Civil" type="text" />
+          <input id="profissaoEd" placeholder="Profissão" type="text" />
+          <input id="escolaridadeEd" placeholder="Escolaridade" type="text" />
+        </div>
+
+        <div class="right-column">
+          <input id="cepEd" placeholder="CEP" type="text" />
+          <input id="estadoEd" placeholder="Estado" type="text" />
+          <input id="cidadeEd" placeholder="Cidade" type="text" />
+          <input id="bairroEd" placeholder="Bairro" type="text" />
+          <input id="ruaEd" placeholder="Rua" type="text" />
+          <input id="numeroRuaEd" placeholder="Número" type="text" />
+        </div>
+      </div>
+
+      <div class="form-sections">
+        <div class="left-column">
+          <input id="telefoneEd" placeholder="Telefone" type="text" />
+        </div>
+        <div class="right-column">
+          <input id="emailEd" placeholder="Email" type="email" />
+        </div>
+      </div>
+
       <textarea id="descricaoEd" placeholder="Outras Informações"></textarea>
-      <button type="submit">Salvar Alterações</button>
+
+      <button class="salvar" type="submit">Salvar Alterações</button>
     </form>
   </div>
 </div>
@@ -227,5 +330,9 @@
     <script src="../backend/script.js"></script>
     <script src="../backend/cadastro.js"></script>
     <script src="../backend/editarPaciente.js"></script>
+    <script src="../backend/calendario.js"></script>
+    <script src="../backend/exibirAnamnese.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </body>
 </html>

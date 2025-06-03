@@ -4,6 +4,19 @@ function mostrar(id) {
     sections.forEach(sec => sec.classList.remove('ativo'));
     document.getElementById(id).classList.add('ativo');
 
+    //Desmarcar o paciente selecionado
+    if (id !== 'editarPaciente') {
+    const select = document.getElementById('selectPaciente');
+    if (select) {
+      select.value = '';
+      pacienteSelecionadoId = null;
+      document.getElementById('botoesAcao').style.display = 'none';
+      document.getElementById('editForm').style.display = 'none';
+      btnEditar.textContent = 'Editar Paciente';
+    }
+  }
+
+
     // 🟨 NOVO: salvar aba ativa
     localStorage.setItem("abaAtiva", id);
 }
@@ -51,13 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cadastrar Paciente
 
-    // Tarefas
-    const tarefaBtn = document.querySelector("#tarefas button");
-    tarefaBtn.addEventListener("click", () => {
-        const tarefa = document.querySelector("#tarefas input[type='text']").value;
-        const status = document.querySelector("#tarefas select").value;
-        alert(`Tarefa adicionada: "${tarefa}" [${status}]`);
-    });
+  
 
     // Financeiro
     const financeiroBtn = document.querySelector("#financeiro button");
@@ -148,155 +155,3 @@ function validarCadastro(event) {
     alert("Erro ao conectar com o servidor.");
   });
 }
-//Calendario
-const calendar = document.getElementById('calendar');
-const monthYearLabel = document.getElementById('monthYearLabel');
-const monthSelect = document.getElementById('monthSelect');
-const yearSelect = document.getElementById('yearSelect');
-
-let currentDate = new Date();
-let selectedDate = null;
-let tasks = {};
-
-function populateYearSelect() {
-  for (let y = 2010; y <= 2099; y++) {
-    const option = document.createElement('option');
-    option.value = y;
-    option.textContent = y;
-    yearSelect.appendChild(option);
-  }
-}
-
-function generateCalendar(date) {
-  document.querySelector('.calendar-container').style.display = 'block';
-  document.getElementById('agendamentoContainer').style.display = 'none';
-
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  monthSelect.value = month;
-  yearSelect.value = year;
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
-
-  calendar.innerHTML = "";
-
-  // ✅ Mostrar o dia de hoje no rótulo
-  const hoje = new Date();
-  const diaHoje = hoje.getDate();
-  const mesHoje = hoje.getMonth();
-  const anoHoje = hoje.getFullYear();
-
-  const label = (mesHoje === month && anoHoje === year)
-    ? `Hoje: ${('0' + diaHoje).slice(-2)}/${('0' + (month + 1)).slice(-2)}/${year}`
-    : `${('0' + (month + 1)).slice(-2)}/${year}`;
-
-  monthYearLabel.textContent = label;
-
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement('div');
-    empty.className = 'day';
-    calendar.appendChild(empty);
-  }
-
-  for (let d = 1; d <= lastDate; d++) {
-    const dayEl = document.createElement('div');
-    const isToday = year === hoje.getFullYear() && month === hoje.getMonth() && d === hoje.getDate();
-    dayEl.className = isToday ? 'day today' : 'day';
-    dayEl.innerHTML = `<div class="date">${d}</div>`;
-
-    const key = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
-    if (tasks[key]) {
-      const scrollContainer = document.createElement('div');
-      scrollContainer.className = 'task-scroll';
-
-      tasks[key].sort((a, b) => a.time.localeCompare(b.time)).forEach(task => {
-        const taskEl = document.createElement('div');
-        taskEl.className = 'task-item ' + (task.color || 'verde');
-        taskEl.textContent = `${task.time} - ${task.desc}`;
-        scrollContainer.appendChild(taskEl);
-      });
-
-      dayEl.appendChild(scrollContainer);
-    }
-
-    dayEl.onclick = () => {
-      selectedDate = key;
-      showDayView();
-    };
-
-    calendar.appendChild(dayEl);
-  }
-}
-
-function showDayView() {
-  document.querySelector('.calendar-container').style.display = 'none';
-  const container = document.getElementById('agendamentoContainer');
-  container.style.display = 'block';
-  container.innerHTML = "";
-
-  const view = document.createElement('div');
-  view.className = 'day-view';
-
-  const [year, month, day] = selectedDate.split("-");
-  const titulo = document.createElement('h2');
-  titulo.textContent = `Tarefas de ${day}/${month}/${year}`;
-  view.appendChild(titulo);
-
-  const lista = document.createElement('div');
-  lista.className = 'task-list';
-  if (tasks[selectedDate]) {
-    tasks[selectedDate].sort((a, b) => a.time.localeCompare(b.time)).forEach(t => {
-      const item = document.createElement('div');
-      item.className = 'task-item ' + (t.color || 'verde');
-      item.innerHTML = `<strong>${t.time}</strong> - ${t.desc}`;
-      lista.appendChild(item);
-    });
-  }
-  view.appendChild(lista);
-
-  const form = document.createElement('div');
-  form.className = 'add-task-form';
-  form.innerHTML = `
-    <label>Hora:</label><input type="time" id="taskTime">
-    <label>Descrição:</label><textarea id="taskDesc" placeholder="Descrição detalhada"></textarea>
-    <label>Cor:</label>
-    <select id="taskColor">
-      <option value="verde">Verde</option>
-      <option value="amarelo">Amarelo</option>
-      <option value="vermelho">Vermelho</option>
-    </select>
-    <button class="save-btn" onclick="saveTask()">Salvar</button>
-    <button class="back-btn" onclick="generateCalendar(currentDate)">Voltar</button>
-  `;
-  view.appendChild(form);
-  container.appendChild(view);
-}
-
-function saveTask() {
-  const time = document.getElementById('taskTime').value;
-  const desc = document.getElementById('taskDesc').value;
-  const color = document.getElementById('taskColor') ? document.getElementById('taskColor').value : 'verde';
-  if (!time || !desc || !selectedDate) return;
-
-  if (!tasks[selectedDate]) tasks[selectedDate] = [];
-  tasks[selectedDate].push({ time, desc, color });
-
-  showDayView();
-}
-
-function changeMonth(offset) {
-  currentDate.setMonth(currentDate.getMonth() + offset);
-  generateCalendar(currentDate);
-}
-
-function selectMonthYear() {
-  const newMonth = parseInt(monthSelect.value);
-  const newYear = parseInt(yearSelect.value);
-  currentDate.setMonth(newMonth);
-  currentDate.setFullYear(newYear);
-  generateCalendar(currentDate);
-}
-
-populateYearSelect();
-generateCalendar(currentDate);

@@ -1,0 +1,12 @@
+
+package br.com.projetospring.projeto_spring.repository;
+
+import br.com.projetospring.projeto_spring.entity.AnamnesePronta;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AnamneseProntaRepository extends JpaRepository<AnamnesePronta, Long> {
+    List<AnamnesePronta> findByCpfA(String cpfA);
+}

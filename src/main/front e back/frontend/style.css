@@ -79,7 +79,7 @@ body {
     display: block;
 }
 
-input, textarea, select, button {
+input, textarea, select {
     display: block;
     margin: 10px 0;
     padding: 10px;
@@ -89,18 +89,163 @@ input, textarea, select, button {
     border-radius: 4px;
 }
 
-button:not(.menu-toggle) {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover:not(.menu-toggle) {
-    background-color: #2980b9;
-}
 
 
 h3 {
     color: #2c3e50;
 }
+.botoes-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+#botoesAcao {
+  display: flex;
+  gap: 20px;
+}
+
+.botoes-container button,
+#botoesAcao button {
+  width: 180px;
+  height: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: black;
+}
+
+#btnListar {
+  background-color: #3498db;
+}
+
+#btnEditar {
+  background-color: #ffc107;
+}
+
+#btnDeletar {
+  background-color: #dc3545;
+}
+
+
+
+.paciente-lista-item:hover {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+#listaPacientes.lista-scroll {
+  max-height: 200px;
+  max-width: 50vw; /* metade da tela */
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.paciente-lista-item {
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: bold;
+}
+
+.paciente-lista-item:hover {
+  background-color: #e6f7ff;
+}
+
+.selectPaciente{
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    color: black;
+    margin-left: auto;
+    margin-right: auto;
+}
+.salvar{
+    margin-left: auto;
+    margin-right: auto;
+     width: 180px;
+  height: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #3498db;
+    
+
+}
+
+#editarPaciente {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
+
+#editarPaciente .container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#editarPaciente h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#editarPaciente form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#editarPaciente .form-sections {
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+#editarPaciente .left-column,
+#editarPaciente .right-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+#editarPaciente form input,
+#editarPaciente form select,
+#editarPaciente form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+#editarPaciente form textarea {
+  resize: vertical;
+  height: 100px;
+}
+@media (max-width: 768px) {
+  #editarPaciente .form-sections {
+    flex-direction: column;
+  }
+}
+

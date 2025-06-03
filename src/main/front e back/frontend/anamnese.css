@@ -1,0 +1,100 @@
+#anamnese form {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#anamnese h2, h3 {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+  margin-top: 30px;
+}
+
+
+#anamnese .termo {
+  font-size: 0.9em;
+  margin-top: 20px;
+}
+
+#anamnese button {
+  margin-right: 1%;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #8e44ad;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#anamnese .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+}
+#anamnese .checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+
+#anamnese .checkbox-item {
+  display: block;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+
+#anamnese .checkbox-item input[type="checkbox"] {
+  margin: 0;
+  transform: scale(1.2);
+}
+
+#anamnese .checkbox-item label {
+  margin: 0;
+  cursor: pointer;
+}
+#anamnese .btn-pdf {
+  background-color: purple;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  margin-right: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#anamnese .btn-deletar {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#anamnese #visualizacaoAnamnese {
+  background-color: #f9f9f9;
+  border-left: 4px solid #8e44ad;
+}
+
+#anamnese .registro-card {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+
+#anamnese .btn-editar {
+  background-color: #f1c40f;
+  color: #000;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
