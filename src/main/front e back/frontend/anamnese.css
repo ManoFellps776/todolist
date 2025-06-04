@@ -29,6 +29,9 @@
   border-radius: 5px;
   cursor: pointer;
 }
+#anamnese button:hover{
+  background-color: #6d3585;
+}
 #anamnese .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -69,6 +72,9 @@
   border-radius: 6px;
   cursor: pointer;
 }
+#anamnese .btn-pdf:hover{
+  background-color: rgb(92, 1, 92);
+}
 
 #anamnese .btn-deletar {
   background-color: #e74c3c;
@@ -77,6 +83,9 @@
   padding: 4px 10px;
   border-radius: 6px;
   cursor: pointer;
+}
+#anamnese .btn-deletar:hover {
+background-color: #c24133;
 }
 #anamnese #visualizacaoAnamnese {
   background-color: #f9f9f9;
@@ -88,6 +97,9 @@
   padding: 10px 0;
   margin-bottom: 10px;
 }
+#anamnese .registro-card:hover{
+  background-color: #d1d1d1;
+}
 
 #anamnese .btn-editar {
   background-color: #f1c40f;
@@ -98,3 +110,7 @@
   border-radius: 4px;
   cursor: pointer;
 }
+#anamnese .btn-editar:hover{
+  background-color: #bb980d;
+}
+

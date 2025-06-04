@@ -124,18 +124,18 @@ body {
 .back-btn { background-color: #757575; }
 
 .btn {
-  background-color: #3498db;
+  background-color: #8e44ad;
   color: #fff;
   text-decoration: none;
   padding: 15px 30px;
-  margin: 10px;
+  margin: 15px;
   display: inline-block;
   border-radius: 5px;
   font-weight: bold;
 }
 
 .btn:hover {
-  background-color: #56b8fa;
+  background-color: #6d3585;
 }
 .actions button {
   margin-right: 5px;

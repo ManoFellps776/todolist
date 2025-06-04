@@ -49,7 +49,7 @@
   height: 100px;
 }
 #cadastrarPaciente button {
-  background-color: #3498db;
+  background-color: #8e44ad;
   color: white;
   border: none;
   font-weight: bold;
@@ -57,7 +57,7 @@
   width: 100%;
 }
 #cadastrarPaciente button:hover {
-  background-color: #2980b9;
+  background-color: #6d3585;
 }
 #cadastrarPaciente #resultado {
   margin-top: 20px;

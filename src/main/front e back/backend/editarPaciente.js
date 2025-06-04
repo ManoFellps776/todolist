@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (response.ok) {
         const paciente = await response.json();
         preencherFormulario(paciente);
+        document.getElementById('selectPaciente').disabled = false;
       }
     } else {
       pacienteSelecionadoId = null;
@@ -61,6 +62,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           const p = await res.json();
           preencherFormulario(p);
           document.getElementById('selectPaciente').value = paciente.id;
+          document.getElementById('selectPaciente').disabled = false;
           form.style.display = 'block';
           listaContainer.style.display = 'none';
           botaoListar.textContent = 'Listar Pacientes';
@@ -101,6 +103,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       alert('Erro ao listar pacientes');
     }
   });
+
+  
 });
 
 async function carregarPacientes() {
@@ -118,6 +122,10 @@ async function carregarPacientes() {
       option.textContent = p.nome;
       select.appendChild(option);
     });
+
+    if (pacienteSelecionadoId === null) {
+      select.disabled = false;
+    }
   } catch (error) {
     console.error(error);
     alert('Erro ao carregar lista de pacientes');
@@ -145,6 +153,12 @@ function preencherFormulario(p) {
   document.getElementById('telefoneEd').value = p.telefone || '';
   document.getElementById('emailEd').value = p.email || '';
   document.getElementById('descricaoEd').value = p.descricao || '';
+  document.getElementById('selectPaciente').disabled = false;
+}
+
+function limparFormulario() {
+  const campos = document.querySelectorAll('#editForm input, #editForm textarea');
+  campos.forEach(campo => campo.value = '');
 }
 
 async function salvarAlteracoes(event) {
@@ -187,9 +201,56 @@ async function salvarAlteracoes(event) {
   }
 }
 
+async function salvarPaciente(event) {
+  event.preventDefault();
+
+  const paciente = {
+    nome: document.getElementById('nomeEd').value,
+    cpf: document.getElementById('cpfCnpjEd').value,
+    birthday: document.getElementById('nascimentoEd').value,
+    estadoCivil: document.getElementById('estadoCivilEd').value,
+    profissao: document.getElementById('profissaoEd').value,
+    escola: document.getElementById('escolaridadeEd').value,
+    cep: document.getElementById('cepEd').value,
+    estadoCep: document.getElementById('estadoEd').value,
+    cidade: document.getElementById('cidadeEd').value,
+    bairro: document.getElementById('bairroEd').value,
+    rua: document.getElementById('ruaEd').value,
+    numeroRua: document.getElementById('numeroRuaEd').value,
+    telefone: document.getElementById('telefoneEd').value,
+    email: document.getElementById('emailEd').value,
+    descricao: document.getElementById('descricaoEd').value
+  };
+
+  const url = pacienteSelecionadoId 
+      ? `http://localhost:8080/pacientes/${pacienteSelecionadoId}` 
+      : 'http://localhost:8080/pacientes';
+
+  const method = pacienteSelecionadoId ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paciente)
+    });
+
+    if (!res.ok) throw new Error('Erro ao salvar paciente');
+    alert(pacienteSelecionadoId ? 'Paciente atualizado!' : 'Paciente criado!');
+    document.getElementById('editForm').style.display = 'none';
+    document.getElementById('selectPaciente').disabled = false;
+    await carregarPacientes();
+  } catch (err) {
+    alert('Erro ao salvar');
+    console.error(err);
+  }
+}
+
 function voltarEdicao() {
   document.getElementById('editForm').style.display = 'none';
   document.getElementById('selectPaciente').value = '';
+  document.getElementById('selectPaciente').disabled = false; // ← Reativar select
   pacienteSelecionadoId = null;
   document.getElementById('botoesAcao').style.display = 'none';
 }
+

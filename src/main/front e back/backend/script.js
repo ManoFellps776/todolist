@@ -46,8 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🟨 NOVO: restaurar aba ativa salva
     const abaSalva = localStorage.getItem("abaAtiva");
     if (abaSalva) {
-        mostrar(abaSalva);
-    }
+    mostrar(abaSalva);
+} else {
+    mostrar("agenda"); // Coloque aqui a aba padrão que você quer mostrar
+}
   // Clientes
     const clienteBtn = document.querySelector("#clientes button");
     const clienteList = document.querySelector("#clientes ul");
@@ -155,3 +157,4 @@ function validarCadastro(event) {
     alert("Erro ao conectar com o servidor.");
   });
 }
+localStorage.removeItem("abaAtiva");

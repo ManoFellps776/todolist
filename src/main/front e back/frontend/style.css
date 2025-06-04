@@ -177,6 +177,30 @@ h3 {
 #btnListar:hover {
   background-color: #732d91; /* cor mais escura ao passar o mouse */
 }
+#btnNovoPaciente {
+  background-color: #8e44ad;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#btnNovoPaciente:hover {
+  background-color: #732d91; /* cor mais escura ao passar o mouse */
+}
+#btnSalvar {
+  background-color: #8e44ad;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#btnSalvar:hover {
+  background-color: #732d91; /* cor mais escura ao passar o mouse */
+}
 
 .paciente-lista-item:hover {
   background-color: #f0f0f0;
