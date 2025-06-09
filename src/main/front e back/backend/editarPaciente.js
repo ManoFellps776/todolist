@@ -254,3 +254,32 @@ function voltarEdicao() {
   document.getElementById('botoesAcao').style.display = 'none';
 }
 
+ document.getElementById('btnEditar').addEventListener('click', async () => {
+  const select = document.getElementById('selectPaciente');
+  const idSelecionado = select.value;
+
+  if (!idSelecionado) {
+    alert('Selecione um paciente para editar.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:8080/pacientes/${idSelecionado}`);
+    if (!res.ok) throw new Error('Erro ao buscar paciente');
+
+    const paciente = await res.json();
+
+    preencherFormulario(paciente); // Função que preenche os campos com os dados
+
+    // Mostra o formulário preenchido
+    document.getElementById('editForm').style.display = 'block';
+    document.getElementById('selectPaciente').disabled = false;
+    document.getElementById('listaPacientes').style.display = 'none';
+    document.getElementById('btnListar').textContent = 'Listar Pacientes';
+    mostrandoLista = false;
+
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao carregar paciente.');
+  }
+});

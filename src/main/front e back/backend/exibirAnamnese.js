@@ -298,93 +298,128 @@ async function gerarPDF(id) {
     doc.line(10, 18, 200, 18); // linha separadora
 
     let y = 25;
-    const addCampo = (label, valor) => {
+
+    const campo = (label, valor = "", x = 15) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text(`${label}:`, 15, y);
+      doc.text(`${label}:`, x, y);
       doc.setFont("helvetica", "normal");
-      doc.text(`${valor || "-"}`, 60, y);
+      doc.text(`${valor || "__________________________"}`, x + 45, y);
       y += 7;
     };
 
-    // Seção: Dados Pessoais
+    // Dados Pessoais
     doc.setFontSize(13);
     doc.setFont("helvetica", "bold");
     doc.text("Dados Pessoais", 15, y);
-    y += 6;
-
-    addCampo("Nome", a.nomeA);
-    addCampo("CPF", a.cpfA);
-    addCampo("Nascimento", a.nascimentoA);
-    addCampo("Telefone", a.telefoneA);
-    addCampo("Email", a.emailA);
-    addCampo("Endereço", a.enderecoA);
-    addCampo("Cidade", a.cidadeA);
-    addCampo("Sexo", a.sexo === "m" ? "Masculino" : a.sexo === "f" ? "Feminino" : "-");
-    addCampo("Altura", a.altura);
-    addCampo("Peso Atual", a.pesoAtual);
-    addCampo("Peso Ideal", a.pesoIdeal);
-
-    // Seção: Histórico
+    y += 7;
+    campo("Nome", a.nomeA);
+    campo("Endereço", a.enderecoA);
+    campo("Data de Nascimento", a.nascimentoA);
+    campo("Profissão");
+    campo("CI");
+    campo("CPF", a.cpfA);
+    campo("Nome da Mãe");
+    campo("Telefone", a.telefoneA);
+    campo("Telefone Residencial");
+    campo("Estado Civil");
+    campo("E-mail", a.emailA);
+    campo("Queixa principal");
     y += 5;
+
+    // Informações Importantes
     doc.setFontSize(13);
     doc.setFont("helvetica", "bold");
-    doc.text("Histórico", 15, y);
-    y += 6;
+    doc.text("INFORMAÇÕES IMPORTANTES", 15, y);
+    y += 7;
 
-    const check = (txt, val) => {
+    const check = (label, checked) => {
       doc.setFont("helvetica", "normal");
-      doc.text(`[${val ? "X" : " "}] ${txt}`, 20, y);
+      doc.text(`(${checked ? "X" : " "}) ${label}`, 20, y);
       y += 6;
     };
 
-    check("Ingestão de Água Diária", a.agua);
-    check("Horas de Sono", a.sono);
-    check("Atividade Física", a.atividade);
-    check("Bebidas Alcoólicas", a.etilismo);
-    check("Intestino Regular", a.intestino);
-    check("Gestante", a.gestante);
-    check("Cirurgias", a.cirurgias);
-    check("Diabetes", a.diabetes);
-
-    // Seção: Outras Informações
+    check("Diabetes / Tipo", a.diabetes);
+    check("Problemas Circulatórios", a.atividade);
+    check("Pressão Alta", false);
+    check("Lesões anteriores", a.cirurgias);
+    doc.text("Taxa de Glicemia capilar: ____________________", 20, y);
     y += 6;
-    doc.setFontSize(13);
+    check("Antecedentes Cancerígenos", false);
+    doc.text("Outros: ____________________________________________", 20, y);
+    y += 10;
+
     doc.setFont("helvetica", "bold");
-    doc.text("Outras Informações", 15, y);
+    doc.text("* Está gestante?", 20, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(`( ${a.gestante ? "X" : " "} ) sim   ( ${!a.gestante ? "X" : " "} ) não`, 70, y);
     y += 7;
 
+    doc.setFont("helvetica", "bold");
+    doc.text("* Apresenta alergia a medicamentos?", 20, y);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(a.obs || "-", 15, y, { maxWidth: 180 });
+    doc.text("( ) sim   ( ) não", 100, y);
+    y += 6;
+    doc.text("Qual: ___________________________________", 25, y);
+    y += 8;
 
-    // Termo de responsabilidade
-    y += 30;
+    doc.setFont("helvetica", "bold");
+    doc.text("* No momento está tomando quais medicamentos", 20, y);
+    y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.text("________________________________________________________________________________", 20, y);
+    y += 6;
+    doc.text("________________________________________________________________________________", 20, y);
+    y += 10;
+
+    // Hábitos
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text("Hábitos", 15, y);
+    y += 7;
+
     doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text("• Consome em média quantos litros de água por dia? ____________________", 20, y);
+    y += 6;
+    doc.text(`• Qual o seu peso e altura? ${a.pesoAtual || "____"} kg / ${a.altura || "____"} m`, 20, y);
+    y += 6;
+    doc.text("• Qual tipo de calçado que você mais usa? __________________________", 20, y);
+    y += 6;
+    doc.text("• Possui calos? Especifique o tipo de calo que o paciente possui.", 20, y);
+    y += 6;
+    doc.text("__________________________________________________________", 20, y);
+    y += 6;
+    doc.text("• Há histórico de ulceração nos pés? ( ) Sim   ( ) Não", 20, y);
+    y += 6;
+    doc.text("• Utiliza meias", 20, y);
+    y += 6;
+    doc.text("• Permanece mais tempo: ( ) sentado   ( ) em pé   ( ) andando", 20, y);
+    y += 20;
+
     doc.setFont("helvetica", "italic");
-    doc.text(
-      "Declaro que as informações acima são verdadeiras, não cabendo ao profissional quaisquer responsabilidades\npor informações contidas nesta anamnese.",
-      15,
-      y
-    );
+    doc.setFontSize(10);
+    doc.text("Declaro que as informações acima são verdadeiras, não cabendo ao profissional quaisquer responsabilidades", 15, y);
+    y += 6;
+    doc.text("por informações contidas nesta anamnese.", 15, y);
+    y += 20;
 
-    // Assinatura e data
-    y += 25;
     doc.setFont("helvetica", "normal");
-    doc.setLineWidth(0.1);
-    doc.line(20, y, 90, y); // linha da assinatura
-    doc.line(120, y, 170, y); // linha da data
+    doc.line(30, y, 100, y);
+    doc.line(120, y, 180, y);
     y += 5;
-    doc.text("Assinatura do Paciente", 30, y);
-    doc.text("Data", 135, y);
+    doc.text("Assinatura do Paciente", 40, y);
+    doc.text("Data", 145, y);
 
-    // Salvar PDF
-    doc.save(`anamnese_${a.nomeA}.pdf`);
+    doc.save(`anamnese_${a.nomeA || "paciente"}.pdf`);
   } catch (err) {
     console.error("Erro ao gerar PDF:", err);
     alert("❌ Não foi possível gerar o PDF.");
   }
 }
+
+
+
 //Vizualizar anamnese antes
 async function visualizarAnamnese(id) {
   try {

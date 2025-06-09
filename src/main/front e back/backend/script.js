@@ -10,9 +10,9 @@ function mostrar(id) {
     if (select) {
       select.value = '';
       pacienteSelecionadoId = null;
-      document.getElementById('botoesAcao').style.display = 'none';
+      
       document.getElementById('editForm').style.display = 'none';
-      btnEditar.textContent = 'Editar Paciente';
+     
     }
   }
 
@@ -50,23 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 } else {
     mostrar("agenda"); // Coloque aqui a aba padrão que você quer mostrar
 }
-  // Clientes
-    const clienteBtn = document.querySelector("#clientes button");
-    const clienteList = document.querySelector("#clientes ul");
 
-    clienteBtn.addEventListener("click", () => {
-        const nome = document.querySelector("#clientes input[type='text']").value;
-        const email = document.querySelector("#clientes input[type='email']").value;
-        if (nome && email) {
-            const li = document.createElement("li");
-            li.textContent = `${nome} - ${email}`;
-            clienteList.appendChild(li);
-        }
-    });
-
-    // Cadastrar Paciente
-
-  
 
     // Financeiro
     const financeiroBtn = document.querySelector("#financeiro button");
@@ -76,13 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert(`${tipo} registrada: R$ ${valor}`);
     });
 
-    // Agenda
-    const agendaBtn = document.querySelector("#agenda button");
-    agendaBtn.addEventListener("click", () => {
-        const dataHora = document.querySelector("#agenda input[type='datetime-local']").value;
-        const compromisso = document.querySelector("#agenda input[type='text']").value;
-        alert(`Compromisso agendado em ${dataHora}: ${compromisso}`);
-    });
+    
 });
 // View Login admin Ativa/desativar
 function mostrarLogin() {
@@ -158,3 +136,25 @@ function validarCadastro(event) {
   });
 }
 localStorage.removeItem("abaAtiva");
+
+// Simulando um objeto de usuário recuperado do back-end
+  const usuarioLogado = {
+    nome: "Felipe Rezende",
+    foto: "https://i.pravatar.cc/150?u=felipe@example.com" // pode substituir por path real
+  };
+
+  window.onload = function () {
+    document.getElementById("userAvatar").src = usuarioLogado.foto;
+  };
+
+  function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function sairLogin() {
+    const confirmar = confirm("Deseja realmente sair?");
+    if (confirmar) {
+      window.location.href = "menuinicial.html";
+    }
+  }

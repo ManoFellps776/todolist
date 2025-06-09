@@ -232,4 +232,15 @@ body {
 #pacienteSelect,#taskDesc,#taskTime,#taskColor{
   font-weight: bold;
 }
+.btnSimplificado{
+  background-color: #8e44ad;
+  color: white;
+  font-weight: bold;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  width: 100%;
+}
 

@@ -64,7 +64,7 @@
   cursor: pointer;
 }
 #anamnese .btn-pdf {
-  background-color: purple;
+  background-color: #8e44ad;
   color: white;
   border: none;
   padding: 4px 10px;
@@ -73,7 +73,7 @@
   cursor: pointer;
 }
 #anamnese .btn-pdf:hover{
-  background-color: rgb(92, 1, 92);
+  background-color: #6d3585;
 }
 
 #anamnese .btn-deletar {

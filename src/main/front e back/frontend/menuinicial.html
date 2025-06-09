@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agência de Controle</title>
+  <link rel="stylesheet" href="menuinicial.css">
+</head>
+<body>
+  <div class="topbar">
+    <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <h2>Agência</h2>
+    <ul>
+      <li onclick="mostrar('admin')">Login / Cadastro</li>
+      <li onclick="mostrar('termos')">Termos</li>
+      <li onclick="mostrar('assinaturas')">Assinaturas e contratos</li>
+    </ul>
+  </div>
+
+  <div class="main" id="main">
+    <!-- FORMULÁRIO DE LOGIN -->
+    <div id="admin" class="conteudo ativo">
+      <div class="container">
+        <div class="card" id="loginCard">
+          <h2>Entrar</h2>
+          <form onsubmit="validarLogin(event)">
+            <input type="text" id="usuario" placeholder="Usuário" required>
+            <input type="password" id="senhaCadastro" placeholder="Senha" required>
+            <button type="submit" class="btn">Entrar</button>
+            <a href="#" class="link">Esqueceu a senha?</a>
+            <hr>
+            <button type="button" class="btn-outline" onclick="mostrarCadastro()">Criar nova conta</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULÁRIO DE CADASTRO -->
+    <div id="clientes" class="conteudo">
+      <div class="container">
+        <div class="card" id="cadastroCard">
+          <h2>Criar conta</h2>
+          <form onsubmit="validarCadastro(event)">
+            <input type="text" id="nome" placeholder="Nome de usuário" required>
+            <input type="email" id="email1" placeholder="Email" required>
+            <input type="password" id="senhaCadastro1" placeholder="Senha" required>
+            <input type="password" id="confirmarSenha" placeholder="Confirmar Senha" required>
+            <button type="submit" class="btn">Cadastrar</button>
+            <button type="button" class="btn-outline" onclick="mostrarLogin()">Voltar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Termos de Uso -->
+<div id="termos" class="conteudo">
+  <div class="info-container">
+    <h2>Termos de Uso</h2>
+    <p>Ao utilizar este sistema, você concorda com os seguintes termos:</p>
+    <ul>
+      <li>Todos os dados inseridos devem ser verdadeiros e atualizados.</li>
+      <li>É proibida a utilização do sistema para atividades ilícitas.</li>
+      <li>Os administradores se reservam o direito de suspender contas suspeitas.</li>
+      <li>O uso do sistema implica na aceitação integral destes termos.</li>
+    </ul>
+    <p>Estes termos podem ser alterados sem aviso prévio. Verifique periodicamente.</p>
+  </div>
+</div>
+    <!-- Assinaturas e Contratos -->
+<div id="assinaturas" class="conteudo">
+  <div class="info-container">
+    <h2>Assinaturas e Contratos</h2>
+    <div class="planos">
+      <div class="plano">
+        <h3>Plano Gratuito</h3>
+        <p>Ideal para iniciantes</p>
+        <ul>
+          <li>Acesso básico ao sistema</li>
+          <li>Limite de 10 pacientes</li>
+          <li>Suporte por e-mail</li>
+        </ul>
+      </div>
+      <div class="plano destaque">
+        <h3>Plano Mensal</h3>
+        <p>Perfeito para pequenos negócios</p>
+        <ul>
+          <li>Até 500 pacientes</li>
+          <li>Relatórios detalhados</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn-assinar">Assinar por R$ 29,90/mês</button>
+      </div>
+      <div class="plano">
+        <h3>Plano Anual</h3>
+        <p>Melhor custo-benefício</p>
+        <ul>
+          <li>Acesso ilimitado</li>
+          <li>Consultoria personalizada</li>
+          <li>Relatórios avançados</li>
+        </ul>
+        <button class="btn-assinar">Assinar por R$ 299,00/ano</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+
+  <script src="../backend/menuinicial.js"></script>
+</body>
+</html>

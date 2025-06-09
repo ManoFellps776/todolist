@@ -115,7 +115,7 @@ function showDayView() {
 
   const [year, month, day] = selectedDate.split("-");
   const titulo = document.createElement('h2');
-  titulo.textContent = `Tarefas de ${day}/${month}/${year}`;
+  titulo.textContent = `Agendamentos do dia ${day}/${month}/${year}`;
   view.appendChild(titulo);
 
   const lista = document.createElement('div');
@@ -157,6 +157,9 @@ item.appendChild(actionsDiv);
   const form = document.createElement('div');
 form.className = 'add-task-form';
 form.innerHTML = `
+  
+  <button class=btnSimplificado onclick="generateCalendar(currentDate)">Criar um cadastro simplificado</button>
+  
   <div class="form-group">
     <label for="pacienteSelect">Paciente:</label>
     <select id="pacienteSelect">

@@ -35,44 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (abaSalva) {
         mostrar(abaSalva);
     }
-  // Clientes
-    const inicioBtn = document.querySelector("#agendaNegocios button");
-
-    inicioBtn.addEventListener("click", () => {
-        
-    });
-
-    // Projetos
-    const projetoBtn = document.querySelector("#projetos button");
-    projetoBtn.addEventListener("click", () => {
-        const nome = document.querySelector("#projetos input[type='text']").value;
-        const descricao = document.querySelector("#projetos textarea").value;
-        alert(`Projeto "${nome}" criado com descrição: ${descricao}`);
-    });
-
-    // Tarefas
-    const tarefaBtn = document.querySelector("#tarefas button");
-    tarefaBtn.addEventListener("click", () => {
-        const tarefa = document.querySelector("#tarefas input[type='text']").value;
-        const status = document.querySelector("#tarefas select").value;
-        alert(`Tarefa adicionada: "${tarefa}" [${status}]`);
-    });
-
-    // Financeiro
-    const financeiroBtn = document.querySelector("#financeiro button");
-    financeiroBtn.addEventListener("click", () => {
-        const valor = document.querySelector("#financeiro input[type='number']").value;
-        const tipo = document.querySelector("#financeiro select").value;
-        alert(`${tipo} registrada: R$ ${valor}`);
-    });
-
-    // Agenda
-    const agendaBtn = document.querySelector("#agenda button");
-    agendaBtn.addEventListener("click", () => {
-        const dataHora = document.querySelector("#agenda input[type='datetime-local']").value;
-        const compromisso = document.querySelector("#agenda input[type='text']").value;
-        alert(`Compromisso agendado em ${dataHora}: ${compromisso}`);
-    });
+  
 });
 
 // Diminuir tabela Ativar/ Desativar
