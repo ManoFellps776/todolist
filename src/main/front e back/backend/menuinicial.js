@@ -18,6 +18,7 @@ function toggleMenu() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  
   const sidebar = document.getElementById("sidebar");
   const main = document.getElementById("main");
 
@@ -52,18 +53,24 @@ function validarLogin(event) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ users: usuario, senha: senha })
   })
-    .then(response => response.text())
-    .then(data => {
-      if (data.includes("bem-sucedido")) {
-        window.location.href = "index.html";
-      } else {
-        alert("Usuário ou senha incorretos!");
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao tentar login:", error);
-      alert("Erro ao conectar com o servidor.");
-    });
+    .then(response => {
+  if (!response.ok) throw new Error("Usuário ou senha inválidos.");
+  return response.json();
+})
+.then(usuario => {
+  // Salva no localStorage
+  localStorage.setItem("usuarioId", usuario.id);
+  localStorage.setItem("usuarioNome", usuario.users);
+  localStorage.setItem("usuarioEmail", usuario.email);
+  localStorage.setItem("usuarioPlano", usuario.plano);
+
+  alert("Login bem-sucedido!");
+  window.location.href = "index.html";
+})
+.catch(error => {
+  alert(error.message || "Erro ao tentar login.");
+});
+
 }
 
 // 📝 Validação de cadastro

@@ -1,3 +1,11 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const usuarioId = localStorage.getItem("usuarioId");
+
+  if (!usuarioId) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "menuinicial.html"; // redireciona para o login
+  }
+});
 //Mostrar Menu
 function mostrar(id) {
     const sections = document.querySelectorAll('.conteudo');

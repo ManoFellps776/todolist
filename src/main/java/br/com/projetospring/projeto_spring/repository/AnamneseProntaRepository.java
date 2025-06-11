@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnamneseProntaRepository extends JpaRepository<AnamnesePronta, Long> {
     List<AnamnesePronta> findByCpfA(String cpfA);
+    List<AnamnesePronta> findByCpfAAndUsuario_Id(String cpfLimpo,Long usuarioId);
+
 }

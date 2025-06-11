@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const usuarioId = localStorage.getItem("usuarioId");
+
+  if (!usuarioId) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "menuinicial.html"; // redireciona para o login
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
   inicializarEventosAnamnese();
 });
 
@@ -38,14 +46,22 @@ function inicializarEventosAnamnese() {
   };
   if (btnReg) btnReg.onclick = () => exibirSecaoAnamnese("registroAnamnese");
 }
-
 async function carregarPacientesAnamnese() {
   const select = document.getElementById("pacienteAnamnese");
   if (!select) return;
 
+  const usuarioId = localStorage.getItem("usuarioId");
+
   try {
-    const res = await fetch("http://localhost:8080/pacientes");
+    const res = await fetch(`http://localhost:8080/pacientes?usuarioId=${usuarioId}`);
+    if (!res.ok) throw new Error("Erro ao buscar pacientes");
+
     const pacientes = await res.json();
+
+    // Garante que está vindo como array
+    if (!Array.isArray(pacientes)) {
+      throw new Error("Resposta inesperada da API (esperado um array)");
+    }
 
     select.innerHTML = '<option value="">Selecione um paciente</option>';
     pacientes.forEach(p => {
@@ -56,9 +72,9 @@ async function carregarPacientesAnamnese() {
     });
   } catch (err) {
     console.error("Erro ao carregar pacientes:", err);
+    alert("Erro ao carregar lista de pacientes.");
   }
 }
-
 function mostrarBotoesAnamnese() {
   const s = document.getElementById("pacienteAnamnese");
   document.getElementById("botoesAcaoAnamnese").style.display = s.value ? "flex" : "none";
@@ -92,27 +108,33 @@ async function exibirAgendamentos() {
 
   try {
     const res = await fetch(`http://localhost:8080/agendamentos/paciente/${idPaciente}`);
+    if (!res.ok) throw new Error("Erro ao buscar agendamentos");
+
     const agendamentos = await res.json();
 
-    if (agendamentos.length === 0) {
+    if (!Array.isArray(agendamentos) || agendamentos.length === 0) {
       container.innerHTML = "<p>Nenhum agendamento encontrado.</p>";
-    } else {
-      agendamentos.forEach(a => {
-        // Formata data para dd/MM/yy
-        const data = new Date(a.data);
-        const dia = String(data.getDate()).padStart(2, '0');
-        const mes = String(data.getMonth() + 1).padStart(2, '0');
-        const ano = String(data.getFullYear()).slice(-2); // pega os 2 últimos dígitos
-        const dataFormatada = `${dia}/${mes}/${ano}`;
-
-        // Hora no formato HH:mm (sem segundos)
-        const horaFormatada = a.hora?.substring(0, 5);
-
-        container.innerHTML += `<div>Data: ${dataFormatada} às ${horaFormatada} → ${a.descricao}</div>`;
-      });
+      return;
     }
+
+    agendamentos.forEach(a => {
+      // Validação da data
+      const data = new Date(a.data);
+      if (isNaN(data.getTime())) return; // pula se a data for inválida
+
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = String(data.getFullYear()).slice(-2);
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+
+      // Formata hora caso exista
+      const horaFormatada = a.hora ? a.hora.substring(0, 5) : "00:00";
+
+      container.innerHTML += `<div>Data: ${dataFormatada} às ${horaFormatada} → ${a.descricao || 'Sem descrição'}</div>`;
+    });
   } catch (err) {
     console.error("Erro ao buscar agendamentos:", err);
+    container.innerHTML = "<p>Erro ao carregar agendamentos.</p>";
   }
 }
 
@@ -122,8 +144,12 @@ async function preencherPaciente() {
 
   try {
     const res = await fetch(`http://localhost:8080/pacientes/${id}`);
+    if (!res.ok) throw new Error("Erro ao buscar paciente");
+
     const p = await res.json();
     const f = document.getElementById("formAnamnese");
+
+    if (!f) return;
 
     f.nomeA.value = p.nome || "";
     f.cpfA.value = p.cpf || "";
@@ -132,10 +158,17 @@ async function preencherPaciente() {
     f.emailA.value = p.email || "";
     f.enderecoA.value = p.rua || "";
     f.cidadeA.value = p.cidade || "";
+
+    // Campos que o usuário deve preencher manualmente:
     f.sexo.value = "";
     f.altura.value = "";
     f.pesoAtual.value = "";
     f.pesoIdeal.value = "";
+
+    // (Opcional) Se quiser salvar o ID do usuário ocultamente:
+    if (f.usuarioId) {
+      f.usuarioId.value = localStorage.getItem("usuarioId") || "";
+    }
   } catch (err) {
     console.error("Erro ao preencher dados do paciente:", err);
   }
@@ -145,7 +178,6 @@ async function exibirRegistrosAnamnese() {
   const container = document.getElementById("listaRegistros");
   container.innerHTML = "";
   document.getElementById("visualizacaoAnamnese").style.display = "none";
-  
 
   const idPaciente = document.getElementById("pacienteAnamnese")?.value;
   if (!idPaciente) return;
@@ -155,20 +187,20 @@ async function exibirRegistrosAnamnese() {
     if (!pacienteRes.ok) throw new Error("Erro ao buscar paciente");
 
     const paciente = await pacienteRes.json();
-    const cpf = paciente?.cpf?.replace(/\D/g, ""); // Remove pontos e traços
+    const cpf = paciente?.cpf?.replace(/\D/g, ""); // Remove tudo que não é número
 
     if (!cpf) {
       container.innerHTML = "<p>Paciente sem CPF cadastrado.</p>";
       return;
     }
 
-    const res = await fetch(`http://localhost:8080/anamnese/paciente/${cpf}`);
+    const res = await fetch(`http://localhost:8080/anamnese/paciente/${cpf}?usuarioId=${localStorage.getItem("usuarioId")}`);
+
     if (!res.ok) throw new Error("Erro ao buscar anamneses");
 
     const registros = await res.json();
     if (!Array.isArray(registros)) throw new Error("Formato inválido da resposta");
 
-    // Filtro usando CPF limpo
     const registrosPaciente = registros.filter(r => r.cpfA?.replace(/\D/g, "") === cpf);
 
     if (registrosPaciente.length === 0) {
@@ -177,12 +209,14 @@ async function exibirRegistrosAnamnese() {
     }
 
     registrosPaciente.forEach(a => {
-      const dataCriacao = a.dataCriacao ? new Date(a.dataCriacao).toLocaleDateString() : new Date().toLocaleDateString();
+      const dataCriacao = a.dataCriacao
+        ? new Date(a.dataCriacao).toLocaleDateString()
+        : "-";
 
       container.innerHTML += `
         <div class="registro-card">
           <strong>Data de criação:</strong> ${dataCriacao}<br>
-          <strong>Nome do paciente:</strong> ${a.nomeA}<br>
+          <strong>Nome do paciente:</strong> ${a.nomeA || "-"}<br>
           <strong>Obs:</strong> ${a.obs || "-"}<br>
           <button class="btn-pdf" onclick="gerarPDF(${a.id})">PDF</button>
           <button class="btn-editar" onclick="visualizarAnamnese(${a.id})">Visualizar</button>
@@ -196,6 +230,7 @@ async function exibirRegistrosAnamnese() {
     container.innerHTML = "<p>Erro ao carregar os registros.</p>";
   }
 }
+
 
 async function deletarAnamnese(id) {
   const confirmacao = confirm("Deseja realmente excluir esta anamnese?");
@@ -222,10 +257,17 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
   e.preventDefault();
 
   const form = e.target;
+  const usuarioId = localStorage.getItem("usuarioId");
+
+  if (!usuarioId) {
+    alert("⚠️ Usuário não identificado. Faça login novamente.");
+    window.location.href = "menuinicial.html";
+    return;
+  }
 
   const data = {
     nomeA: form.nomeA.value,
-    cpfA: form.cpfA.value,
+    cpfA: form.cpfA.value?.replace(/\D/g, ""), // limpa o CPF
     nascimentoA: form.nascimentoA.value,
     telefoneA: form.telefoneA.value,
     emailA: form.emailA.value,
@@ -245,11 +287,13 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
     cirurgias: form.cirurgias.checked,
     diabetes: form.diabetes.checked,
 
-    obs: form.obs.value
+    obs: form.obs.value,
+
+    usuario: { id: parseInt(usuarioId) } // ✅ O campo obrigatório!
   };
 
   try {
-    const res = await fetch("http://localhost:8080/anamnese", {
+    const res = await fetch(`http://localhost:8080/anamnese?usuarioId=${usuarioId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -260,26 +304,27 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
     if (res.ok) {
       alert("✅ Anamnese salva com sucesso!");
 
-      // ✅ Limpa apenas os campos, mantém paciente selecionado
       const pacienteId = document.getElementById("pacienteAnamnese").value;
       form.reset();
 
-      // ✅ Mostra só os botões
       document.getElementById("criarAnamnese").style.display = "none";
       document.getElementById("registroAnamnese").style.display = "none";
       document.getElementById("agendamentos").style.display = "none";
       document.getElementById("botoesAcaoAnamnese").style.display = "flex";
 
-      // ✅ Reforça manter paciente selecionado
       document.getElementById("pacienteAnamnese").value = pacienteId;
 
     } else {
+      const erroTexto = await res.text();
+      console.error("❌ Erro ao salvar:", erroTexto);
       alert("❌ Erro ao salvar anamnese.");
     }
   } catch (err) {
-    console.error("Erro:", err);
+    console.error("❌ Erro ao conectar:", err);
     alert("❌ Erro ao conectar ao servidor.");
   }
+
+
 });
 // Gerar PDF
 async function gerarPDF(id) {

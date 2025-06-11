@@ -20,15 +20,24 @@ public class Users {
     private String senha;
     @NotBlank
     private String email;
+    private String plano;
     public Users(){
 
     }
 
-    public Users(String users, String senha, String email){
+    public Users(String users, String senha, String email, String plano){
         this.users =users;
         this.senha = senha;
         this.email= email;
+        this.plano= plano;
    
+    }
+    public String getPlano() {
+        return plano;
+    }
+
+    public void setPlano(String plano) {
+        this.plano = plano;
     }
 
     public Long getId() {

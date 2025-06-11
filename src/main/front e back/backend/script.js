@@ -1,3 +1,19 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const usuarioId = localStorage.getItem("usuarioId");
+
+  if (!usuarioId) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "menuinicial.html"; // redireciona para o login
+  }
+});
+const nome = localStorage.getItem("usuarioNome");
+document.getElementById("nomeUsuario").innerText = nome;
+const email = localStorage.getItem("usuarioEmail");
+document.getElementById("emailUsuario").innerText = email;
+const plano = localStorage.getItem("usuarioPlano");
+document.getElementById("planoUsuario").innerText = plano;
+
+
 //Mostrar Menu
 function mostrar(id) {
     const sections = document.querySelectorAll('.conteudo');
@@ -33,6 +49,10 @@ function toggleMenu() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  if (!localStorage.getItem("usuarioId")) {
+  window.location.href = "menuinicial.html";
+}
+
      const sidebar = document.getElementById("sidebar");
     const main = document.getElementById("main");
 

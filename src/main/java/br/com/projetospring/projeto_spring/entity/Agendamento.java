@@ -1,14 +1,8 @@
 package br.com.projetospring.projeto_spring.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Agendamento {
@@ -26,52 +20,40 @@ public class Agendamento {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Users usuario;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Agendamento() {}
 
-    public LocalDate getData() {
-        return data;
-    }
-
-    public void setData(LocalDate data) {
+    public Agendamento(LocalDate data, LocalTime hora, String descricao, String cor, Paciente paciente, Users usuario) {
         this.data = data;
-    }
-
-    public LocalTime getHora() {
-        return hora;
-    }
-
-    public void setHora(LocalTime hora) {
         this.hora = hora;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public String getCor() {
-        return cor;
-    }
-
-    public void setCor(String cor) {
         this.cor = cor;
-    }
-
-    public Paciente getPaciente() {
-        return paciente;
-    }
-
-    public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
+        this.usuario = usuario;
     }
 
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public LocalDate getData() { return data; }
+    public void setData(LocalDate data) { this.data = data; }
+
+    public LocalTime getHora() { return hora; }
+    public void setHora(LocalTime hora) { this.hora = hora; }
+
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public String getCor() { return cor; }
+    public void setCor(String cor) { this.cor = cor; }
+
+    public Paciente getPaciente() { return paciente; }
+    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+
+    public Users getUsuario() { return usuario; }
+    public void setUsuario(Users usuario) { this.usuario = usuario; }
 }

@@ -89,20 +89,35 @@ function generateCalendar(date) {
 
 async function carregarAgendamentosDoMes(anoMes) {
   try {
-    const res = await fetch(`http://localhost:8080/agendamentos/mes/${anoMes}`);
+    const usuarioId = localStorage.getItem('usuarioId');
+    const url = usuarioId
+      ? `http://localhost:8080/agendamentos/mes/${anoMes}?usuarioId=${usuarioId}`
+      : `http://localhost:8080/agendamentos/mes/${anoMes}`;
+
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Erro ao carregar agendamentos');
+
     const agendamentos = await res.json();
+
+    if (!Array.isArray(agendamentos)) {
+      console.error('Resposta inesperada da API:', agendamentos);
+      throw new Error('Formato inválido de agendamentos');
+    }
+
     tasks = {};
     agendamentos.forEach(item => {
       const key = item.data;
       if (!tasks[key]) tasks[key] = [];
       tasks[key].push(item);
     });
+
   } catch (err) {
     console.error('Erro ao buscar agendamentos:', err);
+    alert('Erro ao carregar agendamentos. Verifique se o usuário possui agendamentos.');
     throw err;
   }
 }
+
 
 function showDayView() {
   document.querySelector('.calendar-container').style.display = 'none';
@@ -157,9 +172,9 @@ item.appendChild(actionsDiv);
   const form = document.createElement('div');
 form.className = 'add-task-form';
 form.innerHTML = `
-  
-  <button class=btnSimplificado onclick="generateCalendar(currentDate)">Criar um cadastro simplificado</button>
-  
+
+  <button class="btnSimplificado" onclick="generateCalendar(currentDate)">Criar um cadastro simplificado</button>
+
   <div class="form-group">
     <label for="pacienteSelect">Paciente:</label>
     <select id="pacienteSelect">
@@ -192,33 +207,51 @@ form.innerHTML = `
   </div>
 `;
 
-  view.appendChild(form);
-  container.appendChild(view);
+view.appendChild(form);
+container.appendChild(view);
 
-  fetch('http://localhost:8080/pacientes')
-    .then(res => res.json())
-    .then(pacientes => {
-      const select = document.getElementById('pacienteSelect');
-      pacientes.sort((a, b) => a.nome.localeCompare(b.nome));
-      pacientes.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.textContent = p.nome;
-        select.appendChild(option);
-      });
-    })
-    .catch(err => {
-      console.error('Erro ao carregar pacientes:', err);
-      alert('Erro ao carregar pacientes');
+// Carrega pacientes com filtro por usuário, se necessário
+const usuarioId = localStorage.getItem("usuarioId");
+let urlPacientes = "http://localhost:8080/pacientes";
+if (usuarioId) {
+  urlPacientes += `?usuarioId=${usuarioId}`;
+}
+
+fetch(urlPacientes)
+  .then(res => {
+    if (!res.ok) throw new Error("Erro ao buscar pacientes");
+    return res.json();
+  })
+  .then(pacientes => {
+    const select = document.getElementById('pacienteSelect');
+    pacientes.sort((a, b) => a.nome.localeCompare(b.nome));
+    pacientes.forEach(p => {
+      const option = document.createElement('option');
+      option.value = p.id;
+      option.textContent = p.nome;
+      select.appendChild(option);
     });
+  })
+  .catch(err => {
+    console.error("Erro ao carregar pacientes:", err);
+    alert("Erro ao carregar pacientes");
+  });
+
 }
 
 function saveTask() {
+  const usuarioId = localStorage.getItem('usuarioId');
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
   const desc = document.getElementById('taskDesc').value;
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
+
+  if (!usuarioId) {
+    alert("Usuário não identificado. Faça login novamente.");
+    window.location.href = "menuinicial.html";
+    return;
+  }
 
   if (!pacienteId || !time || !desc || !data) {
     alert('Preencha todos os campos antes de salvar.');
@@ -226,30 +259,31 @@ function saveTask() {
   }
 
   const agendamento = {
-    pacienteId: Number(pacienteId),
-    hora: time,
-    descricao: desc,
-    cor: color,
-    data: data
-  };
+  pacienteId: Number(pacienteId),
+  hora: time,
+  descricao: desc,
+  cor: color,
+  data: data,
+  usuarioId: Number(usuarioId) 
+};
 
-  fetch('http://localhost:8080/agendamentos', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(agendamento)
-  })
+fetch('http://localhost:8080/agendamentos', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(agendamento)
+})
     .then(res => {
       if (!res.ok) throw new Error('Erro ao salvar agendamento');
       return res.json();
     })
     .then(() => {
-  carregarAgendamentosDoMes(selectedDate.slice(0, 7))  // Recarrega os dados do mês atual
-    .then(() => showDayView());                         // Atualiza a tela após carregar
-})
+      carregarAgendamentosDoMes(selectedDate.slice(0, 7))
+        .then(() => showDayView());
+    })
     .catch(err => {
-      console.error(err);
+      console.error('Erro ao salvar agendamento:', err);
       alert('Erro ao salvar agendamento');
     });
 }
@@ -266,11 +300,17 @@ function editarAgendamento(agendamento) {
 }
 
 function atualizarAgendamento(id) {
+  const usuarioId = localStorage.getItem('usuarioId');
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
   const desc = document.getElementById('taskDesc').value;
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
+
+  if (!usuarioId) {
+    alert("Usuário não identificado.");
+    return;
+  }
 
   if (!pacienteId || !time || !desc || !data) {
     alert('Preencha todos os campos antes de atualizar.');
@@ -285,7 +325,7 @@ function atualizarAgendamento(id) {
     data: data
   };
 
-  fetch(`http://localhost:8080/agendamentos/${id}`, {
+  fetch(`http://localhost:8080/agendamentos/${id}?usuarioId=${usuarioId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(agendamentoAtualizado)
@@ -295,11 +335,11 @@ function atualizarAgendamento(id) {
       return res.json();
     })
     .then(() => {
-  carregarAgendamentosDoMes(selectedDate.slice(0, 7))  // Atualiza os dados
-    .then(() => showDayView());                        // Reexibe a tela
-})
+      carregarAgendamentosDoMes(selectedDate.slice(0, 7))
+        .then(() => showDayView());
+    })
     .catch(err => {
-      console.error(err);
+      console.error('Erro ao atualizar agendamento:', err);
       alert('Erro ao atualizar agendamento');
     });
 }
@@ -310,17 +350,14 @@ function deletarAgendamento(id) {
   fetch(`http://localhost:8080/agendamentos/${id}`, {
     method: 'DELETE'
   })
-    
-
     .then(() => {
-  carregarAgendamentosDoMes(selectedDate.slice(0, 7))
-    .then(() => showDayView());
-})
+      carregarAgendamentosDoMes(selectedDate.slice(0, 7))
+        .then(() => showDayView());
+    })
     .catch(err => {
-      console.error(err);
+      console.error('Erro ao deletar agendamento:', err);
       alert("Erro ao deletar agendamento.");
     });
-    
 }
 function changeMonth(offset) {
   currentDate.setMonth(currentDate.getMonth() + offset);

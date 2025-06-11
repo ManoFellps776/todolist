@@ -1,6 +1,13 @@
 
 document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
   e.preventDefault();
+  const usuarioId = localStorage.getItem("usuarioId");
+
+  if (!usuarioId) {
+    alert("Você precisa estar logado.");
+    window.location.href = "menuinicial.html";
+    return;
+  }
 
   const cpfCnpj = document.getElementById('cpfCnpj').value.replace(/\D/g, '');
   const email = document.getElementById('email').value;
@@ -14,61 +21,58 @@ document.getElementById('cadastroForm').addEventListener('submit', async functio
     alert("E-mail inválido!");
     return;
   }
-const paciente = {
-      nome: document.getElementById('nomePaciente').value,
-      cpf: document.getElementById('cpfCnpj').value.replace(/\D/g, ''),
-      birthday: document.getElementById('nascimento').value,
-      estadoCivil: document.getElementById('estadoCivil').value,
-      profissao: document.getElementById('profissao').value,
-      escola: document.getElementById('escolaridade').value,
-      cep: document.getElementById('cep').value.replace(/\D/g, ''),
-      estadoCep: document.getElementById('estado').value,
-      cidade: document.getElementById('cidade').value,
-      bairro: document.getElementById('bairro').value,
-      rua: document.getElementById('rua').value,
-      numeroRua: document.getElementById('numero').value,
-      telefone: document.getElementById('telefone').value.replace(/\D/g, ''),
-      email: document.getElementById('email').value,
-      descricao: document.getElementById('outrasInfo').value
-    };
 
-    try {
-      const response = await fetch('http://localhost:8080/pacientes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(paciente)
-      });
+  const paciente = {
+    nome: document.getElementById('nomePaciente').value,
+    cpf: cpfCnpj,
+    birthday: document.getElementById('nascimento').value,
+    estadoCivil: document.getElementById('estadoCivil').value,
+    profissao: document.getElementById('profissao').value,
+    escola: document.getElementById('escolaridade').value,
+    cep: document.getElementById('cep').value.replace(/\D/g, ''),
+    estadoCep: document.getElementById('estado').value,
+    cidade: document.getElementById('cidade').value,
+    bairro: document.getElementById('bairro').value,
+    rua: document.getElementById('rua').value,
+    numeroRua: document.getElementById('numero').value,
+    telefone: document.getElementById('telefone').value.replace(/\D/g, ''),
+    email: email,
+    descricao: document.getElementById('outrasInfo').value
+  };
 
-      if (response.ok) {
-        alert("Paciente cadastrado com sucesso!");
-        form.reset();
-      } else {
-        alert("Erro ao cadastrar paciente.");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
+  try {
+    const response = await fetch(`http://localhost:8080/pacientes?usuarioId=${usuarioId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paciente)
+    });
+
+    if (response.ok) {
+      const resultado = `
+        <h3>Paciente Cadastrado com Sucesso!</h3>
+        <p><strong>Nome:</strong> ${paciente.nome}</p>
+        <p><strong>CPF/CNPJ:</strong> ${paciente.cpf}</p>
+        <p><strong>Data de Nascimento:</strong> ${paciente.birthday}</p>
+        <p><strong>Estado Civil:</strong> ${paciente.estadoCivil}</p>
+        <p><strong>Profissão:</strong> ${paciente.profissao}</p>
+        <p><strong>Escolaridade:</strong> ${paciente.escola}</p>
+        <p><strong>Endereço:</strong> ${paciente.rua}, ${paciente.numeroRua}, ${paciente.bairro}, ${paciente.cidade} - ${paciente.estadoCep}, CEP: ${paciente.cep}</p>
+        <p><strong>Telefone:</strong> ${paciente.telefone}</p>
+        <p><strong>Email:</strong> ${paciente.email}</p>
+        <p><strong>Outras Informações:</strong> ${paciente.descricao}</p>
+      `;
+      const divResultado = document.getElementById('resultado');
+      divResultado.innerHTML = resultado;
+      divResultado.style.display = 'block';
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+      document.getElementById('cadastroForm').reset();
+    } else {
+      alert("Erro ao cadastrar paciente.");
     }
-  const resultado = `
-    <h3>Paciente Cadastrado com Sucesso!</h3>
-    
-    <p><strong>Nome:</strong> ${document.getElementById('nomePaciente').value}</p>
-    <p><strong>CPF/CNPJ:</strong> ${document.getElementById('cpfCnpj').value}</p>
-    <p><strong>Data de Nascimento:</strong> ${document.getElementById('nascimento').value}</p>
-    <p><strong>Estado Civil:</strong> ${document.getElementById('estadoCivil').value}</p>
-    <p><strong>Profissão:</strong> ${document.getElementById('profissao').value}</p>
-    <p><strong>Escolaridade:</strong> ${document.getElementById('escolaridade').value}</p>
-    <p><strong>Endereço:</strong> ${document.getElementById('rua').value}, ${document.getElementById('numero').value}, ${document.getElementById('bairro').value}, ${document.getElementById('cidade').value} - ${document.getElementById('estado').value}, CEP: ${document.getElementById('cep').value}</p>
-    <p><strong>Telefone:</strong> ${document.getElementById('telefone').value}</p>
-    <p><strong>Email:</strong> ${document.getElementById('email').value}</p>
-    <p><strong>Outras Informações:</strong> ${document.getElementById('outrasInfo').value}</p>
-    
-  `;
-
-  const divResultado = document.getElementById('resultado');
-  divResultado.innerHTML = resultado;
-  divResultado.style.display = 'block'; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-
-  this.reset();
+  } catch (error) {
+    console.error("Erro:", error);
+  }
 });
 
 document.getElementById('cep').addEventListener('input', function () {

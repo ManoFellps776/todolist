@@ -4,6 +4,8 @@ package br.com.projetospring.projeto_spring.controller;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,15 +16,15 @@ public class LoginController {
     @Autowired
     private UsersRepository usersRepository;
 
-    @PostMapping
-    public String login(@RequestBody Users user) {
-        Users existingUser = usersRepository.findByUsersAndSenha(user.getUsers(),user.getSenha());
-        if (existingUser != null) {
-            return "Login bem-sucedido!";
-        } else {
-            return "Usuário ou senha incorretos.";
-        }
+   @PostMapping
+public ResponseEntity<?> login(@RequestBody Users user) {
+    Users existingUser = usersRepository.findByUsersAndSenha(user.getUsers(), user.getSenha());
+    if (existingUser != null) {
+        return ResponseEntity.ok(existingUser); // Retorna JSON com id, nome, email e plano
+    } else {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha incorretos.");
     }
+}
 
     @PostMapping("/cadastro")
     public String cadastrar(@RequestBody Users novoUsuario) {
@@ -38,7 +40,7 @@ if (usersRepository.findByUsers(novoUsuario.getUsers()) != null) {
         return "Email já está cadastrado.";
     }
         
-
+        novoUsuario.setPlano("FREE");
         usersRepository.save(novoUsuario);
         return "Usuário cadastrado com sucesso!";
     }

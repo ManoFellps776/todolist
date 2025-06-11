@@ -1,7 +1,9 @@
 package br.com.projetospring.projeto_spring.controller;
 
 import br.com.projetospring.projeto_spring.entity.AnamnesePronta;
+import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.AnamneseProntaRepository;
+import br.com.projetospring.projeto_spring.repository.UsersRepository;
 
 import java.util.List;
 
@@ -17,26 +19,38 @@ public class AnamneseProntaController {
     @Autowired
     private AnamneseProntaRepository repository;
 
-    // ✅ Salvar nova anamnese
+    @Autowired
+    private UsersRepository usersRepository;
+
+    // ✅ Salvar nova anamnese vinculada ao usuário
     @PostMapping
-public ResponseEntity<AnamnesePronta> salvar(@RequestBody AnamnesePronta anamnese) {
-    // limpa CPF antes de salvar
+public ResponseEntity<AnamnesePronta> salvar(
+    @RequestBody AnamnesePronta anamnese,
+    @RequestParam Long usuarioId
+) {
     if (anamnese.getCpfA() != null) {
         anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
     }
+
+    Users usuario = usersRepository.findById(usuarioId)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+    anamnese.setUsuario(usuario);
     return ResponseEntity.ok(repository.save(anamnese));
 }
 
-    // ✅ Buscar anamnese por CPF (filtrando corretamente)
+    // ✅ Buscar anamnese por CPF e usuário
     @GetMapping("/paciente/{cpf}")
-public ResponseEntity<List<AnamnesePronta>> listarPorCpf(@PathVariable String cpf) {
-    // Remove pontuação se vier com CPF formatado
+public ResponseEntity<List<AnamnesePronta>> listarPorCpf(
+    @PathVariable String cpf,
+    @RequestParam Long usuarioId
+) {
     String cpfLimpo = cpf.replaceAll("\\D", "");
-    List<AnamnesePronta> lista = repository.findByCpfA(cpfLimpo);
+    List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuarioId);
     return ResponseEntity.ok(lista);
 }
 
-    // ✅ Buscar anamnese por ID (para visualizar ou gerar PDF)
+    // ✅ Buscar por ID (sem filtro de usuário neste caso específico)
     @GetMapping("/{id}")
     public ResponseEntity<AnamnesePronta> buscarPorId(@PathVariable Long id) {
         return repository.findById(id)
@@ -44,7 +58,7 @@ public ResponseEntity<List<AnamnesePronta>> listarPorCpf(@PathVariable String cp
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ Deletar uma anamnese pelo ID
+    // ✅ Deletar anamnese
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarAnamnese(@PathVariable Long id) {
         if (repository.existsById(id)) {

@@ -1,5 +1,10 @@
-
 package br.com.projetospring.projeto_spring.entity;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,6 +15,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "anamneseProntas")
 public class AnamnesePronta {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,4 +44,12 @@ public class AnamnesePronta {
 
     @Column(columnDefinition = "TEXT")
     private String obs;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnoreProperties({"senha", "pacientes", "agendamentos", "anamneses"})
+    private Users usuario;
+
+    @CreationTimestamp
+    private LocalDateTime dataCriacao;
 }

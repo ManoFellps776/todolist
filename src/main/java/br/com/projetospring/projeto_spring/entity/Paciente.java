@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -36,6 +38,11 @@ public class Paciente {
     private String telefone;
     private String email;
     private String descricao;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Users usuario;
+
+    
 
     public Paciente() {}
 
@@ -57,6 +64,13 @@ public class Paciente {
         this.telefone = telefone;
         this.email = email;
         this.descricao = descricao;
+    }
+    public Users getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Users usuario) {
+        this.usuario = usuario;
     }
 
     public Long getId() {
