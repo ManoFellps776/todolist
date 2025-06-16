@@ -24,31 +24,31 @@ public class AnamneseProntaController {
 
     // ✅ Salvar nova anamnese vinculada ao usuário
     @PostMapping
-public ResponseEntity<AnamnesePronta> salvar(
-    @RequestBody AnamnesePronta anamnese,
-    @RequestParam Long usuarioId
-) {
-    if (anamnese.getCpfA() != null) {
-        anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
+    public ResponseEntity<AnamnesePronta> salvar(
+        @RequestBody AnamnesePronta anamnese,
+        @RequestParam Long usuarioId
+    ) {
+        if (anamnese.getCpfA() != null) {
+            anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
+        }
+
+        Users usuario = usersRepository.findById(usuarioId)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        anamnese.setUsuario(usuario); // Este método existe via Lombok (@Setter)
+        return ResponseEntity.ok(repository.save(anamnese));
     }
-
-    Users usuario = usersRepository.findById(usuarioId)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-    anamnese.setUsuario(usuario);
-    return ResponseEntity.ok(repository.save(anamnese));
-}
 
     // ✅ Buscar anamnese por CPF e usuário
     @GetMapping("/paciente/{cpf}")
-public ResponseEntity<List<AnamnesePronta>> listarPorCpf(
-    @PathVariable String cpf,
-    @RequestParam Long usuarioId
-) {
-    String cpfLimpo = cpf.replaceAll("\\D", "");
-    List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuarioId);
-    return ResponseEntity.ok(lista);
-}
+    public ResponseEntity<List<AnamnesePronta>> listarPorCpf(
+        @PathVariable String cpf,
+        @RequestParam Long usuarioId
+    ) {
+        String cpfLimpo = cpf.replaceAll("\\D", "");
+        List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuarioId);
+        return ResponseEntity.ok(lista);
+    }
 
     // ✅ Buscar por ID (sem filtro de usuário neste caso específico)
     @GetMapping("/{id}")

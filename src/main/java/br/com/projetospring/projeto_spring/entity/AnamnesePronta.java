@@ -52,4 +52,5 @@ public class AnamnesePronta {
 
     @CreationTimestamp
     private LocalDateTime dataCriacao;
+    
 }
