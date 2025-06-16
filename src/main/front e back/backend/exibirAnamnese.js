@@ -117,26 +117,31 @@ async function exibirAgendamentos() {
       return;
     }
 
+    // 🔷 Ordenar por data crescente
+    agendamentos.sort((a, b) => new Date(a.data) - new Date(b.data));
+
     agendamentos.forEach(a => {
-      // Validação da data
-      const data = new Date(a.data);
-      if (isNaN(data.getTime())) return; // pula se a data for inválida
+      const data = new Date(a.data + "T00:00:00");
+      if (isNaN(data.getTime())) return;
 
       const dia = String(data.getDate()).padStart(2, '0');
       const mes = String(data.getMonth() + 1).padStart(2, '0');
       const ano = String(data.getFullYear()).slice(-2);
       const dataFormatada = `${dia}/${mes}/${ano}`;
 
-      // Formata hora caso exista
       const horaFormatada = a.hora ? a.hora.substring(0, 5) : "00:00";
 
-      container.innerHTML += `<div>Data: ${dataFormatada} às ${horaFormatada} → ${a.descricao || 'Sem descrição'}</div>`;
+      container.innerHTML += `
+        <div class="agendamento-card">
+          📅 <strong>${dataFormatada}</strong> às <strong>${horaFormatada}</strong> → ${a.descricao || 'Sem descrição'}
+        </div>`;
     });
   } catch (err) {
     console.error("Erro ao buscar agendamentos:", err);
     container.innerHTML = "<p>Erro ao carregar agendamentos.</p>";
   }
 }
+
 
 async function preencherPaciente() {
   const id = document.getElementById("pacienteAnamnese").value;

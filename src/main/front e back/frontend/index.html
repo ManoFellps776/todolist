@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="cadastrarPaciente.css">
     <link rel="stylesheet" href="anamnese.css">
     <link rel="stylesheet" href="calendario.css">
+    <link rel="stylesheet" href="perfilInterface.css">
 </head>
 <body>
     <div class="topbar">
@@ -16,7 +17,7 @@
   <img id="userAvatar" src="" alt="Usuário" class="user-avatar" onclick="toggleUserDropdown()">
   <div class="user-dropdown" id="userDropdown">
     <a onclick="mostrar('perfilUser')">Ver Perfil</a>
-    <a onclick="mostrar('dadosUser')">Alterar Dados</a>
+    <a onclick="mostrar('planoAssinatura')">Planos/Assinatura</a>
     <a href="#" onclick="sairLogin()">Logoff</a>
   </div>
 </div>
@@ -26,32 +27,46 @@
         <h2>Agência</h2>
         <ul>
           <li onclick="mostrar('agenda')">Agenda</li>
-          <li onclick="mostrar('anamnese')">Registros</li>
-          <li onclick="mostrar('editarPaciente')">Dados pacientes</li>
-          <li onclick="mostrar('cadastrarPaciente')">Cadastro</li>
+          <li onclick="mostrar('editarPaciente')">Portal do Paciente</li>         
+          <li onclick="mostrar('anamnese')">Registros gerais</li>
           <li onclick="mostrar('financeiro')">Financeiro</li>
 
         </ul>
     </div>
     <div class="main" id="main">
         <div id="perfilUser" class="conteudo">
-  <div class="perfil-container">
-    <div class="perfil-foto">
-    <!--<img src="img/perfil.png" alt="Foto do Usuário">--> 
+  <div class="perfil-card">
+    <div class="perfil-imagem">
+      <img id="fotoPerfil" src="img/perfil.png" alt="Foto do Usuário" style="width: 100px; border-radius: 50%;">
     </div>
-    <div class="perfil-info">
-      <p>Nome: <span id="nomeUsuario"></span></p>
-      <p>Email: <span id="emailUsuario"></span></p>
-      <p>Plano: <span id="planoUsuario"></span></p>
-      <p><strong>Idade:</strong> 29 anos</p>
-      <p><strong>Data de Nascimento:</strong> 15/05/1995</p>
-      <p><strong>Escolaridade:</strong> Ensino Superior Completo</p>
+    <div class="perfil-detalhes">
+      <h2>Perfil do Usuário</h2>
+      <p><strong>👤 Nome:</strong> <span id="nomeUsuario"></span></p>
+      <p><strong>📧 Email:</strong> <span id="emailUsuario"></span></p>
+      <p><strong>⭐ Plano:</strong> <span id="planoUsuario"></span></p>
+      <button onclick="mostrarFormularioEdicao()" class="botao-editar">✏️ Alterar Dados</button>
     </div>
   </div>
-</div>
-<div id="dadosUser" class="conteudo">
-        
-        </div>
+
+  <form id="formEditarUsuario" style="display: none; margin-top: 20px;" onsubmit="editarUsuario(event)">
+    <h3>Editar Perfil</h3>
+
+    <label>📸 Foto de Perfil:
+      <input type="file" id="novaFoto" accept="image/*">
+    </label><br><br>
+
+    <label>👤 Nome:
+      <input type="text" id="novoNome" required>
+    </label><br><br>
+
+    <label>📧 Email:
+      <input type="email" id="novoEmail" required>
+    </label><br><br>
+
+    <button type="submit">💾 Salvar Alterações</button>
+    <button type="button" onclick="cancelarEdicao()">❌ Cancelar</button>
+  </form>
+    </div>
       <div id="agenda" class="conteudo ativo">
             <div class="calendar-container">
                 
@@ -103,7 +118,7 @@
 
   <!-- Agendamentos -->
   <div id="agendamentos" style="display: none;">
-    <div id="listaAgendamentos"></div>
+    <div id="listaAgendamentos"class="lista-agendamentos"></div>
   </div>
 
   <!-- Registros Anteriores -->
@@ -169,7 +184,7 @@
       <button type="submit">Salvar Cadastro</button>
     </form>
   </div>
-</div>
+    </div>
         <div id="cadastrarPaciente" class="conteudo">   
   <div class="container">
     <h1>Cadastro de Paciente</h1>
@@ -270,7 +285,7 @@
 
     <div id="resultado"></div>
   </div>
-        </div>
+    </div>
        <div id="editarPaciente" class="conteudo">
   <div class="container">
     <h2>Área do Paciente</h2>
@@ -325,8 +340,8 @@
 
     </form>
   </div>
-</div>
-<div id="financeiro" class="conteudo">
+    </div>
+        <div id="financeiro" class="conteudo">
             <h3>Financeiro</h3>
             <input type="number" placeholder="Valor (R$)" />
             <select>
@@ -334,13 +349,14 @@
                 <option>Despesa</option>
             </select>
             <button>Lançar</button>
-        </div>
+    </div>
     </div>
     <script src="../backend/script.js"></script>
     <script src="../backend/cadastro.js"></script>
     <script src="../backend/editarPaciente.js"></script>
     <script src="../backend/calendario.js"></script>
     <script src="../backend/exibirAnamnese.js"></script>
+    <script src="../backend/dadosUsers.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 </body>

@@ -31,8 +31,6 @@ function mostrar(id) {
      
     }
   }
-
-
     // 🟨 NOVO: salvar aba ativa
     localStorage.setItem("abaAtiva", id);
 }
@@ -173,8 +171,9 @@ localStorage.removeItem("abaAtiva");
   }
 
   function sairLogin() {
-    const confirmar = confirm("Deseja realmente sair?");
-    if (confirmar) {
-      window.location.href = "menuinicial.html";
-    }
+  const confirmar = confirm("Deseja realmente sair?");
+  if (confirmar) {
+    localStorage.clear(); // limpa tudo
+    window.location.href = "menuinicial.html";
   }
+}

@@ -8,6 +8,8 @@ function mostrar(id) {
     localStorage.setItem("abaAtiva", id);
   }
 }
+const nome = localStorage.getItem("usuarioNome");
+document.getElementById("nomeUsuario").innerText = nome;
 
 function toggleMenu() {
   const sidebar = document.getElementById("sidebar");

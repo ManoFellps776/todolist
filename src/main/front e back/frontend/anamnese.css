@@ -93,12 +93,16 @@ background-color: #c24133;
 }
 
 #anamnese .registro-card {
+  background-color: #f3e8ff;
   border-bottom: 1px solid #ccc;
-  padding: 10px 0;
+  padding: 12px 16px;
   margin-bottom: 10px;
+  border: 2px solid #9c4dcc;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 #anamnese .registro-card:hover{
-  background-color: #d1d1d1;
+  background-color: #d5b6f7;
 }
 
 #anamnese .btn-editar {
@@ -113,4 +117,21 @@ background-color: #c24133;
 #anamnese .btn-editar:hover{
   background-color: #bb980d;
 }
+.lista-agendamentos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.lista-agendamentos div {
+  background-color: #f3e8ff;
+  border: 2px solid #9c4dcc;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: black;
+}
+
 

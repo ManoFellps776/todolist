@@ -385,3 +385,12 @@ h3 {
 .user-dropdown a:hover {
   background-color: #f0f0f0;
 }
+.btnfecharcadastro{
+ 
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: red;
+  cursor: pointer;
+
+}
