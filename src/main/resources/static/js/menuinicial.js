@@ -67,7 +67,7 @@ function validarLogin(event) {
   localStorage.setItem("usuarioPlano", usuario.plano);
 
   alert("Login bem-sucedido!");
-  window.location.href = "logado.html";
+  window.location.href = "/inicio";
 })
 .catch(error => {
   alert(error.message || "Erro ao tentar login.");
