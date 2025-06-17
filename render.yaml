@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: minha-agencia-spring
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://<SEU_HOST>:3306/<NOME_DO_BD>
+      - key: SPRING_DATASOURCE_USERNAME
+        value: <USUARIO>
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: <SENHA>
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+    ports:
+      - 8080
