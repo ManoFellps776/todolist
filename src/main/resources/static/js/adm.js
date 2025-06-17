@@ -93,7 +93,7 @@ function voltarCadastro() {
 }
 
 //Salvar na tabela Agenda
-const API_URL = 'http://localhost:8080/todos';
+const API_URL = '/todos';
 const form = document.getElementById('task-form');
 const nome = document.getElementById('nome');
 const descricao = document.getElementById('descricao');

@@ -41,7 +41,7 @@ document.getElementById('cadastroForm').addEventListener('submit', async functio
   };
 
   try {
-    const response = await fetch(`http://localhost:8080/pacientes?usuarioId=${usuarioId}`, {
+    const response = await fetch(`/pacientes?usuarioId=${usuarioId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(paciente)

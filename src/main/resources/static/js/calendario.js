@@ -91,8 +91,8 @@ async function carregarAgendamentosDoMes(anoMes) {
   try {
     const usuarioId = localStorage.getItem('usuarioId');
     const url = usuarioId
-      ? `http://localhost:8080/agendamentos/mes/${anoMes}?usuarioId=${usuarioId}`
-      : `http://localhost:8080/agendamentos/mes/${anoMes}`;
+      ? `/agendamentos/mes/${anoMes}?usuarioId=${usuarioId}`
+      : `/agendamentos/mes/${anoMes}`;
 
     const res = await fetch(url);
     if (!res.ok) throw new Error('Erro ao carregar agendamentos');
@@ -212,7 +212,7 @@ container.appendChild(view);
 
 // Carrega pacientes com filtro por usuário, se necessário
 const usuarioId = localStorage.getItem("usuarioId");
-let urlPacientes = "http://localhost:8080/pacientes";
+let urlPacientes = "/pacientes";
 if (usuarioId) {
   urlPacientes += `?usuarioId=${usuarioId}`;
 }
@@ -267,7 +267,7 @@ function saveTask() {
   usuarioId: Number(usuarioId) 
 };
 
-fetch('http://localhost:8080/agendamentos', {
+fetch('/agendamentos', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -325,7 +325,7 @@ function atualizarAgendamento(id) {
     data: data
   };
 
-  fetch(`http://localhost:8080/agendamentos/${id}?usuarioId=${usuarioId}`, {
+  fetch(`/agendamentos/${id}?usuarioId=${usuarioId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(agendamentoAtualizado)
@@ -347,7 +347,7 @@ function atualizarAgendamento(id) {
 function deletarAgendamento(id) {
   if (!confirm("Deseja realmente excluir este agendamento?")) return;
 
-  fetch(`http://localhost:8080/agendamentos/${id}`, {
+  fetch(`/agendamentos/${id}`, {
     method: 'DELETE'
   })
     .then(() => {

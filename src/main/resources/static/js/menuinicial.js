@@ -50,7 +50,7 @@ function validarLogin(event) {
   const usuario = document.getElementById('usuario').value;
   const senha = document.getElementById('senhaCadastro').value;
 
-  fetch("http://localhost:8080/login", {
+  fetch("/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ users: usuario, senha: senha })
@@ -89,7 +89,7 @@ function validarCadastro(event) {
     return;
   }
 
-  fetch("http://localhost:8080/login/cadastro", {
+  fetch("/login/cadastro", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ users: nome, senha: senha, email: email })

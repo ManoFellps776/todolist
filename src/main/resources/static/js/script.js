@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!usuarioId) {
     alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "menuinicial.html"; // redireciona para o login
+    window.location.href = "index.html"; // redireciona para o login
   }
 });
 const nome = localStorage.getItem("usuarioNome");
@@ -48,7 +48,7 @@ function toggleMenu() {
 
 document.addEventListener("DOMContentLoaded", function () {
   if (!localStorage.getItem("usuarioId")) {
-  window.location.href = "menuinicial.html";
+  window.location.href = "index.html";
 }
 
      const sidebar = document.getElementById("sidebar");
@@ -93,7 +93,7 @@ function validarLogin(event) {
       const usuario = document.getElementById('usuario').value;
       const senha = document.getElementById('senhaCadastro').value;
 
-      fetch("http://localhost:8080/login", {
+      fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -128,7 +128,7 @@ function validarCadastro(event) {
     return;
   }
 
-  fetch("http://localhost:8080/login/cadastro", {
+  fetch("/login/cadastro", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -174,6 +174,6 @@ localStorage.removeItem("abaAtiva");
   const confirmar = confirm("Deseja realmente sair?");
   if (confirmar) {
     localStorage.clear(); // limpa tudo
-    window.location.href = "menuinicial.html";
+    window.location.href = "index.html";
   }
 }

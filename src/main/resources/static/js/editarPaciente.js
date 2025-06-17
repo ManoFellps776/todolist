@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (id) {
     pacienteSelecionadoId = Number(id);
-    const response = await fetch(`http://localhost:8080/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}`);
+    const response = await fetch(`/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}`);
     if (response.ok) {
       const paciente = await response.json();
       preencherFormulario(paciente);
@@ -65,7 +65,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/pacientes?usuarioId=${usuarioId}`);
+    const response = await fetch(`/pacientes?usuarioId=${usuarioId}`);
     if (!response.ok) throw new Error('Erro ao carregar pacientes');
 
     const pacientes = await response.json();
@@ -83,7 +83,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       btnEditar.className = 'btn-editar';
       btnEditar.onclick = async () => {
         pacienteSelecionadoId = paciente.id;
-        const res = await fetch(`http://localhost:8080/pacientes/${paciente.id}?usuarioId=${usuarioId}`);
+        const res = await fetch(`/pacientes/${paciente.id}?usuarioId=${usuarioId}`);
         if (!res.ok) return alert('Erro ao buscar paciente');
         const p = await res.json();
         preencherFormulario(p);
@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const confirmar = confirm(`Deseja realmente deletar o paciente "${paciente.nome}"?`);
         if (!confirmar) return;
         try {
-          const resp = await fetch(`http://localhost:8080/pacientes/${paciente.id}?usuarioId=${usuarioId}`, {
+          const resp = await fetch(`/pacientes/${paciente.id}?usuarioId=${usuarioId}`, {
             method: 'DELETE'
           });
           if (!resp.ok) throw new Error('Erro ao deletar');
@@ -141,7 +141,7 @@ async function carregarPacientes() {
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/pacientes?usuarioId=${usuarioId}`);
+    const response = await fetch(`/pacientes?usuarioId=${usuarioId}`);
     if (!response.ok) throw new Error('Erro ao carregar pacientes');
     pacientes = await response.json();
 
@@ -223,7 +223,7 @@ async function salvarAlteracoes(event) {
   };
 
   try {
-    const response = await fetch(`http://localhost:8080/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}`, {
+    const response = await fetch(`/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pacienteAtualizado)
@@ -270,8 +270,8 @@ async function salvarPaciente(event) {
   };
 
   const url = pacienteSelecionadoId 
-      ? `http://localhost:8080/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}` 
-      : `http://localhost:8080/pacientes?usuarioId=${usuarioId}`;
+      ? `/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}` 
+      : `/pacientes?usuarioId=${usuarioId}`;
 
   const method = pacienteSelecionadoId ? 'PUT' : 'POST';
 
@@ -318,7 +318,7 @@ document.getElementById('btnEditar').addEventListener('click', async () => {
   }
 
   try {
-    const res = await fetch(`http://localhost:8080/pacientes/${idSelecionado}?usuarioId=${usuarioId}`);
+    const res = await fetch(`/pacientes/${idSelecionado}?usuarioId=${usuarioId}`);
     if (!res.ok) throw new Error('Erro ao buscar paciente');
 
     const paciente = await res.json();

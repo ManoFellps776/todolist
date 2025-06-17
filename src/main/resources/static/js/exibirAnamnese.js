@@ -53,7 +53,7 @@ async function carregarPacientesAnamnese() {
   const usuarioId = localStorage.getItem("usuarioId");
 
   try {
-    const res = await fetch(`http://localhost:8080/pacientes?usuarioId=${usuarioId}`);
+    const res = await fetch(`/pacientes?usuarioId=${usuarioId}`);
     if (!res.ok) throw new Error("Erro ao buscar pacientes");
 
     const pacientes = await res.json();
@@ -107,7 +107,7 @@ async function exibirAgendamentos() {
   if (!idPaciente) return;
 
   try {
-    const res = await fetch(`http://localhost:8080/agendamentos/paciente/${idPaciente}`);
+    const res = await fetch(`/agendamentos/paciente/${idPaciente}`);
     if (!res.ok) throw new Error("Erro ao buscar agendamentos");
 
     const agendamentos = await res.json();
@@ -148,7 +148,7 @@ async function preencherPaciente() {
   if (!id) return;
 
   try {
-    const res = await fetch(`http://localhost:8080/pacientes/${id}`);
+    const res = await fetch(`/pacientes/${id}`);
     if (!res.ok) throw new Error("Erro ao buscar paciente");
 
     const p = await res.json();
@@ -188,7 +188,7 @@ async function exibirRegistrosAnamnese() {
   if (!idPaciente) return;
 
   try {
-    const pacienteRes = await fetch(`http://localhost:8080/pacientes/${idPaciente}`);
+    const pacienteRes = await fetch(`/pacientes/${idPaciente}`);
     if (!pacienteRes.ok) throw new Error("Erro ao buscar paciente");
 
     const paciente = await pacienteRes.json();
@@ -199,7 +199,7 @@ async function exibirRegistrosAnamnese() {
       return;
     }
 
-    const res = await fetch(`http://localhost:8080/anamnese/paciente/${cpf}?usuarioId=${localStorage.getItem("usuarioId")}`);
+    const res = await fetch(`/anamnese/paciente/${cpf}?usuarioId=${localStorage.getItem("usuarioId")}`);
 
     if (!res.ok) throw new Error("Erro ao buscar anamneses");
 
@@ -242,7 +242,7 @@ async function deletarAnamnese(id) {
   if (!confirmacao) return;
 
   try {
-    const res = await fetch(`http://localhost:8080/anamnese/${id}`, {
+    const res = await fetch(`/anamnese/${id}`, {
       method: "DELETE"
     });
 
@@ -298,7 +298,7 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
   };
 
   try {
-    const res = await fetch(`http://localhost:8080/anamnese?usuarioId=${usuarioId}`, {
+    const res = await fetch(`/anamnese?usuarioId=${usuarioId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -334,7 +334,7 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
 // Gerar PDF
 async function gerarPDF(id) {
   try {
-    const res = await fetch(`http://localhost:8080/anamnese/${id}`);
+    const res = await fetch(`/anamnese/${id}`);
     if (!res.ok) throw new Error("Erro ao buscar anamnese");
 
     const a = await res.json();
@@ -473,7 +473,7 @@ async function gerarPDF(id) {
 //Vizualizar anamnese antes
 async function visualizarAnamnese(id) {
   try {
-    const res = await fetch(`http://localhost:8080/anamnese/${id}`);
+    const res = await fetch(`/anamnese/${id}`);
     const a = await res.json();
 
     const html = `

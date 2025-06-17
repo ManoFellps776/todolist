@@ -28,7 +28,7 @@ async function editarUsuario(event) {
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/login/usuarios/${usuarioId}`, {
+    const response = await fetch(`/login/usuarios/${usuarioId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
