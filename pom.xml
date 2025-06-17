@@ -99,7 +99,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>br.com.projetospring.ProjetoSpringApplication</mainClass> <!-- AJUSTE AQUI -->
+              <mainClass>br.com.projetospring.projeto_spring.ProjetoSpringApplication</mainClass>
             </manifest>
           </archive>
         </configuration>
