@@ -6,17 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
-    @GetMapping("/home")
+    @GetMapping({"/", "/home"})
     public String index() {
-        return "index"; // isso carrega o arquivo menuinicial.html da pasta templates
+        return "index"; // carrega index.html em templates/
     }
 
     @GetMapping("/inicio")
     public String login() {
-        return "logado";
+        return "logado"; // carrega logado.html em templates/
     }
-
-    
 
     // Adicione mais rotas conforme suas páginas HTML
 }
