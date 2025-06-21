@@ -30,10 +30,11 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(login -> login
-                .loginPage("/home")
-                .defaultSuccessUrl("/inicio", true)
-                .permitAll()
-            )
+    .loginPage("/login") // rota real do formulário de login
+    .loginProcessingUrl("/login") // rota para onde o form POST deve ir
+    .defaultSuccessUrl("/inicio", true) // redireciona após login
+    .permitAll()
+)
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/home")
