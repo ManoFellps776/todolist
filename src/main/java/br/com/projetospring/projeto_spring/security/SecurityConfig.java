@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -25,19 +26,22 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/inicio", "/index", "/login", "/login/**", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/home", "/index", "/cadastro/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic(basic -> {}) // opcional, só se usar autenticação básica
+            .formLogin(login -> login
+                .loginPage("/home")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/inicio", true)
+                .failureUrl("/home?error=true")
+                .permitAll()
+            )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/inicio")
+                .logoutSuccessUrl("/home")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
-            )
-            .sessionManagement(sess -> sess
-                .maximumSessions(1) // impede login simultâneo
             );
 
         return http.build();
