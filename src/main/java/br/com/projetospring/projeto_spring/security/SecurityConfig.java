@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -26,20 +25,21 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**", "/cadastro/**", "/css/**", "/js/**", "/images/**", "/", "/home").permitAll()
+                .requestMatchers("/", "/home", "/index", "/login", "/login/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(login -> login
-    .loginPage("/login") // rota real do formulário de login
-    .loginProcessingUrl("/login") // rota para onde o form POST deve ir
-    .defaultSuccessUrl("/inicio", true) // redireciona após login
-    .permitAll()
-)
+            .httpBasic(basic -> {}) // opcional, só se usar autenticação básica
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/home")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
+            )
+            .sessionManagement(sess -> sess
+                .maximumSessions(1) // impede login simultâneo
             );
+
         return http.build();
     }
 
@@ -47,13 +47,13 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder()); // usa BCrypt para comparar
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // encoder seguro para senhas
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

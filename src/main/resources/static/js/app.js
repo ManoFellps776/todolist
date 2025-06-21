@@ -1,16 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const usuarioId = localStorage.getItem("usuarioId");
 
-  if (!usuarioId) {
-    alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "/home"; // redireciona para o login
-  }
-});
-const nome = localStorage.getItem("usuarioNome");
+
 document.getElementById("nomeUsuario").innerText = nome;
-const email = localStorage.getItem("usuarioEmail");
+
 document.getElementById("emailUsuario").innerText = email;
-const plano = localStorage.getItem("usuarioPlano");
+
 document.getElementById("planoUsuario").innerText = plano;
 
 
@@ -47,9 +40,7 @@ function toggleMenu() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  if (!localStorage.getItem("usuarioId")) {
-  window.location.href = "/home";
-}
+  
 
      const sidebar = document.getElementById("sidebar");
     const main = document.getElementById("main");
@@ -170,11 +161,11 @@ localStorage.removeItem("abaAtiva");
     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
   }
 
-  function sairLogin() {
+ function sairLogin() {
   const confirmar = confirm("Deseja realmente sair?");
   if (confirmar) {
-    localStorage.clear(); // limpa tudo
-    window.location.href = "/home";
+    localStorage.clear();
+    window.location.href = "/logout";
   }
 }
 
@@ -224,35 +215,7 @@ function mostrarLogin() {
 }
 
 // 🔐 Validação de login
-function validarLogin(event) {
-  event.preventDefault();
-  const usuario = document.getElementById('usuario').value;
-  const senha = document.getElementById('senhaCadastro').value;
 
-  fetch("/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ users: usuario, senha: senha })
-  })
-    .then(response => {
-  if (!response.ok) throw new Error("Usuário ou senha inválidos.");
-  return response.json();
-})
-.then(usuario => {
-  // Salva no localStorage
-  localStorage.setItem("usuarioId", usuario.id);
-  localStorage.setItem("usuarioNome", usuario.users);
-  localStorage.setItem("usuarioEmail", usuario.email);
-  localStorage.setItem("usuarioPlano", usuario.plano);
-
-  alert("Login bem-sucedido!");
-  window.location.href = "/inicio";
-})
-.catch(error => {
-  alert(error.message || "Erro ao tentar login.");
-});
-
-}
 
 // 📝 Validação de cadastro
 function validarCadastro(event) {
@@ -293,14 +256,6 @@ function validarCadastro(event) {
 }
 
 localStorage.removeItem("abaAtiva");
-document.addEventListener("DOMContentLoaded", () => {
-  const usuarioId = localStorage.getItem("usuarioId");
-
-  if (!usuarioId) {
-    alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "/home"; // redireciona para o login
-  }
-});
 document.addEventListener("DOMContentLoaded", () => {
   inicializarEventosAnamnese();
 });
@@ -345,7 +300,7 @@ async function carregarPacientesAnamnese() {
   const select = document.getElementById("pacienteAnamnese");
   if (!select) return;
 
-  const usuarioId = localStorage.getItem("usuarioId");
+
 
   try {
     const res = await fetch(`/pacientes?usuarioId=${usuarioId}`);
@@ -466,9 +421,7 @@ async function preencherPaciente() {
     f.pesoIdeal.value = "";
 
     // (Opcional) Se quiser salvar o ID do usuário ocultamente:
-    if (f.usuarioId) {
-      f.usuarioId.value = localStorage.getItem("usuarioId") || "";
-    }
+    
   } catch (err) {
     console.error("Erro ao preencher dados do paciente:", err);
   }
@@ -493,8 +446,7 @@ async function exibirRegistrosAnamnese() {
       container.innerHTML = "<p>Paciente sem CPF cadastrado.</p>";
       return;
     }
-
-    const res = await fetch(`/anamnese/paciente/${cpf}?usuarioId=${localStorage.getItem("usuarioId")}`);
+    const res = await fetch(`/anamnese/paciente/${cpf}`);
 
     if (!res.ok) throw new Error("Erro ao buscar anamneses");
 
@@ -557,13 +509,6 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
   e.preventDefault();
 
   const form = e.target;
-  const usuarioId = localStorage.getItem("usuarioId");
-
-  if (!usuarioId) {
-    alert("⚠️ Usuário não identificado. Faça login novamente.");
-    window.location.href = "/home";
-    return;
-  }
 
   const data = {
     nomeA: form.nomeA.value,
@@ -813,12 +758,6 @@ function fecharVisualizacaoAnamnese() {
   document.getElementById("conteudoVisualizacao").innerHTML = "";
 }
 document.addEventListener("DOMContentLoaded", () => {
-  const usuarioId = localStorage.getItem("usuarioId");
-
-  if (!usuarioId) {
-    alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "/home";
-  }
 });
 let pacientes = [];
 let mostrandoLista = false;
@@ -830,13 +769,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('selectPaciente').addEventListener('change', async () => {
   const id = document.getElementById('selectPaciente').value;
-  const usuarioId = localStorage.getItem("usuarioId");
-
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   if (id) {
     pacienteSelecionadoId = Number(id);
@@ -856,12 +788,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 
  document.getElementById('btnListar').addEventListener('click', async () => {
-  const usuarioId = localStorage.getItem("usuarioId");
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   const listaContainer = document.getElementById('listaPacientes');
   const botaoListar = document.getElementById('btnListar');
@@ -947,12 +873,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 });
 async function carregarPacientes() {
-  const usuarioId = localStorage.getItem("usuarioId");
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   try {
     const response = await fetch(`/pacientes?usuarioId=${usuarioId}`);
@@ -1010,12 +930,6 @@ function limparFormulario() {
 async function salvarAlteracoes(event) {
   event.preventDefault();
 
-  const usuarioId = localStorage.getItem("usuarioId");
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   const pacienteAtualizado = {
     nome: document.getElementById('nomeEd').value,
@@ -1057,12 +971,6 @@ async function salvarAlteracoes(event) {
 async function salvarPaciente(event) {
   event.preventDefault();
 
-  const usuarioId = localStorage.getItem("usuarioId");
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   const paciente = {
     nome: document.getElementById('nomeEd').value,
@@ -1116,12 +1024,6 @@ function voltarEdicao() {
   
 }
 document.getElementById('btnEditar').addEventListener('click', async () => {
-  const usuarioId = localStorage.getItem("usuarioId");
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   const select = document.getElementById('selectPaciente');
   const idSelecionado = select.value;
@@ -1165,11 +1067,6 @@ function cancelarEdicao() {
 async function editarUsuario(event) {
   event.preventDefault();
 
-  const usuarioId = localStorage.getItem("usuarioId");
-  if (!usuarioId) {
-    alert("Usuário não identificado.");
-    return;
-  }
 
   const nome = document.getElementById("novoNome").value.trim();
   const email = document.getElementById("novoEmail").value.trim();
@@ -1292,10 +1189,7 @@ function generateCalendar(date) {
 
 async function carregarAgendamentosDoMes(anoMes) {
   try {
-    const usuarioId = localStorage.getItem('usuarioId');
-    const url = usuarioId
-      ? `/agendamentos/mes/${anoMes}?usuarioId=${usuarioId}`
-      : `/agendamentos/mes/${anoMes}`;
+    const url = `/agendamentos/mes/${anoMes}`;
 
     const res = await fetch(url);
     if (!res.ok) throw new Error('Erro ao carregar agendamentos');
@@ -1414,7 +1308,6 @@ view.appendChild(form);
 container.appendChild(view);
 
 // Carrega pacientes com filtro por usuário, se necessário
-const usuarioId = localStorage.getItem("usuarioId");
 let urlPacientes = "/pacientes";
 if (usuarioId) {
   urlPacientes += `?usuarioId=${usuarioId}`;
@@ -1443,18 +1336,12 @@ fetch(urlPacientes)
 }
 
 function saveTask() {
-  const usuarioId = localStorage.getItem('usuarioId');
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
   const desc = document.getElementById('taskDesc').value;
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
 
-  if (!usuarioId) {
-    alert("Usuário não identificado. Faça login novamente.");
-    window.location.href = "/home";
-    return;
-  }
 
   if (!pacienteId || !time || !desc || !data) {
     alert('Preencha todos os campos antes de salvar.');
@@ -1503,17 +1390,13 @@ function editarAgendamento(agendamento) {
 }
 
 function atualizarAgendamento(id) {
-  const usuarioId = localStorage.getItem('usuarioId');
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
   const desc = document.getElementById('taskDesc').value;
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
 
-  if (!usuarioId) {
-    alert("Usuário não identificado.");
-    return;
-  }
+ 
 
   if (!pacienteId || !time || !desc || !data) {
     alert('Preencha todos os campos antes de atualizar.');
@@ -1580,13 +1463,7 @@ generateCalendar(currentDate);
 
 document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
   e.preventDefault();
-  const usuarioId = localStorage.getItem("usuarioId");
 
-  if (!usuarioId) {
-    alert("Você precisa estar logado.");
-    window.location.href = "/home";
-    return;
-  }
 
   const cpfCnpj = document.getElementById('cpfCnpj').value.replace(/\D/g, '');
   const email = document.getElementById('email').value;
