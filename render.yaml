@@ -6,11 +6,8 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://switchback.proxy.rlwy.net:30733/railway
       - key: SPRING_DATASOURCE_USERNAME
-        value: root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: NKhhudSLreOHmLXYdSsFPCGNDyOmsVuK
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
     ports:
