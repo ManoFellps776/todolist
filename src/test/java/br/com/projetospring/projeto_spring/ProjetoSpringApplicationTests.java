@@ -12,7 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import br.com.projetospring.projeto_spring.entity.Todo;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ProjetoSpringApplicationTests {
+class ProjetoSpringApplication {
 
     @Autowired
     private WebTestClient webTestClient;
