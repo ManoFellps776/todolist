@@ -25,13 +25,13 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/home", "/index", "/login", "/login/**", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/inicio", "/index", "/login", "/login/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
             .httpBasic(basic -> {}) // opcional, só se usar autenticação básica
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/home")
+                .logoutSuccessUrl("/inicio")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
