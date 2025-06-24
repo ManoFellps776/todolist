@@ -108,42 +108,45 @@ function validarLogin(event) {
 //Validação de cadastro
 async function validarCadastro(event) {
   event.preventDefault();
+  
+  const nome = document.getElementById("nome").value.trim();
+  const email = document.getElementById("email1").value.trim();
+  const senha = document.getElementById("senhaCadastro1").value.trim();
+  const confirmarSenha = document.getElementById("confirmarSenha").value.trim();
 
-  const nome = document.getElementById('nome').value.trim();
-  const email = document.getElementById('email1').value.trim();
-  const senha = document.getElementById('senhaCadastro1').value;
-  const confirmar = document.getElementById('confirmarSenha').value;
-
-  if (senha !== confirmar) {
-    alert("As senhas não coincidem.");
+  if (!nome || !email || !senha || senha !== confirmarSenha) {
+    alert("Preencha corretamente os campos.");
     return;
   }
 
-  const novoUsuario = {
+  const usuario = {
     users: nome,
-    email: email,
-    senha: senha
+    senha: senha,
+    email: email
   };
 
   try {
-    const res = await fetch('/login/cadastro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(novoUsuario)
+    const res = await fetch("/login/cadastro", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(usuario)
     });
 
+    const texto = await res.text();
+
     if (!res.ok) {
-      const texto = await res.text();
       throw new Error(texto);
     }
 
-    alert("✅ Cadastro realizado com sucesso!");
+    alert("✅ Usuário cadastrado com sucesso!");
     mostrarLogin();
+
   } catch (err) {
     console.error(err);
     alert("❌ Erro ao cadastrar: " + err.message);
   }
 }
+
 
 localStorage.removeItem("abaAtiva");
 
