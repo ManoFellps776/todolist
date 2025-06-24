@@ -1,51 +1,40 @@
 package br.com.projetospring.projeto_spring.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name="users")
-
+@Table(name = "usuarios") // Evita conflito com "users"
 public class Users {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     @NotBlank
     private String users;
+
     @NotBlank
     private String senha;
+
+    @Column(unique = true)
     @NotBlank
     private String email;
+
     private String plano;
-    public Users(){
 
-    }
+    public Users() {}
 
-    public Users(String users, String senha, String email, String plano){
-        this.users =users;
+    public Users(String users, String senha, String email, String plano) {
+        this.users = users;
         this.senha = senha;
-        this.email= email;
-        this.plano= plano;
-   
-    }
-    public String getPlano() {
-        return plano;
-    }
-
-    public void setPlano(String plano) {
+        this.email = email;
         this.plano = plano;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsers() {
@@ -71,6 +60,16 @@ public class Users {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    
+
+    public String getPlano() {
+        return plano;
+    }
+
+    public void setPlano(String plano) {
+        this.plano = plano;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

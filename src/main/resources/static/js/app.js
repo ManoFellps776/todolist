@@ -106,44 +106,45 @@ function validarLogin(event) {
       
     } 
 //Validação de cadastro
-function validarCadastro(event) {
+async function validarCadastro(event) {
   event.preventDefault();
 
-  const nome = document.getElementById('nome').value;
-  const email = document.getElementById('email1').value;
+  const nome = document.getElementById('nome').value.trim();
+  const email = document.getElementById('email1').value.trim();
   const senha = document.getElementById('senhaCadastro1').value;
-  const confirmarSenha = document.getElementById('confirmarSenha').value;
+  const confirmar = document.getElementById('confirmarSenha').value;
 
-  if (senha !== confirmarSenha) {
-    alert("As senhas não coincidem!");
+  if (senha !== confirmar) {
+    alert("As senhas não coincidem.");
     return;
   }
 
-  fetch("/login/cadastro", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ users: nome, senha: senha, email: email})
-  })
-  .then(response => response.text())
-  .then(data => {
-    if (data.includes("Nome de usuário já existe")) {
-      alert("Este nome de usuário já está cadastrado. Tente outro.");
-    } else if (data.includes("Email já está cadastrado")) {
-      alert("Este e-mail já está cadastrado. Use outro e-mail.");
-    } else if (data.includes("sucesso")) {
-      alert("Cadastro realizado com sucesso!");
+  const novoUsuario = {
+    users: nome,
+    email: email,
+    senha: senha
+  };
 
-    } else {
-      alert("Erro ao cadastrar: " + data);
+  try {
+    const res = await fetch('/login/cadastro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(novoUsuario)
+    });
+
+    if (!res.ok) {
+      const texto = await res.text();
+      throw new Error(texto);
     }
-  })
-  .catch(error => {
-    console.error("Erro ao cadastrar:", error);
-    alert("Erro ao conectar com o servidor.");
-  });
+
+    alert("✅ Cadastro realizado com sucesso!");
+    mostrarLogin();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Erro ao cadastrar: " + err.message);
+  }
 }
+
 localStorage.removeItem("abaAtiva");
 
 // Simulando um objeto de usuário recuperado do back-end

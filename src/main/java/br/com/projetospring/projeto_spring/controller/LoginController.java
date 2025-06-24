@@ -25,28 +25,28 @@ public class LoginController {
     private PasswordEncoder passwordEncoder;
 
     // ---------- CADASTRO ----------
-    @PostMapping("/cadastro")
-    public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
-        if (novoUsuario.getUsers() == null || novoUsuario.getSenha() == null || novoUsuario.getEmail() == null ||
-            novoUsuario.getUsers().isBlank() || novoUsuario.getSenha().isBlank() || novoUsuario.getEmail().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Usuário, e-mail e senha não podem estar em branco.");
-        }
-
-        if (usersRepository.findByUsers(novoUsuario.getUsers()) != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Nome de usuário já existe.");
-        }
-
-        if (usersRepository.findByEmail(novoUsuario.getEmail()) != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("E-mail já está cadastrado.");
-        }
-
-        novoUsuario.setSenha(passwordEncoder.encode(novoUsuario.getSenha()));
-        novoUsuario.setPlano("FREE");
-        usersRepository.save(novoUsuario);
-
-        return ResponseEntity.ok("Usuário cadastrado com sucesso!");
+   @PostMapping("/cadastro")
+public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
+    if (novoUsuario.getUsers() == null || novoUsuario.getSenha() == null || novoUsuario.getEmail() == null ||
+        novoUsuario.getUsers().isBlank() || novoUsuario.getSenha().isBlank() || novoUsuario.getEmail().isBlank()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body("Usuário, e-mail e senha não podem estar em branco.");
     }
+
+    if (usersRepository.findByUsers(novoUsuario.getUsers()) != null) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Nome de usuário já existe.");
+    }
+
+    if (usersRepository.findByEmail(novoUsuario.getEmail()) != null) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("E-mail já está cadastrado.");
+    }
+
+    novoUsuario.setSenha(passwordEncoder.encode(novoUsuario.getSenha()));
+    novoUsuario.setPlano("FREE");
+    usersRepository.save(novoUsuario);
+
+    return ResponseEntity.ok("Usuário cadastrado com sucesso!");
+}
 
     // ---------- ATUALIZAR USUÁRIO ----------
    @PutMapping("/usuarios")

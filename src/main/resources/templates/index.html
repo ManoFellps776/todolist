@@ -41,21 +41,22 @@
     </div>
 
     <!-- FORMULÁRIO DE CADASTRO -->
-    <div id="clientes" class="conteudo">
-      <div class="container">
-        <div class="card" id="cadastroCard">
-          <h2>Criar conta</h2>
-          <form onsubmit="validarCadastro(event)">
-            <input type="text" id="nome" placeholder="Nome de usuário" required>
-            <input type="email" id="email1" placeholder="Email" required>
-            <input type="password" id="senhaCadastro1" placeholder="Senha" required>
-            <input type="password" id="confirmarSenha" placeholder="Confirmar Senha" required>
-            <button type="submit" class="btn">Cadastrar</button>
-            <button type="button" class="btn-outline" onclick="mostrarLogin()">Voltar</button>
-          </form>
-        </div>
-      </div>
+<div id="clientes" class="conteudo">
+  <div class="container">
+    <div class="card" id="cadastroCard">
+      <h2>Criar conta</h2>
+      <form id="formCadastro" onsubmit="validarCadastro(event)">
+        <input type="text" id="nome" placeholder="Nome de usuário" required>
+        <input type="email" id="email1" placeholder="Email" required>
+        <input type="password" id="senhaCadastro1" placeholder="Senha" required>
+        <input type="password" id="confirmarSenha" placeholder="Confirmar Senha" required>
+        <button type="submit" class="btn">Cadastrar</button>
+        <button type="button" class="btn-outline" onclick="mostrarLogin()">Voltar</button>
+      </form>
     </div>
+  </div>
+</div>
+
 
     <!-- Termos de Uso -->
     <div id="termos" class="conteudo">
