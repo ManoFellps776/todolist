@@ -1,14 +1,12 @@
-
 package br.com.projetospring.projeto_spring.repository;
 
 import br.com.projetospring.projeto_spring.entity.Paciente;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
+
+    // Retorna pacientes do usuário ordenados por nome
     List<Paciente> findByUsuarioIdOrderByNomeAsc(Long usuarioId);
 
 }
-

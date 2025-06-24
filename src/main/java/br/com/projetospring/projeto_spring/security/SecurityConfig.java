@@ -24,21 +24,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable()) // Desabilitado por padrão, útil para REST e testes — opcional ativar depois
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/home", "/index", "/cadastro/**", "/css/**", "/js/**", "/images/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers(
+                    "/", "/home", "/index", "/login", "/cadastro/**", 
+                    "/css/**", "/js/**", "/images/**", "/webjars/**"
+                ).permitAll() // Libera páginas públicas e recursos estáticos
+                .anyRequest().authenticated() // O resto exige login
             )
             .formLogin(login -> login
-                .loginPage("/home")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/inicio", true)
-                .failureUrl("/home?error=true")
+                .loginPage("/home") // Página de login customizada
+                .loginProcessingUrl("/login") // Endpoint de autenticação (POST)
+                .defaultSuccessUrl("/inicio", true) // Redireciona após login com sucesso
+                .failureUrl("/home?error=true") // Em caso de erro, volta ao login com ?error
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/home")
+                .logoutSuccessUrl("/home") // Após logout, volta ao login
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
@@ -50,18 +53,18 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(userDetailsService); // Nossa implementação
+        provider.setPasswordEncoder(passwordEncoder());     // BCrypt encoder
         return provider;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Segurança com hash forte
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+        return config.getAuthenticationManager(); // Gerenciador de autenticação padrão
     }
 }

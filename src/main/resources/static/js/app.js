@@ -303,7 +303,7 @@ async function carregarPacientesAnamnese() {
 
 
   try {
-    const res = await fetch(`/pacientes?usuarioId=${usuarioId}`);
+    const res = await fetch(`/pacientes`);
     if (!res.ok) throw new Error("Erro ao buscar pacientes");
 
     const pacientes = await res.json();
@@ -1034,7 +1034,7 @@ document.getElementById('btnEditar').addEventListener('click', async () => {
   }
 
   try {
-    const res = await fetch(`/pacientes/${idSelecionado}?usuarioId=${usuarioId}`);
+    const res = await fetch(`/pacientes/${idSelecionado}`);
     if (!res.ok) throw new Error('Erro ao buscar paciente');
 
     const paciente = await res.json();
@@ -1067,7 +1067,6 @@ function cancelarEdicao() {
 async function editarUsuario(event) {
   event.preventDefault();
 
-
   const nome = document.getElementById("novoNome").value.trim();
   const email = document.getElementById("novoEmail").value.trim();
 
@@ -1077,7 +1076,7 @@ async function editarUsuario(event) {
   }
 
   try {
-    const response = await fetch(`/login/usuarios/${usuarioId}`, {
+    const response = await fetch("/login/usuarios", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -1098,6 +1097,7 @@ async function editarUsuario(event) {
     alert("❌ Falha ao salvar alterações.");
   }
 }
+
 //Calendario
 const calendar = document.getElementById('calendar');
 const monthYearLabel = document.getElementById('monthYearLabel');
@@ -1308,12 +1308,7 @@ view.appendChild(form);
 container.appendChild(view);
 
 // Carrega pacientes com filtro por usuário, se necessário
-let urlPacientes = "/pacientes";
-if (usuarioId) {
-  urlPacientes += `?usuarioId=${usuarioId}`;
-}
-
-fetch(urlPacientes)
+fetch("/pacientes")
   .then(res => {
     if (!res.ok) throw new Error("Erro ao buscar pacientes");
     return res.json();
@@ -1333,8 +1328,8 @@ fetch(urlPacientes)
     alert("Erro ao carregar pacientes");
   });
 
-}
 
+}
 function saveTask() {
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
@@ -1342,28 +1337,27 @@ function saveTask() {
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
 
-
   if (!pacienteId || !time || !desc || !data) {
     alert('Preencha todos os campos antes de salvar.');
     return;
   }
 
   const agendamento = {
-  pacienteId: Number(pacienteId),
-  hora: time,
-  descricao: desc,
-  cor: color,
-  data: data,
-  usuarioId: Number(usuarioId) 
-};
+    pacienteId: Number(pacienteId),
+    hora: time,
+    descricao: desc,
+    cor: color,
+    data: data
+    // ❌ usuarioId: não é mais necessário
+  };
 
-fetch('/agendamentos', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(agendamento)
-})
+  fetch('/agendamentos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(agendamento)
+  })
     .then(res => {
       if (!res.ok) throw new Error('Erro ao salvar agendamento');
       return res.json();
@@ -1396,8 +1390,6 @@ function atualizarAgendamento(id) {
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
 
- 
-
   if (!pacienteId || !time || !desc || !data) {
     alert('Preencha todos os campos antes de atualizar.');
     return;
@@ -1411,7 +1403,7 @@ function atualizarAgendamento(id) {
     data: data
   };
 
-  fetch(`/agendamentos/${id}?usuarioId=${usuarioId}`, {
+  fetch(`/agendamentos/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(agendamentoAtualizado)
@@ -1429,6 +1421,7 @@ function atualizarAgendamento(id) {
       alert('Erro ao atualizar agendamento');
     });
 }
+
 
 function deletarAgendamento(id) {
   if (!confirm("Deseja realmente excluir este agendamento?")) return;
@@ -1497,7 +1490,7 @@ document.getElementById('cadastroForm').addEventListener('submit', async functio
   };
 
   try {
-    const response = await fetch(`/pacientes?usuarioId=${usuarioId}`, {
+    const response = await fetch(`/pacientes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(paciente)
