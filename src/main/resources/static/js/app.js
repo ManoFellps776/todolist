@@ -108,14 +108,19 @@ function validarLogin(event) {
 //Validação de cadastro
 async function validarCadastro(event) {
   event.preventDefault();
-  
+
   const nome = document.getElementById("nome").value.trim();
   const email = document.getElementById("email1").value.trim();
   const senha = document.getElementById("senhaCadastro1").value.trim();
   const confirmarSenha = document.getElementById("confirmarSenha").value.trim();
 
-  if (!nome || !email || !senha || senha !== confirmarSenha) {
-    alert("Preencha corretamente os campos.");
+  if (!nome || !email || !senha || !confirmarSenha) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  if (senha !== confirmarSenha) {
+    alert("As senhas não coincidem.");
     return;
   }
 
@@ -142,7 +147,7 @@ async function validarCadastro(event) {
     mostrarLogin();
 
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao cadastrar:", err);
     alert("❌ Erro ao cadastrar: " + err.message);
   }
 }
