@@ -84,7 +84,7 @@ function validarLogin(event) {
       const usuario = document.getElementById('usuario').value;
       const senha = document.getElementById('senhaCadastro').value;
 
-      fetch("https://minha-agencia.onrender.com/login", {
+      fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -126,7 +126,7 @@ async function validarCadastro(event) {
   };
 
   try {
-    const res = await fetch("https://minha-agencia.onrender.com/login/cadastro", {
+    const res = await fetch("/login/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(usuario)
