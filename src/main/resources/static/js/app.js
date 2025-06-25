@@ -134,9 +134,10 @@ async function validarCadastro(event) {
 
     const respostaTexto = await res.text(); // Captura até HTML se for erro
 
-    if (!res.ok) {
-      console.error("Erro do servidor:", respostaTexto); // Mostra HTML no console
-      alert("❌ Erro ao cadastrar:\n" + respostaTexto);  // Opcional: remover isso depois
+    if (respostaTexto.startsWith("<!DOCTYPE")) {
+  alert("❌ Erro ao cadastrar: rota inválida ou servidor retornou HTML.");
+} else {
+  alert("❌ Erro ao cadastrar:\n" + respostaTexto);
       return;
     }
 
