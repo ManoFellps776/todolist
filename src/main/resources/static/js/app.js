@@ -84,7 +84,7 @@ function validarLogin(event) {
       const usuario = document.getElementById('usuario').value;
       const senha = document.getElementById('senhaCadastro').value;
 
-      fetch("/login", {
+      fetch("https://minha-agencia.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -222,44 +222,6 @@ function mostrarLogin() {
 
 // 🔐 Validação de login
 
-
-// 📝 Validação de cadastro
-function validarCadastro(event) {
-  event.preventDefault();
-
-  const nome = document.getElementById('nome').value;
-  const email = document.getElementById('email1').value;
-  const senha = document.getElementById('senhaCadastro1').value;
-  const confirmarSenha = document.getElementById('confirmarSenha').value;
-
-  if (senha !== confirmarSenha) {
-    alert("As senhas não coincidem!");
-    return;
-  }
-
-  fetch("/login/cadastro", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ users: nome, senha: senha, email: email })
-  })
-    .then(response => response.text())
-    .then(data => {
-      if (data.includes("Nome de usuário já existe")) {
-        alert("Este nome de usuário já está cadastrado. Tente outro.");
-      } else if (data.includes("Email já está cadastrado")) {
-        alert("Este e-mail já está cadastrado. Use outro e-mail.");
-      } else if (data.includes("sucesso")) {
-        alert("Cadastro realizado com sucesso!");
-        mostrarLogin(); // volta para o login
-      } else {
-        alert("Erro ao cadastrar: " + data);
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao cadastrar:", error);
-      alert("Erro ao conectar com o servidor.");
-    });
-}
 
 localStorage.removeItem("abaAtiva");
 document.addEventListener("DOMContentLoaded", () => {
