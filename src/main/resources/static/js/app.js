@@ -114,13 +114,8 @@ async function validarCadastro(event) {
   const senha = document.getElementById("senhaCadastro1").value.trim();
   const confirmarSenha = document.getElementById("confirmarSenha").value.trim();
 
-  if (!nome || !email || !senha || !confirmarSenha) {
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-  if (senha !== confirmarSenha) {
-    alert("As senhas não coincidem.");
+  if (!nome || !email || !senha || senha !== confirmarSenha) {
+    alert("Preencha corretamente os campos.");
     return;
   }
 
@@ -137,18 +132,20 @@ async function validarCadastro(event) {
       body: JSON.stringify(usuario)
     });
 
-    const texto = await res.text();
+    const respostaTexto = await res.text(); // Captura até HTML se for erro
 
     if (!res.ok) {
-      throw new Error(texto);
+      console.error("Erro do servidor:", respostaTexto); // Mostra HTML no console
+      alert("❌ Erro ao cadastrar:\n" + respostaTexto);  // Opcional: remover isso depois
+      return;
     }
 
     alert("✅ Usuário cadastrado com sucesso!");
     mostrarLogin();
 
   } catch (err) {
-    console.error("Erro ao cadastrar:", err);
-    alert("❌ Erro ao cadastrar: " + err.message);
+    console.error("Erro inesperado:", err);
+    alert("❌ Erro inesperado: " + err.message);
   }
 }
 
