@@ -126,7 +126,7 @@ async function validarCadastro(event) {
   };
 
   try {
-    const res = await fetch("/login/cadastro", {
+    const res = await fetch("https://minha-agencia.onrender.com/login/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(usuario)
