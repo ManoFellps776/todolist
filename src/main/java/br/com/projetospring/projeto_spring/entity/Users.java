@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "usuarios") // Evita conflito com "users"
+@Table(name = "users") // Evita conflito com "users"
 public class Users {
 
     @Id
