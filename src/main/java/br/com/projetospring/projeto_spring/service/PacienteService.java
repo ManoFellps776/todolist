@@ -3,10 +3,8 @@ package br.com.projetospring.projeto_spring.service;
 import br.com.projetospring.projeto_spring.entity.Paciente;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.PacienteRepository;
-import br.com.projetospring.projeto_spring.repository.UsersRepository;
 
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,75 +12,64 @@ import java.util.List;
 @Service
 public class PacienteService {
 
-    @Autowired
-    private PacienteRepository pacienteRepository;
+    private final PacienteRepository repo;
 
-    @Autowired
-    private UsersRepository usersRepository;
-
-    @Transactional
-    public Paciente create(Paciente paciente, Long usuarioId) {
-        Users usuario = usersRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
-
-        paciente.setUsuario(usuario);
-        return pacienteRepository.save(paciente);
+    public PacienteService(PacienteRepository repo) {
+        this.repo = repo;
     }
 
+    /* --------------------------------  CREATE  ------------------------------- */
     @Transactional
-public List<Paciente> listByUsuario(Long usuarioId) {
-    return pacienteRepository.findByUsuarioIdOrderByNomeAsc(usuarioId);
-}
-
-
-    @Transactional
-    public Paciente buscarPorId(Long id) {
-        return pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com ID: " + id));
+    public Paciente create(Paciente p, Users usuario) {
+        p.setUsuario(usuario);
+        return repo.save(p);
     }
 
+    /* --------------------------------  LIST  --------------------------------- */
     @Transactional
-    public Paciente update(Long id, Paciente pacienteAtualizado, Long usuarioId) {
-        Users usuario = usersRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
+    public List<Paciente> listByUsuario(Users usuario) {
+        return repo.findByUsuarioOrderByNomeAsc(usuario);
+    }
 
-        Paciente existente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com ID: " + id));
-
-        if (!existente.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("Você não tem permissão para editar este paciente.");
+    /* -------------  READ - helper que já aplica a regra de proprietário ------- */
+    @Transactional
+    public Paciente buscarPorIdEUsuario(Long id, Users usuario) {
+        Paciente p = repo.findById(id)
+                         .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        if (!p.getUsuario().equals(usuario)) {
+            throw new RuntimeException("Acesso negado ao paciente");
         }
-
-        existente.setUsuario(usuario);
-        existente.setNome(pacienteAtualizado.getNome());
-        existente.setCpf(pacienteAtualizado.getCpf());
-        existente.setBirthday(pacienteAtualizado.getBirthday());
-        existente.setEstadoCivil(pacienteAtualizado.getEstadoCivil());
-        existente.setProfissao(pacienteAtualizado.getProfissao());
-        existente.setEscola(pacienteAtualizado.getEscola());
-        existente.setCep(pacienteAtualizado.getCep());
-        existente.setEstadoCep(pacienteAtualizado.getEstadoCep());
-        existente.setCidade(pacienteAtualizado.getCidade());
-        existente.setBairro(pacienteAtualizado.getBairro());
-        existente.setRua(pacienteAtualizado.getRua());
-        existente.setNumeroRua(pacienteAtualizado.getNumeroRua());
-        existente.setTelefone(pacienteAtualizado.getTelefone());
-        existente.setEmail(pacienteAtualizado.getEmail());
-        existente.setDescricao(pacienteAtualizado.getDescricao());
-
-        return pacienteRepository.save(existente);
+        return p;
     }
 
+    /* --------------------------------  UPDATE  ------------------------------- */
     @Transactional
-    public List<Paciente> delete(Long id, Long usuarioId) {
-        Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com ID: " + id));
+    public Paciente update(Long id, Paciente dados, Users usuario) {
+        Paciente p = buscarPorIdEUsuario(id, usuario);     // garante que é do usuário
+        /* copia campos editáveis */
+        p.setNome(dados.getNome());
+        p.setCpf(dados.getCpf());
+        p.setBirthday(dados.getBirthday());
+        p.setEstadoCivil(dados.getEstadoCivil());
+        p.setProfissao(dados.getProfissao());
+        p.setEscola(dados.getEscola());
+        p.setCep(dados.getCep());
+        p.setEstadoCep(dados.getEstadoCep());
+        p.setCidade(dados.getCidade());
+        p.setBairro(dados.getBairro());
+        p.setRua(dados.getRua());
+        p.setNumeroRua(dados.getNumeroRua());
+        p.setTelefone(dados.getTelefone());
+        p.setEmail(dados.getEmail());
+        p.setDescricao(dados.getDescricao());
 
-        if (!paciente.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("Você não tem permissão para excluir este paciente.");
-        }
+        return repo.save(p);
+    }
 
-        pacienteRepository.deleteById(id);
-        return listByUsuario(usuarioId);
+    /* --------------------------------  DELETE  ------------------------------- */
+    @Transactional
+    public void delete(Long id, Users usuario) {
+        Paciente p = buscarPorIdEUsuario(id, usuario);     // valida dono
+        repo.delete(p);
     }
 }

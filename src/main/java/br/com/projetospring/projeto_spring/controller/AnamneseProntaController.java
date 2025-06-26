@@ -5,11 +5,13 @@ import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.AnamneseProntaRepository;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/anamnese")
@@ -22,33 +24,43 @@ public class AnamneseProntaController {
     @Autowired
     private UsersRepository usersRepository;
 
-    // ✅ Salvar nova anamnese vinculada ao usuário
+    // ✅ Salvar nova anamnese vinculada ao usuário logado
     @PostMapping
-    public ResponseEntity<AnamnesePronta> salvar(
-        @RequestBody AnamnesePronta anamnese,
-        @RequestParam Long usuarioId
-    ) {
-        if (anamnese.getCpfA() != null) {
-            anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
-        }
-
-        Users usuario = usersRepository.findById(usuarioId)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        anamnese.setUsuario(usuario); // Este método existe via Lombok (@Setter)
-        return ResponseEntity.ok(repository.save(anamnese));
+public ResponseEntity<AnamnesePronta> salvar(
+    @RequestBody AnamnesePronta anamnese,
+    Principal principal
+) {
+    if (anamnese.getCpfA() != null) {
+        anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
     }
 
-    // ✅ Buscar anamnese por CPF e usuário
+    String nomeUsuario = principal.getName();
+    Users usuario = usersRepository.findByUsers(nomeUsuario);
+    if (usuario == null) {
+        return ResponseEntity.status(401).build();
+    }
+
+    anamnese.setUsuario(usuario);
+    return ResponseEntity.ok(repository.save(anamnese));
+}
+
+
+    // ✅ Buscar anamnese por CPF e usuário logado
     @GetMapping("/paciente/{cpf}")
-    public ResponseEntity<List<AnamnesePronta>> listarPorCpf(
-        @PathVariable String cpf,
-        @RequestParam Long usuarioId
-    ) {
-        String cpfLimpo = cpf.replaceAll("\\D", "");
-        List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuarioId);
-        return ResponseEntity.ok(lista);
+public ResponseEntity<List<AnamnesePronta>> listarPorCpf(
+    @PathVariable String cpf,
+    Principal principal
+) {
+    String cpfLimpo = cpf.replaceAll("\\D", "");
+    String nomeUsuario = principal.getName();
+    Users usuario = usersRepository.findByUsers(nomeUsuario);
+    if (usuario == null) {
+        return ResponseEntity.status(401).build();
     }
+
+    List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuario.getId());
+    return ResponseEntity.ok(lista);
+}
 
     // ✅ Buscar por ID (sem filtro de usuário neste caso específico)
     @GetMapping("/{id}")
@@ -58,7 +70,7 @@ public class AnamneseProntaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ Deletar anamnese
+    // ✅ Deletar anamnese (idealmente só permitir se for do usuário logado)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarAnamnese(@PathVariable Long id) {
         if (repository.existsById(id)) {

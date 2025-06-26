@@ -1,29 +1,34 @@
 //Carregar dados do perfil
 async function carregarPerfil() {
   try {
-    const resposta = await fetch("https://minha-agencia.onrender.com/login/logado", {
-      credentials: "include" // importante para manter a sessão
+    const resposta = await fetch("/login/logado", {
+      credentials: "include"
     });
 
-    if (!resposta.ok) {
-      throw new Error("Não foi possível carregar os dados do perfil.");
+    const texto = await resposta.text();
+
+    // ⚠️ Verifica se retornou HTML em vez de JSON → significa que NÃO está logado
+    if (texto.startsWith("<!DOCTYPE")) {
+      console.warn("Usuário não autenticado. Ignorando carregamento de perfil.");
+      return; // Evita erro e alerta desnecessário
     }
 
-    const usuario = await resposta.json();
+    const usuario = JSON.parse(texto);
 
     document.getElementById("nomeUsuario").innerText = usuario.users;
     document.getElementById("emailUsuario").innerText = usuario.email;
     document.getElementById("planoUsuario").innerText = usuario.plano;
 
-    // Preenche também os campos de edição
     document.getElementById("novoNome").value = usuario.users;
     document.getElementById("novoEmail").value = usuario.email;
 
   } catch (erro) {
-    console.error(erro);
-    alert("Erro ao carregar o perfil do usuário.");
+    console.error("Erro ao carregar perfil:", erro);
+    // Só mostra alerta se quiser depurar
+    // alert("Erro ao carregar o perfil do usuário.");
   }
 }
+
 
 //Funções do Perfil editar dados do usuario.
 document.addEventListener("DOMContentLoaded", carregarPerfil);
@@ -52,7 +57,7 @@ async function editarUsuario(event) {
   }
 
   try {
-    const response = await fetch("https://minha-agencia.onrender.com/login/usuarios", {
+    const response = await fetch("/login/usuarios", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -197,7 +202,7 @@ async function validarCadastro(event) {
   };
 
   try {
-    const res = await fetch("https://minha-agencia.onrender.com/login/cadastro", {
+    const res = await fetch("/login/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(usuario)
@@ -394,7 +399,7 @@ async function exibirAgendamentos() {
   if (!idPaciente) return;
 
   try {
-    const res = await fetch(`/agendamentos/paciente/${idPaciente}`);
+    const res = await fetch(`/agendamentos/paciente/`);
     if (!res.ok) throw new Error("Erro ao buscar agendamentos");
 
     const agendamentos = await res.json();
@@ -473,7 +478,7 @@ async function exibirRegistrosAnamnese() {
   if (!idPaciente) return;
 
   try {
-    const pacienteRes = await fetch(`/pacientes/${idPaciente}`);
+    const pacienteRes = await fetch(`/pacientes/`);
     if (!pacienteRes.ok) throw new Error("Erro ao buscar paciente");
 
     const paciente = await pacienteRes.json();
@@ -546,10 +551,16 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
   e.preventDefault();
 
   const form = e.target;
+  const pacienteId = document.getElementById("pacienteAnamnese")?.value;
+
+  if (!pacienteId) {
+    alert("❗ Selecione um paciente para salvar a anamnese.");
+    return;
+  }
 
   const data = {
-    nomeA: form.nomeA.value,
-    cpfA: form.cpfA.value?.replace(/\D/g, ""), // limpa o CPF
+    nomeA: form.nomeA.value.trim(),
+    cpfA: form.cpfA.value?.replace(/\D/g, ""),
     nascimentoA: form.nascimentoA.value,
     telefoneA: form.telefoneA.value,
     emailA: form.emailA.value,
@@ -571,24 +582,23 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
 
     obs: form.obs.value,
 
-    usuario: { id: parseInt(usuarioId) } // ✅ O campo obrigatório!
+    paciente: { id: parseInt(pacienteId) } // Somente o paciente precisa ser enviado
   };
 
   try {
-    const res = await fetch(`/anamnese?usuarioId=${usuarioId}`, {
+    const res = await fetch("/anamnese", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
+      credentials: "include", // mantém a sessão do usuário logado
       body: JSON.stringify(data)
     });
 
     if (res.ok) {
       alert("✅ Anamnese salva com sucesso!");
 
-      const pacienteId = document.getElementById("pacienteAnamnese").value;
       form.reset();
-
       document.getElementById("criarAnamnese").style.display = "none";
       document.getElementById("registroAnamnese").style.display = "none";
       document.getElementById("agendamentos").style.display = "none";
@@ -599,14 +609,13 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
     } else {
       const erroTexto = await res.text();
       console.error("❌ Erro ao salvar:", erroTexto);
-      alert("❌ Erro ao salvar anamnese.");
+      alert("❌ Erro ao salvar anamnese:\n" + erroTexto);
     }
+
   } catch (err) {
     console.error("❌ Erro ao conectar:", err);
     alert("❌ Erro ao conectar ao servidor.");
   }
-
-
 });
 // Gerar PDF
 async function gerarPDF(id) {
@@ -809,7 +818,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (id) {
     pacienteSelecionadoId = Number(id);
-    const response = await fetch(`/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}`);
+    const response = await fetch(`/pacientes/${pacienteSelecionadoId}`);
     if (response.ok) {
       const paciente = await response.json();
       preencherFormulario(paciente);
@@ -842,7 +851,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const response = await fetch(`/pacientes?usuarioId=${usuarioId}`);
+    const response = await fetch(`/pacientes`);
     if (!response.ok) throw new Error('Erro ao carregar pacientes');
 
     const pacientes = await response.json();
@@ -860,7 +869,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       btnEditar.className = 'btn-editar';
       btnEditar.onclick = async () => {
         pacienteSelecionadoId = paciente.id;
-        const res = await fetch(`/pacientes/${paciente.id}?usuarioId=${usuarioId}`);
+        const res = await fetch(`/pacientes/${paciente.id}`);
         if (!res.ok) return alert('Erro ao buscar paciente');
         const p = await res.json();
         preencherFormulario(p);
@@ -879,7 +888,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const confirmar = confirm(`Deseja realmente deletar o paciente "${paciente.nome}"?`);
         if (!confirmar) return;
         try {
-          const resp = await fetch(`/pacientes/${paciente.id}?usuarioId=${usuarioId}`, {
+          const resp = await fetch(`/pacientes/${paciente.id}`, {
             method: 'DELETE'
           });
           if (!resp.ok) throw new Error('Erro ao deletar');
@@ -912,7 +921,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 async function carregarPacientes() {
 
   try {
-    const response = await fetch(`/pacientes?usuarioId=${usuarioId}`);
+    const response = await fetch(`/pacientes`);
     if (!response.ok) throw new Error('Erro ao carregar pacientes');
     pacientes = await response.json();
 
@@ -967,7 +976,6 @@ function limparFormulario() {
 async function salvarAlteracoes(event) {
   event.preventDefault();
 
-
   const pacienteAtualizado = {
     nome: document.getElementById('nomeEd').value,
     cpf: document.getElementById('cpfCnpjEd').value,
@@ -983,28 +991,32 @@ async function salvarAlteracoes(event) {
     numeroRua: document.getElementById('numeroRuaEd').value,
     telefone: document.getElementById('telefoneEd').value,
     email: document.getElementById('emailEd').value,
-    descricao: document.getElementById('descricaoEd').value,
-    usuario: { id: usuarioId } // 🟢 Importante: vincula ao usuário correto
+    descricao: document.getElementById('descricaoEd').value
+    // 🔴 Removido o campo `usuario`
   };
 
   try {
-    const response = await fetch(`/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}`, {
+    const response = await fetch(`/pacientes/${pacienteSelecionadoId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include', // ✅ importante para manter a sessão ativa
       body: JSON.stringify(pacienteAtualizado)
     });
 
     if (!response.ok) throw new Error('Erro ao atualizar paciente');
 
-    alert('Paciente atualizado com sucesso!');
+    alert('✅ Paciente atualizado com sucesso!');
     document.getElementById('editForm').style.display = 'none';
     document.getElementById('selectPaciente').value = '';
     await carregarPacientes();
   } catch (error) {
     console.error(error);
-    alert('Erro ao salvar alterações');
+    alert('❌ Erro ao salvar alterações');
   }
 }
+
 async function salvarPaciente(event) {
   event.preventDefault();
 
@@ -1029,8 +1041,8 @@ async function salvarPaciente(event) {
   };
 
   const url = pacienteSelecionadoId 
-      ? `/pacientes/${pacienteSelecionadoId}?usuarioId=${usuarioId}` 
-      : `/pacientes?usuarioId=${usuarioId}`;
+      ? `/pacientes/${pacienteSelecionadoId}` 
+      : `/pacientes`;
 
   const method = pacienteSelecionadoId ? 'PUT' : 'POST';
 
@@ -1340,7 +1352,6 @@ function saveTask() {
     descricao: desc,
     cor: color,
     data: data
-    // ❌ usuarioId: não é mais necessário
   };
 
   fetch('/agendamentos', {
