@@ -1,10 +1,81 @@
+//Carregar dados do perfil
+async function carregarPerfil() {
+  try {
+    const resposta = await fetch("https://minha-agencia.onrender.com/login/logado", {
+      credentials: "include" // importante para manter a sessão
+    });
 
+    if (!resposta.ok) {
+      throw new Error("Não foi possível carregar os dados do perfil.");
+    }
 
-document.getElementById("nomeUsuario").innerText = nome;
+    const usuario = await resposta.json();
 
-document.getElementById("emailUsuario").innerText = email;
+    document.getElementById("nomeUsuario").innerText = usuario.users;
+    document.getElementById("emailUsuario").innerText = usuario.email;
+    document.getElementById("planoUsuario").innerText = usuario.plano;
 
-document.getElementById("planoUsuario").innerText = plano;
+    // Preenche também os campos de edição
+    document.getElementById("novoNome").value = usuario.users;
+    document.getElementById("novoEmail").value = usuario.email;
+
+  } catch (erro) {
+    console.error(erro);
+    alert("Erro ao carregar o perfil do usuário.");
+  }
+}
+
+//Funções do Perfil editar dados do usuario.
+document.addEventListener("DOMContentLoaded", carregarPerfil);
+function mostrarFormularioEdicao() {
+  const nome = document.getElementById("nomeUsuario").textContent;
+  const email = document.getElementById("emailUsuario").textContent;
+
+  document.getElementById("novoNome").value = nome;
+  document.getElementById("novoEmail").value = email;
+  document.getElementById("formEditarUsuario").style.display = "block";
+}
+
+function cancelarEdicao() {
+  document.getElementById("formEditarUsuario").style.display = "none";
+}
+
+async function editarUsuario(event) {
+  event.preventDefault();
+
+  const nome = document.getElementById("novoNome").value.trim();
+  const email = document.getElementById("novoEmail").value.trim();
+
+  if (!nome || !email) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://minha-agencia.onrender.com/login/usuarios", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include", // ← mantém a sessão do usuário logado
+      body: JSON.stringify({ nome, email })
+    });
+
+    const texto = await response.text();
+
+    if (!response.ok) throw new Error(texto);
+
+    document.getElementById("nomeUsuario").textContent = nome;
+    document.getElementById("emailUsuario").textContent = email;
+
+    alert("✅ Dados atualizados com sucesso!");
+    cancelarEdicao();
+
+  } catch (err) {
+    console.error("❌ Erro ao atualizar:", err);
+    alert("❌ Falha ao salvar alterações:\n" + err.message);
+  }
+}
 
 
 //Mostrar Menu
@@ -132,23 +203,21 @@ async function validarCadastro(event) {
       body: JSON.stringify(usuario)
     });
 
-    const respostaTexto = await res.text(); // Captura até HTML se for erro
+    const respostaTexto = await res.text();
 
-    if (respostaTexto.startsWith("<!DOCTYPE")) {
-  alert("❌ Erro ao cadastrar: rota inválida ou servidor retornou HTML.");
-} else {
-  alert("❌ Erro ao cadastrar:\n" + respostaTexto);
-      return;
+    if (res.ok) {
+      alert("✅ " + respostaTexto); // Sucesso real
+      mostrarLogin();
+    } else {
+      alert("❌ Erro ao cadastrar:\n" + respostaTexto); // Mensagem real de erro
     }
-
-    alert("✅ Usuário cadastrado com sucesso!");
-    mostrarLogin();
 
   } catch (err) {
     console.error("Erro inesperado:", err);
     alert("❌ Erro inesperado: " + err.message);
   }
 }
+
 
 
 localStorage.removeItem("abaAtiva");
@@ -186,7 +255,6 @@ function mostrar(id) {
     localStorage.setItem("abaAtiva", id);
   }
 }
-document.getElementById("nomeUsuario").innerText = nome;
 
 function toggleMenu() {
   const sidebar = document.getElementById("sidebar");
@@ -1021,51 +1089,6 @@ document.getElementById('btnEditar').addEventListener('click', async () => {
     alert('Erro ao carregar paciente.');
   }
 });
-function mostrarFormularioEdicao() {
-  const nome = document.getElementById("nomeUsuario").textContent;
-  const email = document.getElementById("emailUsuario").textContent;
-
-  document.getElementById("novoNome").value = nome;
-  document.getElementById("novoEmail").value = email;
-  document.getElementById("formEditarUsuario").style.display = "block";
-}
-
-function cancelarEdicao() {
-  document.getElementById("formEditarUsuario").style.display = "none";
-}
-async function editarUsuario(event) {
-  event.preventDefault();
-
-  const nome = document.getElementById("novoNome").value.trim();
-  const email = document.getElementById("novoEmail").value.trim();
-
-  if (!nome || !email) {
-    alert("Preencha todos os campos.");
-    return;
-  }
-
-  try {
-    const response = await fetch("/login/usuarios", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ nome, email }) // campos enviados
-    });
-
-    if (!response.ok) throw new Error("Erro ao atualizar usuário.");
-
-    document.getElementById("nomeUsuario").textContent = nome;
-    document.getElementById("emailUsuario").textContent = email;
-
-    alert("✅ Dados atualizados com sucesso!");
-    cancelarEdicao();
-
-  } catch (err) {
-    console.error("❌ Erro ao atualizar:", err);
-    alert("❌ Falha ao salvar alterações.");
-  }
-}
 
 //Calendario
 const calendar = document.getElementById('calendar');
