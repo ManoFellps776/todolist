@@ -24,24 +24,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desabilitado por padrão, útil para REST e testes — opcional ativar depois
+            .csrf(csrf -> csrf.disable()) // útil para API REST ou SPA frontend
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/", "/home", "/index", "/login", "/cadastro/**", 
-                    "/css/**", "/js/**", "/images/**", "/webjars/**"
-                ).permitAll() // Libera páginas públicas e recursos estáticos
-                .anyRequest().authenticated() // O resto exige login
+                    "/home", "/", "/index",
+                    "/css/**", "/js/**", "/images/**", "/webjars/**",
+                    "/login/cadastro",  // 🔓 Permite cadastro público via POST
+                    "/login/**"         // 🔓 Permite outras chamadas relacionadas ao login
+                ).permitAll()
+                .anyRequest().authenticated()
             )
             .formLogin(login -> login
-                .loginPage("/home") // Página de login customizada
-                .loginProcessingUrl("/login") // Endpoint de autenticação (POST)
-                .defaultSuccessUrl("/inicio", true) // Redireciona após login com sucesso
-                .failureUrl("/home?error=true") // Em caso de erro, volta ao login com ?error
+                .loginPage("/home")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/inicio", true)
+                .failureUrl("/home?error=true")
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/home") // Após logout, volta ao login
+                .logoutSuccessUrl("/home")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
@@ -53,18 +55,18 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService); // Nossa implementação
-        provider.setPasswordEncoder(passwordEncoder());     // BCrypt encoder
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Segurança com hash forte
+        return new BCryptPasswordEncoder(); // segurança
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager(); // Gerenciador de autenticação padrão
+        return config.getAuthenticationManager();
     }
 }
