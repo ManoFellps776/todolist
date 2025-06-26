@@ -10,5 +10,3 @@ services:
       - key: SPRING_DATASOURCE_PASSWORD
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
-    ports:
-      - 8080
