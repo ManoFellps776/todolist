@@ -21,5 +21,8 @@ WORKDIR /app
 # Copia o .jar compilado
 COPY --from=builder /app/target/*.jar app.jar
 
+# Expõe a porta usada pelo Spring Boot
+EXPOSE 8080
+
 # Comando de execução
 ENTRYPOINT ["java", "-jar", "app.jar"]

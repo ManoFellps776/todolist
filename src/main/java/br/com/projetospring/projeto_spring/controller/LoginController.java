@@ -26,39 +26,27 @@ public class LoginController {
 
     // ---------- CADASTRO ----------
    @PostMapping("/cadastro")
-public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
-    System.out.println("➡️ Recebido para cadastro: " + novoUsuario.getUsers() + ", " + novoUsuario.getEmail());
+    public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
+        if (novoUsuario.getUsers() == null || novoUsuario.getSenha() == null || novoUsuario.getEmail() == null) {
+            return ResponseEntity.badRequest().body("Campos obrigatórios não preenchidos.");
+        }
 
-    if (novoUsuario.getUsers() == null || novoUsuario.getSenha() == null || novoUsuario.getEmail() == null ||
-        novoUsuario.getUsers().isBlank() || novoUsuario.getSenha().isBlank() || novoUsuario.getEmail().isBlank()) {
-        System.out.println("⚠️ Dados inválidos");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Campos obrigatórios não preenchidos.");
-    }
+        if (usersRepository.findByUsers(novoUsuario.getUsers()) != null) {
+            return ResponseEntity.status(409).body("Usuário já existe.");
+        }
 
-    if (usersRepository.findByUsers(novoUsuario.getUsers()) != null) {
-        System.out.println("⚠️ Nome de usuário já existe");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Nome de usuário já existe.");
-    }
+        if (usersRepository.findByEmail(novoUsuario.getEmail()) != null) {
+            return ResponseEntity.status(409).body("E-mail já cadastrado.");
+        }
 
-    if (usersRepository.findByEmail(novoUsuario.getEmail()) != null) {
-        System.out.println("⚠️ E-mail já cadastrado");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("E-mail já está cadastrado.");
-    }
-
-    try {
         novoUsuario.setSenha(passwordEncoder.encode(novoUsuario.getSenha()));
         novoUsuario.setPlano("FREE");
 
-        Users salvo = usersRepository.save(novoUsuario);
-        System.out.println("✅ Usuário salvo com ID: " + salvo.getId());
+        usersRepository.save(novoUsuario);
 
         return ResponseEntity.ok("Usuário cadastrado com sucesso!");
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body("Erro interno ao salvar usuário: " + e.getMessage());
     }
-}
+
 
 
     // ---------- ATUALIZAR USUÁRIO ----------
