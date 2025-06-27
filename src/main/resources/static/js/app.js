@@ -364,7 +364,7 @@ async function carregarPacientesAnamnese() {
     });
   } catch (err) {
     console.error("Erro ao carregar pacientes:", err);
-    alert("Erro ao carregar lista de pacientes.");
+    
   }
 }
 function mostrarBotoesAnamnese() {
@@ -831,13 +831,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (id) {
     pacienteSelecionadoId = Number(id);
-    const response = await fetch(`/pacientes/${pacienteSelecionadoId}`);
-    if (response.ok) {
+    try {
+      const response = await fetch(`/pacientes/${pacienteSelecionadoId}`, {
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        const erroTexto = await response.text();
+        console.error("Erro ao buscar paciente:", erroTexto);
+        alert("Paciente não encontrado ou você não tem permissão.");
+        return;
+      }
+
       const paciente = await response.json();
       preencherFormulario(paciente);
       document.getElementById('selectPaciente').disabled = false;
-    } else {
-      alert("Paciente não encontrado ou você não tem permissão.");
+
+    } catch (err) {
+      console.error("Erro na requisição:", err);
+      alert("Erro ao buscar paciente.");
     }
   } else {
     pacienteSelecionadoId = null;
@@ -953,7 +965,7 @@ async function carregarPacientes() {
     }
   } catch (error) {
     console.error(error);
-    alert('Erro ao carregar lista de pacientes');
+    
   }
 }
 
