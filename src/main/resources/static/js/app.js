@@ -399,7 +399,11 @@ async function exibirAgendamentos() {
   if (!idPaciente) return;
 
   try {
-    const res = await fetch(`/agendamentos/paciente/`);
+    // ✅ Corrigido: adiciona o ID do paciente na URL
+    const res = await fetch(`/agendamentos/paciente/${idPaciente}`, {
+      credentials: "include"
+    });
+
     if (!res.ok) throw new Error("Erro ao buscar agendamentos");
 
     const agendamentos = await res.json();
@@ -435,6 +439,7 @@ async function exibirAgendamentos() {
 }
 
 
+
 async function preencherPaciente() {
   const id = document.getElementById("pacienteAnamnese").value;
   if (!id) return;
@@ -468,7 +473,6 @@ async function preencherPaciente() {
     console.error("Erro ao preencher dados do paciente:", err);
   }
 }
-
 async function exibirRegistrosAnamnese() {
   const container = document.getElementById("listaRegistros");
   container.innerHTML = "";
@@ -478,17 +482,25 @@ async function exibirRegistrosAnamnese() {
   if (!idPaciente) return;
 
   try {
-    const pacienteRes = await fetch(`/pacientes/`);
+    // ✅ Corrigido: agora busca apenas o paciente selecionado
+    const pacienteRes = await fetch(`/pacientes/${idPaciente}`, {
+      credentials: "include"
+    });
+
     if (!pacienteRes.ok) throw new Error("Erro ao buscar paciente");
 
     const paciente = await pacienteRes.json();
-    const cpf = paciente?.cpf?.replace(/\D/g, ""); // Remove tudo que não é número
+    const cpf = paciente?.cpf?.replace(/\D/g, ""); // Limpa o CPF
 
     if (!cpf) {
       container.innerHTML = "<p>Paciente sem CPF cadastrado.</p>";
       return;
     }
-    const res = await fetch(`/anamnese/paciente/${cpf}`);
+
+    // ✅ A requisição de anamnese não precisa mais de usuarioId
+    const res = await fetch(`/anamnese/paciente/${cpf}`, {
+      credentials: "include"
+    });
 
     if (!res.ok) throw new Error("Erro ao buscar anamneses");
 
@@ -559,7 +571,7 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
   }
 
   const data = {
-    nomeA: form.nomeA.value.trim(),
+    nomeA: form.nomeA.value?.trim(),
     cpfA: form.cpfA.value?.replace(/\D/g, ""),
     nascimentoA: form.nascimentoA.value,
     telefoneA: form.telefoneA.value,
@@ -571,18 +583,18 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
     pesoAtual: form.pesoAtual.value,
     pesoIdeal: form.pesoIdeal.value,
 
-    agua: form.agua.checked,
-    sono: form.sono.checked,
-    atividade: form.atividade.checked,
-    etilismo: form.etilismo.checked,
-    intestino: form.intestino.checked,
-    gestante: form.gestante.checked,
-    cirurgias: form.cirurgias.checked,
-    diabetes: form.diabetes.checked,
+    agua: form.agua?.checked || false,
+    sono: form.sono?.checked || false,
+    atividade: form.atividade?.checked || false,
+    etilismo: form.etilismo?.checked || false,
+    intestino: form.intestino?.checked || false,
+    gestante: form.gestante?.checked || false,
+    cirurgias: form.cirurgias?.checked || false,
+    diabetes: form.diabetes?.checked || false,
 
-    obs: form.obs.value,
+    obs: form.obs.value?.trim(),
 
-    paciente: { id: parseInt(pacienteId) } // Somente o paciente precisa ser enviado
+    paciente: { id: parseInt(pacienteId) }
   };
 
   try {
@@ -591,32 +603,33 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
       headers: {
         "Content-Type": "application/json"
       },
-      credentials: "include", // mantém a sessão do usuário logado
+      credentials: "include",
       body: JSON.stringify(data)
     });
 
-    if (res.ok) {
-      alert("✅ Anamnese salva com sucesso!");
-
-      form.reset();
-      document.getElementById("criarAnamnese").style.display = "none";
-      document.getElementById("registroAnamnese").style.display = "none";
-      document.getElementById("agendamentos").style.display = "none";
-      document.getElementById("botoesAcaoAnamnese").style.display = "flex";
-
-      document.getElementById("pacienteAnamnese").value = pacienteId;
-
-    } else {
+    if (!res.ok) {
       const erroTexto = await res.text();
       console.error("❌ Erro ao salvar:", erroTexto);
       alert("❌ Erro ao salvar anamnese:\n" + erroTexto);
+      return;
     }
+
+    alert("✅ Anamnese salva com sucesso!");
+    form.reset();
+
+    document.getElementById("criarAnamnese").style.display = "none";
+    document.getElementById("registroAnamnese").style.display = "none";
+    document.getElementById("agendamentos").style.display = "none";
+    document.getElementById("botoesAcaoAnamnese").style.display = "flex";
+
+    document.getElementById("pacienteAnamnese").value = pacienteId;
 
   } catch (err) {
     console.error("❌ Erro ao conectar:", err);
     alert("❌ Erro ao conectar ao servidor.");
   }
 });
+
 // Gerar PDF
 async function gerarPDF(id) {
   try {
@@ -1020,7 +1033,6 @@ async function salvarAlteracoes(event) {
 async function salvarPaciente(event) {
   event.preventDefault();
 
-
   const paciente = {
     nome: document.getElementById('nomeEd').value,
     cpf: document.getElementById('cpfCnpjEd').value,
@@ -1036,8 +1048,8 @@ async function salvarPaciente(event) {
     numeroRua: document.getElementById('numeroRuaEd').value,
     telefone: document.getElementById('telefoneEd').value,
     email: document.getElementById('emailEd').value,
-    descricao: document.getElementById('descricaoEd').value,
-    usuario: { id: usuarioId } // 🟢 Associa o paciente ao usuário logado
+    descricao: document.getElementById('descricaoEd').value
+    // ❌ Removido: usuario: { id: usuarioId }
   };
 
   const url = pacienteSelecionadoId 
@@ -1050,10 +1062,12 @@ async function salvarPaciente(event) {
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
+      credentials: "include", // ✅ necessário para manter a sessão
       body: JSON.stringify(paciente)
     });
 
     if (!res.ok) throw new Error('Erro ao salvar paciente');
+
     alert(pacienteSelecionadoId ? 'Paciente atualizado!' : 'Paciente criado!');
     document.getElementById('editForm').style.display = 'none';
     document.getElementById('selectPaciente').disabled = false;
