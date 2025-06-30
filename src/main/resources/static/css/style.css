@@ -70,6 +70,12 @@ body {
 .main.com-menu {
     margin-left: 260px;
 }
+/* Em telas menores, o menu não empurra o conteúdo */
+@media (max-width: 768px) {
+  .main.com-menu {
+    margin-left: 0;
+  }
+}
 
 .conteudo {
     display: none;

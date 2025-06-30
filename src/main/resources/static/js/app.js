@@ -114,16 +114,6 @@ function toggleMenu() {
     // 🟨 NOVO: salvar estado do menu
     localStorage.setItem("menuAberto", isActive ? "1" : "0");
 }
-//Sidebar Selecionar e fechar
-document.querySelectorAll('.sidebar ul li').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.remove('mostrar');
-  });
-});
-//Toogle Menu Selecionar e fechar
-document.getElementById('menu-toggle').addEventListener('click', () => {
-  document.querySelector('.sidebar').classList.toggle('mostrar');
-});
 
 document.addEventListener("DOMContentLoaded", function () {
   
@@ -270,7 +260,37 @@ function mostrar(id) {
     localStorage.setItem("abaAtiva", id);
   }
 }
+//Fechar Toggle e Sidebar
+document.querySelectorAll('.sidebar ul li').forEach(item => {
+  item.addEventListener('click', () => {
+    const sidebar = document.getElementById("sidebar");
+    const main = document.getElementById("main");
+    sidebar.classList.remove("mostrar");
+    main.classList.remove("com-menu");
+    localStorage.setItem("menuAberto", "0");
+  });
+});
 
+document.querySelectorAll('.sidebar ul li').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelector('.sidebar').classList.remove('mostrar');
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main");
+
+  if (localStorage.getItem("menuAberto") === "1") {
+    sidebar.classList.add("mostrar");
+    main.classList.add("com-menu");
+  }
+
+  const abaSalva = localStorage.getItem("abaAtiva");
+  mostrar(abaSalva || "admin");
+});
 
 // ✅ Corrigido: agora só alterna as seções já existentes
 function mostrarCadastro() {
