@@ -338,3 +338,35 @@ body {
     padding: 10px 20px;
   }
 }
+/* Adicione ao final do seu CSS */
+
+@media (max-width: 768px) {
+  .weekdays, #calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(50px, 1fr));
+    overflow-x: auto;
+  }
+
+  .day {
+    min-width: 50px;
+    height: 70px; /* menor altura para caber na tela */
+    font-size: 12px;
+    padding: 2px;
+  }
+
+  .calendar-container {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .weekdays, #calendar {
+    grid-template-columns: repeat(7, minmax(60px, 1fr));
+  }
+
+  .day {
+    min-width: 60px;
+    height: 70px;
+    font-size: 11px;
+  }
+}
