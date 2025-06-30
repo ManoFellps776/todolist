@@ -114,6 +114,16 @@ function toggleMenu() {
     // 🟨 NOVO: salvar estado do menu
     localStorage.setItem("menuAberto", isActive ? "1" : "0");
 }
+//Sidebar Selecionar e fechar
+document.querySelectorAll('.sidebar ul li').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelector('.sidebar').classList.remove('mostrar');
+  });
+});
+//Toogle Menu Selecionar e fechar
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.querySelector('.sidebar').classList.toggle('mostrar');
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   
@@ -261,27 +271,6 @@ function mostrar(id) {
   }
 }
 
-function toggleMenu() {
-  const sidebar = document.getElementById("sidebar");
-  const main = document.getElementById("main");
-  const isActive = sidebar.classList.toggle("mostrar");
-  main.classList.toggle("com-menu", isActive);
-  localStorage.setItem("menuAberto", isActive ? "1" : "0");
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  
-  const sidebar = document.getElementById("sidebar");
-  const main = document.getElementById("main");
-
-  if (localStorage.getItem("menuAberto") === "1") {
-    sidebar.classList.add("mostrar");
-    main.classList.add("com-menu");
-  }
-
-  const abaSalva = localStorage.getItem("abaAtiva");
-  mostrar(abaSalva || "admin");
-});
 
 // ✅ Corrigido: agora só alterna as seções já existentes
 function mostrarCadastro() {
