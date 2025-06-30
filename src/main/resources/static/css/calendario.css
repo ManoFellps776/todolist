@@ -13,18 +13,17 @@ body {
 
 .controls {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
-  align-items: center;
+  gap: 10px;
   justify-content: center;
-  margin-bottom: 15px;
+  align-items: center;
 }
 
 .controls select,
 .controls button {
   font-weight: bold;
-  padding: 6px 10px;
-  font-size: 14px;
+  flex: 1 1 auto; /* permite que os botões encolham ou expandam */
+  min-width: 80px;
 }
 
 .linha-selects,
@@ -338,20 +337,18 @@ body {
     padding: 10px 20px;
   }
 }
-/* Adicione ao final do seu CSS */
-
 @media (max-width: 768px) {
   .weekdays, #calendar {
     display: grid;
-    grid-template-columns: repeat(7, minmax(50px, 1fr));
+    grid-template-columns: repeat(7, minmax(45px, 1fr)); /* diminuiu de 50px para 45px */
     overflow-x: auto;
   }
 
   .day {
-    min-width: 50px;
-    height: 70px; /* menor altura para caber na tela */
-    font-size: 12px;
-    padding: 2px;
+    min-width: 45px; /* antes 50px */
+    height: 60px;    /* antes 70px */
+    font-size: 10px; /* menor para caber o número do dia e tarefas */
+    padding: 1px;
   }
 
   .calendar-container {
@@ -359,14 +356,15 @@ body {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 450px) {
   .weekdays, #calendar {
-    grid-template-columns: repeat(7, minmax(60px, 1fr));
+    grid-template-columns: repeat(7, minmax(40px, 1fr)); /* ainda menor para celulares pequenos */
   }
 
   .day {
-    min-width: 60px;
-    height: 70px;
-    font-size: 11px;
+    min-width: 40px; /* antes 60px */
+    height: 55px;    /* antes 70px */
+    font-size: 9px;  /* texto menor */
+    padding: 1px;
   }
 }
