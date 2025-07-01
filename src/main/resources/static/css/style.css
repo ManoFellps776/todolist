@@ -357,7 +357,7 @@ h3 {
 /* 🔥 Container do user-menu */
 .user-menu {
   position: absolute; /* mantém no topo */
-  top: 10px;          /* ajuste vertical conforme seu header/nav */
+  top: 0px;          /* ajuste vertical conforme seu header/nav */
   right: 20px;        /* distância da borda direita */
   display: flex;
   align-items: center;
@@ -407,7 +407,7 @@ h3 {
 /* 🔥 Ajustes para mobile */
 @media (max-width: 768px) {
   .user-menu {
-    top: 10px;
+    top: 5px;
     right: 10px;
   }
   .user-avatar {
