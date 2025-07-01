@@ -242,12 +242,6 @@ localStorage.removeItem("abaAtiva");
   dropdown.classList.toggle('show');
 }
 
-// Fecha o dropdown após clicar em um item
-function closeUserDropdown() {
-  const dropdown = document.getElementById('userDropdown');
-  dropdown.classList.remove('show');
-}
-
 // Fecha o dropdown ao clicar fora dele
 window.addEventListener('click', function(event) {
   if (!event.target.matches('.user-avatar')) {
