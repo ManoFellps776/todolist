@@ -354,23 +354,31 @@ h3 {
     flex-direction: column;
   }
 }
-
+/* 🔥 Container do user-menu */
 .user-menu {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  z-index: 999;
+  position: absolute; /* mantém no topo */
+  top: 10px;          /* ajuste vertical conforme seu header/nav */
+  right: 20px;        /* distância da borda direita */
+  display: flex;
+  align-items: center;
+  z-index: 1000;
 }
 
+/* 🔥 Avatar do usuário */
 .user-avatar {
-  width: 35px;
-  height: 35px;
+  width: 40px;        /* tamanho fixo responsivo */
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
+  object-fit: cover;  /* garante que a imagem preencha corretamente sem distorcer */
+  border: 2px solid #ccc; /* opcional: adiciona borda */
 }
+
+/* 🔥 Dropdown do usuário */
 .user-dropdown {
   display: none;
   position: absolute;
+  top: 50px;          /* ajusta a posição logo abaixo do avatar */
   right: 0;
   background-color: white;
   border: 1px solid #ccc;
@@ -378,13 +386,9 @@ h3 {
   margin-top: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   min-width: 150px;
-  z-index: 999;
 }
 
-.user-dropdown.show {
-  display: block;
-}
-
+/* 🔥 Links dentro do dropdown */
 .user-dropdown a {
   display: block;
   padding: 10px;
@@ -396,11 +400,17 @@ h3 {
   background-color: #f0f0f0;
 }
 
-.user-menu {
-  position: relative;
-  display: inline-block;
+/* 🔥 Ajustes para mobile */
+@media (max-width: 768px) {
+  .user-menu {
+    top: 10px;
+    right: 10px;
+  }
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+  }
 }
-
 .btnfecharcadastro{
  
   background: transparent;
