@@ -238,9 +238,19 @@ localStorage.removeItem("abaAtiva");
   };
 
   function toggleUserDropdown() {
+  const dropdown = document.getElementById('userDropdown');
+  if (!dropdown) return;
+  dropdown.classList.toggle('show');
+}
+
+// Fechar dropdown ao clicar em qualquer opção
+document.querySelectorAll('#userDropdown a').forEach(item => {
+  item.addEventListener('click', () => {
     const dropdown = document.getElementById('userDropdown');
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-  }
+    dropdown.classList.remove('show');
+  });
+});
+
 
  function sairLogin() {
   const confirmar = confirm("Deseja realmente sair?");

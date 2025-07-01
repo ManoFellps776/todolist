@@ -55,6 +55,8 @@
   font-weight: bold;
   cursor: pointer;
   width: 100%;
+  padding: 12px; /* mantido o padding confortável */
+  border-radius: 5px;
 }
 #cadastrarPaciente button:hover {
   background-color: #6d3585;
@@ -89,4 +91,32 @@
   align-items: center;
   font-size: 14px;
   white-space: nowrap;
+}
+/* 🔥 NOVO - container para os botões de ação */
+#cadastrarPaciente .botoes-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center; /* centraliza em telas menores */
+  margin-top: 20px;
+}
+
+/* 🔥 NOVO - estilização específica dos botões dentro do container */
+#cadastrarPaciente .botoes-acoes button {
+  flex: 1 1 150px; /* base 150px, cresce até preencher */
+  max-width: 200px; /* limite máximo */
+  min-width: 100px; /* limite mínimo para mobile */
+  padding: 10px;
+}
+
+/* 🔥 RESPONSIVIDADE para telas muito pequenas */
+@media (max-width: 480px) {
+  #cadastrarPaciente .botoes-acoes {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  #cadastrarPaciente .botoes-acoes button {
+    max-width: 100%;
+  }
 }
