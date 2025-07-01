@@ -239,17 +239,25 @@ localStorage.removeItem("abaAtiva");
 
   function toggleUserDropdown() {
   const dropdown = document.getElementById('userDropdown');
-  if (!dropdown) return;
   dropdown.classList.toggle('show');
 }
 
-// Fechar dropdown ao clicar em qualquer opção
-document.querySelectorAll('#userDropdown a').forEach(item => {
-  item.addEventListener('click', () => {
+// Fecha o dropdown após clicar em um item
+function closeUserDropdown() {
+  const dropdown = document.getElementById('userDropdown');
+  dropdown.classList.remove('show');
+}
+
+// Fecha o dropdown ao clicar fora dele
+window.addEventListener('click', function(event) {
+  if (!event.target.matches('.user-avatar')) {
     const dropdown = document.getElementById('userDropdown');
-    dropdown.classList.remove('show');
-  });
+    if (dropdown.classList.contains('show')) {
+      dropdown.classList.remove('show');
+    }
+  }
 });
+
 
 
  function sairLogin() {

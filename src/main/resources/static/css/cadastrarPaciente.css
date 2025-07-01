@@ -120,3 +120,53 @@
     max-width: 100%;
   }
 }
+/* 🔥 NOVO: Ajuste geral para inputs em telas pequenas */
+@media (max-width: 480px) {
+  #cadastrarPaciente form input,
+  #cadastrarPaciente form select,
+  #cadastrarPaciente form textarea,
+  #cadastrarPaciente form button {
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px; /* diminui o texto se necessário */
+  }
+
+  #cadastrarPaciente .left-column,
+  #cadastrarPaciente .right-column {
+    min-width: 100%;
+  }
+}
+
+/* 🔥 NOVO: Responsividade para tabelas */
+#cadastrarPaciente table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+}
+
+#cadastrarPaciente table td,
+#cadastrarPaciente table th {
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+  white-space: nowrap; /* impede quebra de texto indesejada */
+}
+
+#cadastrarPaciente table th {
+  background-color: #8e44ad;
+  color: white;
+}
+
+#cadastrarPaciente table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* 🔥 NOVO: Scroll horizontal para tabelas em telas pequenas */
+@media (max-width: 768px) {
+  #cadastrarPaciente table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

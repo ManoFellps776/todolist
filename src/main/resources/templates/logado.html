@@ -17,9 +17,9 @@
         <div class="user-menu">
   <img id="userAvatar" src="" alt="Usuário" class="user-avatar" onclick="toggleUserDropdown()">
   <div class="user-dropdown" id="userDropdown">
-    <a onclick="mostrar('perfilUser')">Ver Perfil</a>
-    <a onclick="mostrar('planoAssinatura')">Planos/Assinatura</a>
-    <a href="#" onclick="sairLogin()">Logoff</a>
+    <a href="#" onclick="mostrar('perfilUser'); closeUserDropdown()">Ver Perfil</a>
+    <a href="#" onclick="mostrar('planoAssinatura'); closeUserDropdown()">Planos/Assinatura</a>
+    <a href="#" onclick="sairLogin(); closeUserDropdown()">Logoff</a>
   </div>
 </div>
 </div>
@@ -297,7 +297,7 @@
     <div class="botoes-acoes">
       <button id="btnEditar">Editar</button>
     <button id="btnListar">Listar Pacientes</button>
-    <button id="btnNovoPaciente" onclick="mostrar('cadastrarPaciente')">Criar Novo Paciente</button>
+    <button id="btnNovoPaciente" onclick="mostrar('cadastrarPaciente')">Novo Paciente</button>
 
     </div>
 <div id="listaPacientes" class="lista-scroll lista-personalizada" style="display: none;"></div>
