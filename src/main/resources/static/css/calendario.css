@@ -22,8 +22,30 @@ body {
 .controls select,
 .controls button {
   font-weight: bold;
-  flex: 1 1 auto; /* permite que os botões encolham ou expandam */
-  min-width: 80px;
+  padding: 6px 10px;
+  font-size: 14px;
+  max-width: 180px;  /* 🔥 limita a largura */
+  width: auto;      /* 🔥 permite ajustar ao conteúdo */
+}
+
+/* 🔥 Ajuste para os botões de navegação ficarem lado a lado menores */
+.controls button {
+  display: inline-block;
+  width: 80px;       /* ajuste conforme preferir */
+}
+
+/* 🔥 Responsividade específica para telas menores */
+@media (max-width: 480px) {
+  .controls select,
+  .controls button {
+    font-size: 12px;
+    padding: 5px 8px;
+    max-width: 140px;
+  }
+
+  .controls button {
+    width: 70px; /* reduz ainda mais em telas muito pequenas */
+  }
 }
 
 .linha-selects,
