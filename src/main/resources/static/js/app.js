@@ -928,31 +928,48 @@ window.addEventListener('DOMContentLoaded', async () => {
       };
 
       const btnDeletar = document.createElement('button');
-      btnDeletar.textContent = 'Deletar';
-      btnDeletar.className = 'btn-deletar';
-      btnDeletar.onclick = async () => {
-        const confirmar = confirm(`Deseja realmente deletar o paciente "${paciente.nome}"?`);
-        if (!confirmar) return;
-        try {
-          const resp = await fetch(`/pacientes/${paciente.id}`, {
-            method: 'DELETE'
-          });
-          if (!resp.ok) throw new Error('Erro ao deletar');
-          alert('Paciente deletado com sucesso!');
-          await carregarPacientes();
-          listaContainer.style.display = 'none';
-          botaoListar.textContent = 'Listar Pacientes';
-          mostrandoLista = false;
-        } catch (err) {
-          console.error(err);
-          alert('Erro ao deletar paciente.');
-        }
-      };
+btnDeletar.textContent = 'Deletar';
+btnDeletar.className = 'btn-deletar';
 
-      item.appendChild(nome);
-      item.appendChild(btnEditar);
-      item.appendChild(btnDeletar);
-      listaContainer.appendChild(item);
+btnDeletar.onclick = async () => {
+  const confirmar = confirm(`❗ Deseja realmente deletar o paciente "${paciente.nome}"?`);
+  if (!confirmar) return;
+
+  try {
+    const resp = await fetch(`/pacientes/${paciente.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // ✅ mantém sessão se usar Spring Security
+    });
+
+    if (resp.ok) {
+      alert(`✅ Paciente "${paciente.nome}" deletado com sucesso.`);
+      await carregarPacientes();
+
+      // ✅ Atualiza a interface após deletar
+      listaContainer.style.display = 'none';
+      botaoListar.textContent = 'Listar Pacientes';
+      mostrandoLista = false;
+    } else {
+      // 🔴 Se a API retornar erro, captura mensagem detalhada
+      const erro = await resp.text();
+      console.error('❌ Erro ao deletar paciente:', erro);
+      alert('❌ Erro ao deletar paciente: ' + erro);
+    }
+
+  } catch (err) {
+    console.error('❌ Erro na requisição DELETE:', err);
+    alert('❌ Erro ao conectar ao servidor ao deletar paciente.');
+  }
+};
+
+// ✅ Adiciona o botão ao item
+item.appendChild(nome);
+item.appendChild(btnEditar);
+item.appendChild(btnDeletar);
+listaContainer.appendChild(item);
     });
 
     listaContainer.style.display = 'block';
