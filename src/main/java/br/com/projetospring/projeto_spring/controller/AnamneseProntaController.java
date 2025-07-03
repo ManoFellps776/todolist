@@ -75,30 +75,33 @@ public class AnamneseProntaController {
 
     // ✅ Deletar anamnese enviando para lixeira antes
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarAnamnese(@PathVariable Long id) {
-        try {
-            AnamnesePronta a = repository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Anamnese não encontrada"));
+public ResponseEntity<Void> deletarAnamnese(@PathVariable Long id) {
+    try {
+        AnamnesePronta a = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Anamnese não encontrada"));
 
-            // 🔷 Serializa anamnese
-            String json = objectMapper.writeValueAsString(a);
+        // 🔷 Serializa a anamnese em JSON
+        String json = objectMapper.writeValueAsString(a);
 
-            // 🔷 Cria objeto LixeiraPacienteCompleta preenchendo apenas o campo de anamneses
-            LixeiraPacienteCompleta l = new LixeiraPacienteCompleta();
-            l.setAnamneses(json);
-            l.setPacienteOriginalId(null); // Opcional: preencha se quiser referenciar paciente
-            l.setDadosPaciente(null);
-            l.setAgendamentos(null);
+        // 🔷 Cria objeto LixeiraPacienteCompleta preenchendo apenas o campo de anamneses
+        LixeiraPacienteCompleta l = new LixeiraPacienteCompleta();
+        l.setPacienteOriginalId(null); // Caso deseje referenciar algum paciente no futuro
+        l.setDadosPaciente(null);
+        l.setAgendamentos(null);
+        l.setAnamneses(json);
+        l.setDataExclusao(java.time.LocalDateTime.now());
 
-            lixeiraRepository.save(l);
+        // 🔷 Salva na lixeira
+        lixeiraRepository.save(l);
 
-            // 🔷 Deleta a anamnese original
-            repository.deleteById(id);
+        // 🔷 Deleta a anamnese original
+        repository.delete(a);
 
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
+        return ResponseEntity.noContent().build();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).build();
     }
+}
+
 }

@@ -68,17 +68,31 @@ public class PacienteController {
         Paciente atualizado = pacienteService.update(id, paciente, usuario);
         return ResponseEntity.ok(atualizado);
     }
-
-    /* ------------------  DELETE  ------------------ */
-    @DeleteMapping("/{id}")
+/* ------------------  DELETE  ------------------ */
+@DeleteMapping("/{id}")
 public ResponseEntity<?> deletar(@PathVariable Long id, Principal principal) {
-    Users usuario = getUsuario(principal);
     try {
-        pacienteService.delete(id, usuario); // ✅ Chama o service que já envia para lixeira
+        // 🔷 Obtém o usuário autenticado
+        Users usuario = getUsuario(principal);
+
+        // 🔷 Chama o service que envia o paciente (e dados relacionados) para a lixeira antes de excluir
+        pacienteService.delete(id, usuario);
+
+        // 🔷 Retorna resposta de sucesso sem conteúdo (204)
         return ResponseEntity.noContent().build();
+
     } catch (RuntimeException e) {
-        return ResponseEntity.status(500).body("Erro ao deletar paciente: " + e.getMessage());
+        // 🔴 Lança erros de validação ou regra de negócio
+        e.printStackTrace();
+        return ResponseEntity.badRequest().body("Erro ao deletar paciente: " + e.getMessage());
+
+    } catch (Exception e) {
+        // 🔴 Lança erros inesperados do servidor
+        e.printStackTrace();
+        return ResponseEntity.status(500).body("Erro interno ao deletar paciente: " + e.getMessage());
     }
 }
+
+
 
 }

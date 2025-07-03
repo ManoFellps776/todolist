@@ -53,21 +53,25 @@ public ResponseEntity<Agendamento> atualizar(@PathVariable Long id,
     return ResponseEntity.ok(agendamentoService.atualizar(id, dto, userDetails.getId()));
 }
 
-    // 🔸 Deletar agendamento por ID
-    @DeleteMapping("/{id}")
+   // 🔸 Deletar agendamento por ID
+@DeleteMapping("/{id}")
 public ResponseEntity<Void> deletar(@PathVariable Long id) {
     try {
-        // 🔹 Busca o agendamento
+        // 🔹 Busca o agendamento no banco
         Agendamento agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
 
         // 🔹 Serializa os dados do agendamento em JSON
         String dadosAgendamentoJson = objectMapper.writeValueAsString(agendamento);
 
-        // 🔹 Cria registro na lixeira
+        // 🔹 Cria registro na lixeira preenchendo apenas agendamentos
         LixeiraPacienteCompleta lixo = new LixeiraPacienteCompleta();
-        lixo.setAgendamentos(dadosAgendamentoJson); // Assumindo que a coluna "agendamentos" existe
-        lixo.setPacienteOriginalId(agendamento.getPaciente() != null ? agendamento.getPaciente().getId() : null);
+        lixo.setAgendamentos(dadosAgendamentoJson); // ✅ Assumindo coluna "agendamentos" na lixeira
+        lixo.setPacienteOriginalId(
+                agendamento.getPaciente() != null ? agendamento.getPaciente().getId() : null
+        );
+        lixo.setDadosPaciente(null); // 🔹 Opcional: mantém outros campos null
+        lixo.setAnamneses(null);
         lixo.setDataExclusao(LocalDateTime.now());
 
         // 🔹 Salva na lixeira
@@ -83,6 +87,7 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
         return ResponseEntity.status(500).build();
     }
 }
+
 
 
     // 🔸 Buscar agendamentos de um determinado mês (filtrando pelo usuário logado)
