@@ -72,27 +72,27 @@ public class PacienteController {
 @DeleteMapping("/{id}")
 public ResponseEntity<?> deletar(@PathVariable Long id, Principal principal) {
     try {
-        // 🔷 Obtém o usuário autenticado
+        // ✅ Obtém o usuário autenticado
         Users usuario = getUsuario(principal);
 
-        // 🔷 Chama o service que envia o paciente (e dados relacionados) para a lixeira antes de excluir
+        // ✅ Chama o service que envia o paciente (e dados relacionados) para a lixeira antes de excluir
         pacienteService.delete(id, usuario);
 
-        // 🔷 Retorna resposta de sucesso sem conteúdo (204)
+        // ✅ Retorna resposta de sucesso sem conteúdo (204)
         return ResponseEntity.noContent().build();
 
     } catch (RuntimeException e) {
-        // 🔴 Lança erros de validação ou regra de negócio
+        // 🔴 Erros de regra de negócio ou validação (ex: paciente não encontrado ou acesso negado)
+        System.err.println("Erro ao deletar paciente: " + e.getMessage());
         e.printStackTrace();
         return ResponseEntity.badRequest().body("Erro ao deletar paciente: " + e.getMessage());
 
     } catch (Exception e) {
-        // 🔴 Lança erros inesperados do servidor
+        // 🔴 Erros inesperados (ex: falha ao serializar para lixeira, erro no banco)
+        System.err.println("Erro interno ao deletar paciente: " + e.getMessage());
         e.printStackTrace();
         return ResponseEntity.status(500).body("Erro interno ao deletar paciente: " + e.getMessage());
     }
 }
-
-
 
 }

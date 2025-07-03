@@ -78,42 +78,53 @@ public class PacienteService {
         return repo.save(p);
     }
 
-    /* --------------------------------  DELETE  ------------------------------- */
-    @Transactional
-    public void delete(Long id, Users usuario) {
-        Paciente paciente = buscarPorIdEUsuario(id, usuario);
+   /* --------------------------------  DELETE  ------------------------------- */
+@Transactional
+public void delete(Long id, Users usuario) {
+    // ✅ Valida se o paciente pertence ao usuário logado
+    Paciente paciente = buscarPorIdEUsuario(id, usuario);
 
-        try {
-            // 🔷 Serializa dados do paciente
-            String dadosPacienteJson = objectMapper.writeValueAsString(paciente);
+    try {
+        // 🔷 Serializa dados do paciente
+        String dadosPacienteJson = objectMapper.writeValueAsString(paciente);
 
-            // 🔷 Busca e serializa anamneses
-            List<AnamnesePronta> anamneses = anamneseRepo.findByPacienteId(paciente.getId());
-            String anamnesesJson = objectMapper.writeValueAsString(anamneses);
+        // 🔷 Busca e serializa anamneses
+        List<AnamnesePronta> anamneses = anamneseRepo.findByPacienteId(paciente.getId());
+        String anamnesesJson = objectMapper.writeValueAsString(anamneses);
 
-            // 🔷 Busca e serializa agendamentos
-            List<Agendamento> agendamentos = agendamentoRepo.findByPacienteId(paciente.getId());
-            String agendamentosJson = objectMapper.writeValueAsString(agendamentos);
+        // 🔷 Busca e serializa agendamentos
+        List<Agendamento> agendamentos = agendamentoRepo.findByPacienteId(paciente.getId());
+        String agendamentosJson = objectMapper.writeValueAsString(agendamentos);
 
-            // 🔷 Cria registro na lixeira
-            LixeiraPacienteCompleta lixo = new LixeiraPacienteCompleta();
-            lixo.setPacienteOriginalId(paciente.getId());
-            lixo.setDadosPaciente(dadosPacienteJson);
-            lixo.setAnamneses(anamnesesJson);
-            lixo.setAgendamentos(agendamentosJson);
-            lixo.setDataExclusao(java.time.LocalDateTime.now());
+        // 🔷 Cria registro na lixeira
+        LixeiraPacienteCompleta lixo = new LixeiraPacienteCompleta();
+        lixo.setPacienteOriginalId(paciente.getId());
+        lixo.setDadosPaciente(dadosPacienteJson);
+        lixo.setAnamneses(anamnesesJson);
+        lixo.setAgendamentos(agendamentosJson);
+        lixo.setDataExclusao(java.time.LocalDateTime.now());
 
-            lixeiraRepo.save(lixo);
+        // ✅ Salva na lixeira antes de deletar
+        lixeiraRepo.save(lixo);
 
-            // 🔷 Deleta agendamentos e anamneses antes de deletar paciente
+        // ✅ Deleta agendamentos antes de deletar o paciente
+        if (!agendamentos.isEmpty()) {
             agendamentoRepo.deleteAll(agendamentos);
-            anamneseRepo.deleteAll(anamneses);
-
-            // 🔷 Finalmente deleta paciente
-            repo.delete(paciente);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao enviar paciente para lixeira: " + e.getMessage());
         }
+
+        // ✅ Deleta anamneses antes de deletar o paciente
+        if (!anamneses.isEmpty()) {
+            anamneseRepo.deleteAll(anamneses);
+        }
+
+        // ✅ Finalmente deleta paciente
+        repo.delete(paciente);
+
+        System.out.println("✅ Paciente ID " + id + " enviado para lixeira e deletado com sucesso.");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Erro ao enviar paciente para lixeira: " + e.getMessage());
     }
+}
 }
