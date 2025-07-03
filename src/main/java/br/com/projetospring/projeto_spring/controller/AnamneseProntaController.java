@@ -1,8 +1,10 @@
 package br.com.projetospring.projeto_spring.controller;
 
 import br.com.projetospring.projeto_spring.entity.AnamnesePronta;
+import br.com.projetospring.projeto_spring.entity.Paciente;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.AnamneseProntaRepository;
+import br.com.projetospring.projeto_spring.repository.PacienteRepository;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,24 +25,28 @@ public class AnamneseProntaController {
 
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private PacienteRepository pacienteRepository;
+
 
     // ✅ Salvar nova anamnese vinculada ao usuário logado
     @PostMapping
 public ResponseEntity<AnamnesePronta> salvar(
-    @RequestBody AnamnesePronta anamnese,
-    Principal principal
+    @RequestBody AnamnesePronta anamnese
 ) {
     if (anamnese.getCpfA() != null) {
         anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
     }
 
-    String nomeUsuario = principal.getName();
-    Users usuario = usersRepository.findByUsers(nomeUsuario);
-    if (usuario == null) {
-        return ResponseEntity.status(401).build();
+    if (anamnese.getPaciente() == null || anamnese.getPaciente().getId() == null) {
+        return ResponseEntity.badRequest().build();
     }
 
-    anamnese.setUsuario(usuario);
+    // Se quiser, valide se o paciente existe no banco
+    Paciente paciente = pacienteRepository.findById(anamnese.getPaciente().getId())
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+
+    anamnese.setPaciente(paciente);
     return ResponseEntity.ok(repository.save(anamnese));
 }
 

@@ -45,10 +45,11 @@ public class AnamnesePronta {
     @Column(columnDefinition = "TEXT")
     private String obs;
 
+
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonIgnoreProperties({"senha", "pacientes", "agendamentos", "anamneses"})
-    private Users usuario;
+    @JoinColumn(name = "paciente_id", nullable = false)
+    @JsonIgnoreProperties({"usuario", "anamneses", "agendamentos"})
+    private Paciente paciente;
 
     @CreationTimestamp
     private LocalDateTime dataCriacao;

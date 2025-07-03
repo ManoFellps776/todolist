@@ -71,9 +71,14 @@ public class PacienteController {
 
     /* ------------------  DELETE  ------------------ */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id, Principal principal) {
-        Users usuario = getUsuario(principal);
-        pacienteService.delete(id, usuario);
+public ResponseEntity<?> deletar(@PathVariable Long id, Principal principal) {
+    Users usuario = getUsuario(principal);
+    try {
+        pacienteService.delete(id, usuario); // ✅ Chama o service que já envia para lixeira
         return ResponseEntity.noContent().build();
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(500).body("Erro ao deletar paciente: " + e.getMessage());
     }
+}
+
 }
