@@ -2,7 +2,9 @@ package br.com.projetospring.projeto_spring.controller;
 
 import br.com.projetospring.projeto_spring.entity.Agendamento;
 import br.com.projetospring.projeto_spring.entity.AgendamentoDTO;
+import br.com.projetospring.projeto_spring.entity.LixeiraPacienteCompleta;
 import br.com.projetospring.projeto_spring.repository.AgendamentoRepository;
+import br.com.projetospring.projeto_spring.repository.LixeiraPacienteCompletaRepository;
 import br.com.projetospring.projeto_spring.security.UsersDetails;
 import br.com.projetospring.projeto_spring.service.AgendamentoService;
 
@@ -11,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,6 +32,11 @@ public class AgendamentoController {
 
     @Autowired
     private AgendamentoRepository agendamentoRepository;
+    @Autowired
+private ObjectMapper objectMapper;
+
+@Autowired
+private LixeiraPacienteCompletaRepository lixeiraPacienteCompletaRepository;
 
     // 🔸 Criar novo agendamento
     @PostMapping
@@ -45,10 +55,35 @@ public ResponseEntity<Agendamento> atualizar(@PathVariable Long id,
 
     // 🔸 Deletar agendamento por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        agendamentoService.deletar(id);
+public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    try {
+        // 🔹 Busca o agendamento
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+
+        // 🔹 Serializa os dados do agendamento em JSON
+        String dadosAgendamentoJson = objectMapper.writeValueAsString(agendamento);
+
+        // 🔹 Cria registro na lixeira
+        LixeiraPacienteCompleta lixo = new LixeiraPacienteCompleta();
+        lixo.setAgendamentos(dadosAgendamentoJson); // Assumindo que a coluna "agendamentos" existe
+        lixo.setPacienteOriginalId(agendamento.getPaciente() != null ? agendamento.getPaciente().getId() : null);
+        lixo.setDataExclusao(LocalDateTime.now());
+
+        // 🔹 Salva na lixeira
+        lixeiraPacienteCompletaRepository.save(lixo);
+
+        // 🔹 Deleta o agendamento original
+        agendamentoRepository.deleteById(id);
+
         return ResponseEntity.noContent().build();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).build();
     }
+}
+
 
     // 🔸 Buscar agendamentos de um determinado mês (filtrando pelo usuário logado)
     @GetMapping("/mes/{anoMes}")

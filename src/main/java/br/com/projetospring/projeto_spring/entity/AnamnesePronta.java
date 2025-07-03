@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "anamneseProntas")
 public class AnamnesePronta {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,13 +45,16 @@ public class AnamnesePronta {
     @Column(columnDefinition = "TEXT")
     private String obs;
 
-
     @ManyToOne
-    @JoinColumn(name = "paciente_id", nullable = false)
-    @JsonIgnoreProperties({"usuario", "anamneses", "agendamentos"})
-    private Paciente paciente;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnoreProperties({"senha", "pacientes", "agendamentos", "anamneses"})
+    private Users usuario;
 
     @CreationTimestamp
     private LocalDateTime dataCriacao;
-    
+
+    // 🔷 Se quiser vincular ao paciente
+    // @ManyToOne
+    // @JoinColumn(name = "paciente_id")
+    // private Paciente paciente;
 }

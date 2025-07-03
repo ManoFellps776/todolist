@@ -16,10 +16,11 @@ public class LixeiraPacienteCompletaController {
     @Autowired
     private LixeiraPacienteCompletaRepository repo;
 
-    // ✅ Listar tudo na lixeira
+    // ✅ Listar todos os registros da lixeira
     @GetMapping
-    public List<LixeiraPacienteCompleta> listarTodos() {
-        return repo.findAll();
+    public ResponseEntity<List<LixeiraPacienteCompleta>> listarTodos() {
+        List<LixeiraPacienteCompleta> lista = repo.findAll();
+        return ResponseEntity.ok(lista);
     }
 
     // ✅ Buscar um item específico por ID
@@ -41,7 +42,7 @@ public class LixeiraPacienteCompletaController {
         }
     }
 
-    // ✅ Deletar toda a lixeira (use com cuidado)
+    // ✅ Deletar toda a lixeira (⚠️ uso com cautela)
     @DeleteMapping
     public ResponseEntity<Void> deletarTudo() {
         repo.deleteAll();
