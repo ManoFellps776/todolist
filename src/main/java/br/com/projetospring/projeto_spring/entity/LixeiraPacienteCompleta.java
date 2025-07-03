@@ -12,13 +12,24 @@ public class LixeiraPacienteCompleta {
     private Long id;
 
     private Long pacienteOriginalId;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String dadosPaciente;     // JSON com dados do paciente
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String anamneses;         // JSON com todas anamneses
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String agendamentos;      // JSON com todos agendamentos
 
     private LocalDateTime dataExclusao;
 
-    public LixeiraPacienteCompleta() {}
+    public LixeiraPacienteCompleta() {
+        this.dataExclusao = LocalDateTime.now();
+    }
 
     public LixeiraPacienteCompleta(String dadosPaciente, String anamneses, String agendamentos, Long pacienteOriginalId) {
         this.pacienteOriginalId = pacienteOriginalId;
@@ -27,6 +38,8 @@ public class LixeiraPacienteCompleta {
         this.agendamentos = agendamentos;
         this.dataExclusao = LocalDateTime.now();
     }
+
+    // Getters e setters
 
     public Long getId() {
         return id;
@@ -75,6 +88,4 @@ public class LixeiraPacienteCompleta {
     public void setDataExclusao(LocalDateTime dataExclusao) {
         this.dataExclusao = dataExclusao;
     }
-
-    // getters e setters omitidos por brevidade
 }
