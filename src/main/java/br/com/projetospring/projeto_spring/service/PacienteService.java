@@ -1,10 +1,12 @@
 package br.com.projetospring.projeto_spring.service;
 
-import br.com.projetospring.projeto_spring.entity.Paciente;
-import br.com.projetospring.projeto_spring.entity.Users;
-import br.com.projetospring.projeto_spring.repository.PacienteRepository;
+import br.com.projetospring.projeto_spring.entity.*;
+import br.com.projetospring.projeto_spring.repository.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +14,20 @@ import java.util.List;
 @Service
 public class PacienteService {
 
-    private final PacienteRepository repo;
+    @Autowired
+    private PacienteRepository repo;
 
-    public PacienteService(PacienteRepository repo) {
-        this.repo = repo;
-    }
+    @Autowired
+    private AgendamentoRepository agendamentoRepo;
+
+    @Autowired
+    private AnamneseProntaRepository anamneseRepo;
+
+    @Autowired
+    private LixeiraPacienteCompletaRepository lixeiraRepo;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /* --------------------------------  CREATE  ------------------------------- */
     @Transactional
@@ -45,7 +56,8 @@ public class PacienteService {
     /* --------------------------------  UPDATE  ------------------------------- */
     @Transactional
     public Paciente update(Long id, Paciente dados, Users usuario) {
-        Paciente p = buscarPorIdEUsuario(id, usuario);     // garante que é do usuário
+        Paciente p = buscarPorIdEUsuario(id, usuario); // garante que é do usuário
+
         /* copia campos editáveis */
         p.setNome(dados.getNome());
         p.setCpf(dados.getCpf());
@@ -69,7 +81,39 @@ public class PacienteService {
     /* --------------------------------  DELETE  ------------------------------- */
     @Transactional
     public void delete(Long id, Users usuario) {
-        Paciente p = buscarPorIdEUsuario(id, usuario);     // valida dono
-        repo.delete(p);
+        Paciente paciente = buscarPorIdEUsuario(id, usuario);
+
+        try {
+            // 🔷 Serializa dados do paciente
+            String dadosPacienteJson = objectMapper.writeValueAsString(paciente);
+
+            // 🔷 Busca e serializa anamneses
+            List<AnamnesePronta> anamneses = anamneseRepo.findByPacienteId(paciente.getId());
+            String anamnesesJson = objectMapper.writeValueAsString(anamneses);
+
+            // 🔷 Busca e serializa agendamentos
+            List<Agendamento> agendamentos = agendamentoRepo.findByPacienteId(paciente.getId());
+            String agendamentosJson = objectMapper.writeValueAsString(agendamentos);
+
+            // 🔷 Cria registro na lixeira
+            LixeiraPacienteCompleta lixo = new LixeiraPacienteCompleta();
+            lixo.setPacienteOriginalId(paciente.getId());
+            lixo.setDadosPaciente(dadosPacienteJson);
+            lixo.setAnamneses(anamnesesJson);
+            lixo.setAgendamentos(agendamentosJson);
+            lixo.setDataExclusao(java.time.LocalDateTime.now());
+
+            lixeiraRepo.save(lixo);
+
+            // 🔷 Deleta agendamentos e anamneses antes de deletar paciente
+            agendamentoRepo.deleteAll(agendamentos);
+            anamneseRepo.deleteAll(anamneses);
+
+            // 🔷 Finalmente deleta paciente
+            repo.delete(paciente);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao enviar paciente para lixeira: " + e.getMessage());
+        }
     }
 }

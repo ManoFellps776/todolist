@@ -50,11 +50,12 @@ public class AnamnesePronta {
     @JsonIgnoreProperties({"senha", "pacientes", "agendamentos", "anamneses"})
     private Users usuario;
 
+    @ManyToOne
+    @JoinColumn(name = "paciente_id", nullable = false) // 🔥 Torna obrigatório o vínculo com paciente
+    @JsonIgnoreProperties({"usuario", "agendamentos", "anamneses"}) // ajuste conforme sua entidade Paciente
+    private Paciente paciente;
+
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
-    // 🔷 Se quiser vincular ao paciente
-    // @ManyToOne
-    // @JoinColumn(name = "paciente_id")
-    // private Paciente paciente;
 }
