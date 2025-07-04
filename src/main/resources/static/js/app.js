@@ -1287,7 +1287,6 @@ function mostrarCadastroSimplificado() {
   // 🔥 Oculta outros formulários se necessário
   document.getElementById('cadastroSimplificadoContainer').style.display = 'block';
 }
-
 async function salvarCadastroSimplificado(event) {
   event.preventDefault();
 
@@ -1299,9 +1298,8 @@ async function salvarCadastroSimplificado(event) {
     return;
   }
 
-  // 🔷 Aqui você pode enviar para sua API backend (exemplo)
   try {
-    const resp = await fetch('/pacientes', {
+    const resp = await fetch('/pacientes/simplificado', { // 🔷 endpoint novo
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, telefone })
@@ -1310,20 +1308,19 @@ async function salvarCadastroSimplificado(event) {
     if (!resp.ok) throw new Error('Erro ao salvar cadastro');
 
     alert('Cadastro simplificado salvo com sucesso!');
-    // Limpa os campos e esconde o formulário
     document.getElementById('cadastroSimplificadoForm').reset();
     document.getElementById('cadastroSimplificadoContainer').style.display = 'none';
-    
-    // 🔷 Opcional: recarrega lista de pacientes, se houver função
+
     if (typeof carregarPacientes === 'function') {
       await carregarPacientes();
     }
 
   } catch (err) {
     console.error(err);
-    alert('Erro ao salvar cadastro.');
+    alert('Erro ao salvar cadastro simplificado.');
   }
 }
+
 
 function showDayView() {
   document.querySelector('.calendar-container').style.display = 'none';

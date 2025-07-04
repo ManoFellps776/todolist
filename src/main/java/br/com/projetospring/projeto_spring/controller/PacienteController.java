@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pacientes")
@@ -68,6 +69,17 @@ public class PacienteController {
         Paciente atualizado = pacienteService.update(id, paciente, usuario);
         return ResponseEntity.ok(atualizado);
     }
+/*----------------------   SIMPLIFICADO    ---------------------- */
+@PostMapping("/simplificado")
+public ResponseEntity<Paciente> criarSimplificado(@RequestBody Map<String, String> dados, Principal principal) {
+    Users usuario = getUsuario(principal);
+    Paciente p = new Paciente();
+    p.setNome(dados.get("nome"));
+    p.setTelefone(dados.get("telefone"));
+    p.setUsuario(usuario);
+    return ResponseEntity.ok(pacienteService.create(p, usuario));
+}
+
 /* ------------------  DELETE  ------------------ */
 @DeleteMapping("/{id}")
 public ResponseEntity<?> deletar(@PathVariable Long id, Principal principal) {
