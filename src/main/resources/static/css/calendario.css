@@ -12,11 +12,11 @@ body {
 }
 
 .controls {
- display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;         /* permite quebra em telas pequenas */
+  justify-content: center; /* centraliza horizontalmente */
+  align-items: center;     /* alinha verticalmente */
+  gap: 10px;
   margin-bottom: 20px;
 }
 
@@ -25,8 +25,8 @@ body {
   font-weight: bold;
   padding: 6px 10px;
   font-size: 14px;
-  max-width: 110px; /* 🔥 ajustado para telas pequenas */
-  width: auto;     /* 🔥 permite ajustar ao conteúdo */
+  max-width: 140px;  /* 🔥 limite de largura */
+  width: auto;       /* 🔥 adapta ao conteúdo */
 }
 .controls select {
   padding: 6px 10px;
@@ -316,16 +316,6 @@ body {
     padding: 3px;
   }
 
-  .controls {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .controls select,
-  .controls button {
-    width: 100%;
-    font-size: 14px;
-  }
 
   .day-view {
     padding: 20px;
@@ -351,10 +341,6 @@ body {
     font-size: 10px;
   }
 
-  .controls select,
-  .controls button {
-    font-size: 13px;
-  }
 
   .btn,
   .save-btn,
