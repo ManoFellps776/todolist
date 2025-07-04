@@ -1294,18 +1294,18 @@ async function salvarCadastroSimplificado(event) {
   const telefone = document.getElementById('telefoneSimplificado').value.trim();
 
   if (!nome || !telefone) {
-    alert('Por favor, preencha nome e telefone.');
+    alert('Preencha nome e telefone.');
     return;
   }
 
   try {
-    const resp = await fetch('/pacientes/simplificado', { // 🔷 endpoint novo
+    const resp = await fetch('/pacientes/simplificado', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, telefone })
     });
 
-    if (!resp.ok) throw new Error('Erro ao salvar cadastro');
+    if (!resp.ok) throw new Error('Erro ao salvar cadastro simplificado.');
 
     alert('Cadastro simplificado salvo com sucesso!');
     document.getElementById('cadastroSimplificadoForm').reset();

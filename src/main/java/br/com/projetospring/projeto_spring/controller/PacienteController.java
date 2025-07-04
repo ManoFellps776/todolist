@@ -73,12 +73,30 @@ public class PacienteController {
 @PostMapping("/simplificado")
 public ResponseEntity<Paciente> criarSimplificado(@RequestBody Map<String, String> dados, Principal principal) {
     Users usuario = getUsuario(principal);
+
     Paciente p = new Paciente();
     p.setNome(dados.get("nome"));
     p.setTelefone(dados.get("telefone"));
     p.setUsuario(usuario);
+
+    // Se sua entidade tiver campos obrigatórios no banco, defina valores padrões:
+    p.setCpf("CADASTRO_SIMPLIFICADO");
+    p.setEmail("simplificado@" + System.currentTimeMillis() + ".com");
+    p.setBirthday(null);
+    p.setEstadoCivil("NÃO INFORMADO");
+    p.setProfissao("NÃO INFORMADO");
+    p.setEscola("NÃO INFORMADO");
+    p.setCep("00000000");
+    p.setEstadoCep("NÃO INFORMADO");
+    p.setCidade("NÃO INFORMADO");
+    p.setBairro("NÃO INFORMADO");
+    p.setRua("NÃO INFORMADO");
+    p.setNumeroRua("0");
+    p.setDescricao("Cadastro simplificado. Completar depois.");
+
     return ResponseEntity.ok(pacienteService.create(p, usuario));
 }
+
 
 /* ------------------  DELETE  ------------------ */
 @DeleteMapping("/{id}")
