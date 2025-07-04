@@ -650,7 +650,14 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
     alert("❌ Erro ao conectar ao servidor.");
   }
 });
+// Carregar paciente Calendario
+document.addEventListener('DOMContentLoaded', () => {
+  const selectPaciente = document.getElementById('pacienteSelect');
 
+  selectPaciente.addEventListener('click', () => {
+    carregarPacientes();
+  });
+});
 // Gerar PDF
 async function gerarPDF(id) {
   try {
