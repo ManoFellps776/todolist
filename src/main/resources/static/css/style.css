@@ -220,22 +220,11 @@ h3 {
   background-color: #732d91; /* cor mais escura ao passar o mouse */
 }
 
-#listaPacientes.lista-scroll {
-  max-height: 200px;
-  width: 100%; /* 🔥 ocupa toda a largura disponível */
-  max-width: 500px; /* 🔥 limite máximo em telas grandes */
-  overflow-y: auto;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 10px;
-  margin-top: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
-/* Itens individuais da lista */
 .paciente-lista-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px; /* espaço entre nome e botões */
   padding: 8px 12px;
   margin-bottom: 5px;
   background-color: #fff;
@@ -243,22 +232,51 @@ h3 {
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-weight: bold;
-  white-space: nowrap; /* 🔥 impede quebra de linha */
-  overflow-x: auto; /* 🔥 adiciona scroll horizontal se necessário */
+  flex-wrap: wrap; /* 🔥 permite quebrar se realmente necessário em telas muito pequenas */
 }
 
-.paciente-lista-item:hover {
-  background-color: #e6f7ff;
+.paciente-lista-item span {
+  flex: 1;
+  min-width: 0; /* 🔥 evita que estoure */
+  word-break: break-word; /* 🔥 quebra a palavra se ultrapassar */
 }
 
-/* 🔥 Responsividade: ajuste específico para telas menores */
+.paciente-lista-item .botoes {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0; /* 🔥 impede redução dos botões */
+}
+
+.paciente-lista-item .botoes button {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.paciente-lista-item .botoes .btn-editar {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.paciente-lista-item .botoes .btn-deletar {
+  background-color: #f44336;
+  color: white;
+}
+
+/* ✅ Responsividade específica para celulares */
 @media (max-width: 480px) {
-  #listaPacientes.lista-scroll {
-    max-width: 100%; /* 🔥 ocupa toda a tela no celular */
+  .paciente-lista-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .paciente-lista-item {
-    font-size: 14px; /* opcional: texto menor em telas pequenas */
+  .paciente-lista-item .botoes {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 5px;
   }
 }
 

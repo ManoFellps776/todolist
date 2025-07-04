@@ -152,17 +152,6 @@ input[type="email"] {
   text-decoration: none;
 }
 
-@media (max-width: 480px) {
-  .main {
-    padding: 20px;
-    justify-content: center;
-  }
-
-  .card {
-    padding: 20px;
-  }
-}
-
 .info-container {
   width: 100%;
   max-width: 800px;
@@ -198,11 +187,13 @@ input[type="email"] {
   background: #eaf6ff;
   border: 2px solid #2196f3;
 }
+
 .plano.destaque:hover {
   background: #eaf6ff;
   border: 5px solid #e9f732;
 }
-.plano:hover{
+
+.plano:hover {
   background: #eaf6ff;
   border: 5px solid #17a52a;
 }
@@ -216,4 +207,84 @@ input[type="email"] {
   font-weight: bold;
   border-radius: 5px;
   cursor: pointer;
+}
+
+/* ✅ RESPONSIVIDADE - tablets */
+@media (max-width: 768px) {
+  .main {
+    padding: 70px 15px 20px 15px;
+  }
+
+  .card {
+    padding: 15px 20px;
+  }
+
+  .btn, .btn-outline, .btn-assinar {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  .planos {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .plano {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+/* ✅ RESPONSIVIDADE - celulares */
+@media (max-width: 480px) {
+  .topbar {
+    height: 45px;
+  }
+
+  .menu-toggle {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+
+  .sidebar {
+    width: 180px;
+    padding: 15px;
+    top: 45px;
+  }
+
+  .main {
+    padding: 60px 10px 15px 10px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .btn, .btn-outline, .btn-assinar {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .info-container {
+    padding: 20px;
+  }
+
+  .planos {
+    gap: 10px;
+  }
+
+  .plano {
+    padding: 15px;
+  }
+
+  .plano h2 {
+    font-size: 16px;
+  }
 }
