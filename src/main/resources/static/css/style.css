@@ -220,13 +220,10 @@ h3 {
   background-color: #732d91; /* cor mais escura ao passar o mouse */
 }
 
-.paciente-lista-item:hover {
-  background-color: #f0f0f0;
-  font-weight: bold;
-}
 #listaPacientes.lista-scroll {
   max-height: 200px;
-  max-width: 50vw; /* metade da tela */
+  width: 100%; /* 🔥 ocupa toda a largura disponível */
+  max-width: 500px; /* 🔥 limite máximo em telas grandes */
   overflow-y: auto;
   background-color: #f9f9f9;
   border: 1px solid #ccc;
@@ -234,8 +231,10 @@ h3 {
   padding: 10px;
   margin-top: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
+/* Itens individuais da lista */
 .paciente-lista-item {
   padding: 8px 12px;
   margin-bottom: 5px;
@@ -244,11 +243,25 @@ h3 {
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-weight: bold;
+  white-space: nowrap; /* 🔥 impede quebra de linha */
+  overflow-x: auto; /* 🔥 adiciona scroll horizontal se necessário */
 }
 
 .paciente-lista-item:hover {
   background-color: #e6f7ff;
 }
+
+/* 🔥 Responsividade: ajuste específico para telas menores */
+@media (max-width: 480px) {
+  #listaPacientes.lista-scroll {
+    max-width: 100%; /* 🔥 ocupa toda a tela no celular */
+  }
+
+  .paciente-lista-item {
+    font-size: 14px; /* opcional: texto menor em telas pequenas */
+  }
+}
+
 
 .selectPaciente{
     font-size: 16px;
