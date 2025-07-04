@@ -112,6 +112,12 @@ body {
     line-height: 1.1; /* reduz o espaçamento vertical */
   }
 }
+#cadastroSimplificadoContainer {
+  border: 2px dashed #f39c12;
+  padding: 15px;
+  background-color: #fff8e1;
+  border-radius: 8px;
+}
 
 .task-item {
   font-size: 11px;

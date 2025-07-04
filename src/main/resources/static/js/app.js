@@ -1283,6 +1283,47 @@ async function carregarAgendamentosDoMes(anoMes) {
   }
 }
 
+function mostrarCadastroSimplificado() {
+  // 🔥 Oculta outros formulários se necessário
+  document.getElementById('cadastroSimplificadoContainer').style.display = 'block';
+}
+
+async function salvarCadastroSimplificado(event) {
+  event.preventDefault();
+
+  const nome = document.getElementById('nomeSimplificado').value.trim();
+  const telefone = document.getElementById('telefoneSimplificado').value.trim();
+
+  if (!nome || !telefone) {
+    alert('Por favor, preencha nome e telefone.');
+    return;
+  }
+
+  // 🔷 Aqui você pode enviar para sua API backend (exemplo)
+  try {
+    const resp = await fetch('/pacientes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, telefone })
+    });
+
+    if (!resp.ok) throw new Error('Erro ao salvar cadastro');
+
+    alert('Cadastro simplificado salvo com sucesso!');
+    // Limpa os campos e esconde o formulário
+    document.getElementById('cadastroSimplificadoForm').reset();
+    document.getElementById('cadastroSimplificadoContainer').style.display = 'none';
+    
+    // 🔷 Opcional: recarrega lista de pacientes, se houver função
+    if (typeof carregarPacientes === 'function') {
+      await carregarPacientes();
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao salvar cadastro.');
+  }
+}
 
 function showDayView() {
   document.querySelector('.calendar-container').style.display = 'none';
@@ -1338,8 +1379,24 @@ item.appendChild(actionsDiv);
 form.className = 'add-task-form';
 form.innerHTML = `
 
-  <button class="btnSimplificado" onclick="generateCalendar(currentDate)">Criar um cadastro simplificado</button>
+  <button class="btnSimplificado" onclick="mostrarCadastroSimplificado()">Criar um cadastro simplificado</button>
+  
+<!-- 🔥 Formulário Simplificado (inicialmente oculto) -->
+<div id="cadastroSimplificadoContainer" style="display: none; margin-top: 20px;">
+  <h3>Cadastro Simplificado</h3>
+  <p style="color: red; font-weight: bold;">
+    Este é um cadastro simplificado. Complete os demais dados posteriormente.
+  </p>
+  <form id="cadastroSimplificadoForm" onsubmit="salvarCadastroSimplificado(event)">
+    <label for="nomeSimplificado">Nome:</label><br>
+    <input type="text" id="nomeSimplificado" name="nomeSimplificado" required><br><br>
 
+    <label for="telefoneSimplificado">Telefone:</label><br>
+    <input type="tel" id="telefoneSimplificado" name="telefoneSimplificado" required><br><br>
+
+    <button type="submit" class="btn">Salvar Cadastro Simplificado</button>
+  </form>
+</div>
   <div class="form-group">
     <label for="pacienteSelect">Paciente:</label>
     <select id="pacienteSelect">
@@ -1349,7 +1406,7 @@ form.innerHTML = `
 
   <div class="form-group">
     <label for="taskTime">Hora:</label>
-    <input type="time" id="taskTime">
+    <input type="time" id="taskTime"placeholder="Horário">
   </div>
 
   <div class="form-group">
