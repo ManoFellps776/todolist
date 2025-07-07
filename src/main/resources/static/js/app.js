@@ -1319,6 +1319,7 @@ async function salvarCadastroSimplificado(event) {
     document.getElementById('cadastroSimplificadoContainer').style.display = 'none';
 
     if (typeof carregarPacientes === 'function') {
+      
       await carregarPacientes();
     }
 
