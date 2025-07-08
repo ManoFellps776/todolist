@@ -3,10 +3,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #f4f4f4;
   transition: all 0.3s ease;
-  min-height: 100vh; /* garante altura mínima ocupando tela inteira */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 100vh; /* ocupa a altura total da tela */
 }
 
 .topbar {
