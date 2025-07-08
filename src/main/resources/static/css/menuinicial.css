@@ -88,7 +88,24 @@ body {
 
 .container {
   width: 100%;
+  max-width: 1200px;  /* 🔥 limita largura máxima em telas grandes */
+  margin: 0 auto;     /* 🔥 centraliza horizontalmente */
   padding: 20px;
+  box-sizing: border-box; /* 🔥 garante que padding não estoure o container */
+}
+
+/* ✅ Ajustes para tablets */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;  /* 🔥 padding menor em tablets */
+  }
+}
+
+/* ✅ Ajustes para celulares */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;  /* 🔥 padding mínimo para caber no mobile */
+  }
 }
 
 .card {
