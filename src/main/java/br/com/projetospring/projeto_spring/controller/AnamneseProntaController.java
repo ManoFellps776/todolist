@@ -35,35 +35,32 @@ public class AnamneseProntaController {
     private ObjectMapper objectMapper;
 
     // ✅ Salvar nova anamnese vinculada ao usuário logado
-    @PostMapping
-    public ResponseEntity<AnamnesePronta> salvar(@RequestBody AnamnesePronta anamnese, Principal principal) {
-        if (anamnese.getCpfA() != null) {
-            anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
-        }
-
-        String nomeUsuario = principal.getName();
-        Users usuario = usersRepository.findByUsers(nomeUsuario);
-        if (usuario == null) {
-            return ResponseEntity.status(401).build();
-        }
-
-        anamnese.setUsuario(usuario);
-        return ResponseEntity.ok(repository.save(anamnese));
+   @PostMapping
+public ResponseEntity<AnamnesePronta> salvar(@RequestBody AnamnesePronta anamnese, Principal principal) {
+    if (anamnese.getCpfA() != null) {
+        anamnese.setCpfA(anamnese.getCpfA().replaceAll("\\D", ""));
     }
 
-    // ✅ Buscar anamnese por CPF e usuário logado
-    @GetMapping("/paciente/{cpf}")
-    public ResponseEntity<List<AnamnesePronta>> listarPorCpf(@PathVariable String cpf, Principal principal) {
-        String cpfLimpo = cpf.replaceAll("\\D", "");
-        String nomeUsuario = principal.getName();
-        Users usuario = usersRepository.findByUsers(nomeUsuario);
-        if (usuario == null) {
-            return ResponseEntity.status(401).build();
-        }
+    String login = principal.getName();
+    Users usuario = usersRepository.findByUsersOrEmail(login, login)
+            .orElseThrow(() -> new RuntimeException("Usuário autenticado não encontrado"));
 
-        List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuario.getId());
-        return ResponseEntity.ok(lista);
-    }
+    anamnese.setUsuario(usuario);
+    return ResponseEntity.ok(repository.save(anamnese));
+}
+
+// ✅ Buscar anamnese por CPF e usuário logado
+@GetMapping("/paciente/{cpf}")
+public ResponseEntity<List<AnamnesePronta>> listarPorCpf(@PathVariable String cpf, Principal principal) {
+    String cpfLimpo = cpf.replaceAll("\\D", "");
+    String login = principal.getName();
+    Users usuario = usersRepository.findByUsersOrEmail(login, login)
+            .orElseThrow(() -> new RuntimeException("Usuário autenticado não encontrado"));
+
+    List<AnamnesePronta> lista = repository.findByCpfAAndUsuario_Id(cpfLimpo, usuario.getId());
+    return ResponseEntity.ok(lista);
+}
+
 
     // ✅ Buscar por ID (sem filtro de usuário neste caso específico)
     @GetMapping("/{id}")

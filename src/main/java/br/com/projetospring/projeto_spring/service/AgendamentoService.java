@@ -111,10 +111,9 @@ public Agendamento atualizar(Long id, AgendamentoDTO dto, Long usuarioId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     String username = auth.getName();
 
-    Users user = usersRepository.findByUsers(username);
-    if (user == null) {
-        throw new RuntimeException("Usuário autenticado não encontrado");
-    }
-    return user;
+    Users user = usersRepository.findByUsersOrEmail(username, username)
+        .orElseThrow(() -> new RuntimeException("Usuário ou email autenticado não encontrado"));
+return user;
+
 }
 }

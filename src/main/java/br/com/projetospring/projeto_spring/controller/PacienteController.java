@@ -30,11 +30,15 @@ public class PacienteController {
        UTILITY: obtém o usuário logado a partir do Principal
        ------------------------------------------------- */
     private Users getUsuario(Principal principal) {
-        if (principal == null) throw new RuntimeException("Usuário não autenticado");
-        Users u = usersRepository.findByUsers(principal.getName());
-        if (u == null) throw new RuntimeException("Usuário não encontrado");
-        return u;
+    if (principal == null) {
+        throw new RuntimeException("Usuário não autenticado");
     }
+
+    String login = principal.getName();
+    return usersRepository.findByUsersOrEmail(login, login)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+}
+
 
     /* ------------------  CREATE  ------------------ */
     @PostMapping
