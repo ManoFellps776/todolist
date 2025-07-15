@@ -45,9 +45,9 @@ public class UsersDetails implements UserDetails {
     }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+public boolean isEnabled() {
+    return user.isVerificado();
+}
 
     public String getEmail() {
         return user.getEmail();

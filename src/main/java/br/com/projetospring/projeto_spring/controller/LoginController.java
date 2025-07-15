@@ -2,6 +2,8 @@ package br.com.projetospring.projeto_spring.controller;
 
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
+import br.com.projetospring.projeto_spring.service.EmailVerificationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class LoginController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailVerificationService emailVerificationService;
+
 
     // ---------- CADASTRO ----------
     @PostMapping("/cadastro")
@@ -84,6 +89,21 @@ public class LoginController {
         usersRepository.save(usuarioAtual);
         return ResponseEntity.ok("Usuário atualizado com sucesso.");
     }
+    // ---------- VERIFICAÇÃO POR TOKEN ----------
+    @GetMapping("/verificacao")
+public ResponseEntity<String> verificarEmail(@RequestParam String token) {
+    Optional<Users> usuarioOpt = emailVerificationService.validarToken(token);
+
+    if (usuarioOpt.isEmpty()) {
+        return ResponseEntity.badRequest().body("Token inválido ou expirado.");
+    }
+
+    Users usuario = usuarioOpt.get();
+    usuario.setAtivo(true);
+    usersRepository.save(usuario);
+
+    return ResponseEntity.ok("E-mail verificado com sucesso! Você já pode fazer login.");
+}
 
     // ---------- RETORNAR USUÁRIO LOGADO ----------
     @GetMapping("/logado")

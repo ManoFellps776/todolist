@@ -24,6 +24,18 @@ public class Users {
 
     private String plano;
 
+    // ✅ Novo campo: se o e-mail já foi verificado
+    @Column(nullable = false)
+    private boolean verificado = false;
+    @Column(name = "ativo")
+    private boolean ativo = false;
+
+
+
+    // ✅ Novo campo: token de verificação
+    @Column(name = "token_verificacao", length = 100)
+    private String tokenVerificacao;
+
     public Users() {}
 
     public Users(String users, String senha, String email, String plano) {
@@ -35,6 +47,10 @@ public class Users {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsers() {
@@ -69,7 +85,26 @@ public class Users {
         this.plano = plano;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public boolean isVerificado() {
+        return verificado;
     }
+
+    public void setVerificado(boolean verificado) {
+        this.verificado = verificado;
+    }
+
+    public String getTokenVerificacao() {
+        return tokenVerificacao;
+    }
+
+    public void setTokenVerificacao(String tokenVerificacao) {
+        this.tokenVerificacao = tokenVerificacao;
+    }
+    public boolean isAtivo() {
+    return ativo;
+}
+
+public void setAtivo(boolean ativo) {
+    this.ativo = ativo;
+}
 }
