@@ -31,27 +31,31 @@ public class LoginController {
 
 
     // ---------- CADASTRO ----------
-    @PostMapping("/cadastro")
-    public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
-        if (novoUsuario.getUsers() == null || novoUsuario.getSenha() == null || novoUsuario.getEmail() == null) {
-            return ResponseEntity.badRequest().body("Campos obrigatórios não preenchidos.");
-        }
-
-        if (usersRepository.findByUsers(novoUsuario.getUsers()).isPresent()) {
-            return ResponseEntity.status(409).body("Usuário já existe.");
-        }
-
-        if (usersRepository.findByEmail(novoUsuario.getEmail()).isPresent()) {
-            return ResponseEntity.status(409).body("E-mail já cadastrado.");
-        }
-
-        novoUsuario.setSenha(passwordEncoder.encode(novoUsuario.getSenha()));
-        novoUsuario.setPlano("FREE");
-
-        usersRepository.save(novoUsuario);
-
-        return ResponseEntity.ok("Usuário cadastrado com sucesso!");
+  @PostMapping("/cadastro")
+public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
+    if (novoUsuario.getUsers() == null || novoUsuario.getSenha() == null || novoUsuario.getEmail() == null) {
+        return ResponseEntity.badRequest().body("Campos obrigatórios não preenchidos.");
     }
+
+    if (usersRepository.findByUsers(novoUsuario.getUsers()).isPresent()) {
+        return ResponseEntity.status(409).body("Usuário já existe.");
+    }
+
+    if (usersRepository.findByEmail(novoUsuario.getEmail()).isPresent()) {
+        return ResponseEntity.status(409).body("E-mail já cadastrado.");
+    }
+
+    novoUsuario.setSenha(passwordEncoder.encode(novoUsuario.getSenha()));
+    novoUsuario.setPlano("FREE");
+
+    usersRepository.save(novoUsuario);
+
+    // ✅ ENVIA E-MAIL DE VERIFICAÇÃO
+    emailVerificationService.enviarTokenConfirmacao(novoUsuario);
+
+    return ResponseEntity.ok("Usuário cadastrado com sucesso! Verifique seu e-mail para ativar a conta.");
+}
+
 
     // ---------- ATUALIZAR USUÁRIO ----------
     @PutMapping("/usuarios")
