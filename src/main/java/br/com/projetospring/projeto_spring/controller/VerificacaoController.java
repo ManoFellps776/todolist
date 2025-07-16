@@ -25,9 +25,10 @@ public class VerificacaoController {
         }
 
         Users user = usuarioOpt.get();
-        user.setVerificado(true);
-        user.setTokenVerificacao(null);
-        usersRepository.save(user);
+        user.setVerificado(true);           // ✅ MARCA COMO VERIFICADO
+        user.setAtivo(true);                // ✅ (Opcional) também ativa o usuário
+        user.setTokenVerificacao(null);     // ✅ Remove o token após verificação
+        usersRepository.save(user);         // ✅ Salva no banco
 
         return ResponseEntity.ok("E-mail verificado com sucesso! Agora você pode fazer login.");
     }
