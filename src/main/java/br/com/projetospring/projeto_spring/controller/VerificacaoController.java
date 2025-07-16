@@ -3,8 +3,8 @@ package br.com.projetospring.projeto_spring.controller;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Optional;
 
@@ -17,19 +17,19 @@ public class VerificacaoController {
     private UsersRepository usersRepository;
 
     @GetMapping
-    public ResponseEntity<String> verificarEmail(@RequestParam("token") String token) {
-        Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
+public RedirectView verificarEmail(@RequestParam("token") String token) {
+    Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
 
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Token inválido ou expirado.");
-        }
-
-        Users user = usuarioOpt.get();
-        user.setVerificado(true);           // ✅ MARCA COMO VERIFICADO
-        user.setAtivo(true);                // ✅ (Opcional) também ativa o usuário
-        user.setTokenVerificacao(null);     // ✅ Remove o token após verificação
-        usersRepository.save(user);         // ✅ Salva no banco
-
-        return ResponseEntity.ok("E-mail verificado com sucesso! Agora você pode fazer login.");
+    if (usuarioOpt.isEmpty()) {
+        return new RedirectView("https://minha-agencia.onrender.com/erro-verificacao.html");
     }
+
+    Users user = usuarioOpt.get();
+    user.setVerificado(true);
+    user.setAtivo(true);
+    user.setTokenVerificacao(null);
+    usersRepository.save(user);
+
+    return new RedirectView("https://minha-agencia.onrender.com/verificado.html");
+}
 }

@@ -1,7 +1,8 @@
 package br.com.projetospring.projeto_spring.service;
 
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.UUID;
+
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
 import jakarta.mail.MessagingException;
@@ -11,8 +12,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class EmailVerificationService {
@@ -26,16 +25,11 @@ public class EmailVerificationService {
     @Autowired
     private Environment environment;
 
-    // Armazena tokens temporariamente (em produção, use banco de dados ou Redis)
-    private final ConcurrentHashMap<String, Users> tokenStorage = new ConcurrentHashMap<>();
-
     public void enviarTokenConfirmacao(Users usuario) {
         String token = UUID.randomUUID().toString();
         usuario.setTokenVerificacao(token);
-        usuario.setVerificado(false);
-        usersRepository.save(usuario);
-
-        tokenStorage.put(token, usuario);
+        usuario.setVerificado(false); // Marcar como não verificado
+        usersRepository.save(usuario); // Salva com o token
 
         String baseUrl = environment.getProperty("app.url.frontend", "https://minha-agencia.onrender.com");
         String link = baseUrl + "/verificacao?token=" + token;
@@ -64,6 +58,6 @@ public class EmailVerificationService {
     }
 
     public Optional<Users> validarToken(String token) {
-    return usersRepository.findByTokenVerificacao(token);
-}
+        return usersRepository.findByTokenVerificacao(token);
+    }
 }
