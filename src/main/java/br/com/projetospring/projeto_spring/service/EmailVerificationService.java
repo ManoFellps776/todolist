@@ -33,7 +33,7 @@ public class EmailVerificationService {
         usersRepository.save(users);
 
         // Pega a URL do backend
-        String backendUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
+        String backendUrl = environment.getProperty("app.url.backend", "https://minha-agencia.onrender.com");
 
         // Gera link com token
         String link = backendUrl + "/verificacao?token=" + token;
