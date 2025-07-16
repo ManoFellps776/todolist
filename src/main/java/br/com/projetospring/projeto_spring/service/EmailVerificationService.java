@@ -25,22 +25,22 @@ public class EmailVerificationService {
     @Autowired
     private Environment environment;
 
-    public void enviarTokenConfirmacao(Users usuario) {
+    public void enviarTokenConfirmacao(Users users) {
         String token = UUID.randomUUID().toString();
-        usuario.setTokenVerificacao(token);
-        usuario.setVerificado(false); // Marcar como não verificado
-        usersRepository.save(usuario); // Salva com o token
+        users.setTokenVerificacao(token);
+        users.setVerificado(false); // Marcar como não verificado
+        usersRepository.save(users); // Salva com o token
 
         String baseUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
-String link = baseUrl + "/verificacao?token=" + token;
+        String link = baseUrl + "/verificacao?token=" + token;
 
         String assunto = "Confirmação de e-mail";
-        String conteudo = "<h2>Olá, " + usuario.getUsers() + "</h2>"
+        String conteudo = "<h2>Olá, " + users.getUsers() + "</h2>"
                 + "<p>Por favor, clique no link abaixo para verificar seu e-mail:</p>"
                 + "<a href=\"" + link + "\">Verificar E-mail</a>";
 
         try {
-            enviarEmail(usuario.getEmail(), assunto, conteudo);
+            enviarEmail(users.getEmail(), assunto, conteudo);
         } catch (MessagingException e) {
             throw new RuntimeException("Erro ao enviar e-mail de verificação", e);
         }
