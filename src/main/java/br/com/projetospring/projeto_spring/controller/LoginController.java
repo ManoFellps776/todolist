@@ -94,7 +94,7 @@ public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
         return ResponseEntity.ok("Usuário atualizado com sucesso.");
     }
     // ---------- VERIFICAÇÃO POR TOKEN ----------
-    @GetMapping("/verificacao")
+    @RequestMapping("/verificacao")
 public ResponseEntity<String> verificarEmail(@RequestParam String token) {
     Optional<Users> usuarioOpt = emailVerificationService.validarToken(token);
 
@@ -103,7 +103,10 @@ public ResponseEntity<String> verificarEmail(@RequestParam String token) {
     }
 
     Users usuario = usuarioOpt.get();
-    usuario.setAtivo(true);
+    usuario.setVerificado(true);           // ✅ marca como verificado
+    usuario.setAtivo(true);                // ✅ ativa o usuário
+    usuario.setTokenVerificacao(null);     // ✅ remove o token para não reutilizar
+
     usersRepository.save(usuario);
 
     return ResponseEntity.ok("E-mail verificado com sucesso! Você já pode fazer login.");
