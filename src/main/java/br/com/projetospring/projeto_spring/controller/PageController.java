@@ -15,14 +15,14 @@ public class PageController {
     public String login() {
         return "logado"; // carrega logado.html em templates/
     }
-    @GetMapping("/verificado")
+    @GetMapping("/verificado.html")
     public String verificado() {
-        return "verificado"; // carrega templates/verificado.html
+        return "verificado"; // carrega o verificado.html do templates (com Thymeleaf)
     }
 
-    @GetMapping("/erro")
+    @GetMapping("/erro.html")
     public String erro() {
-        return "erro"; // carrega templates/erro.html
+        return "erro"; // carrega o erro.html do templates
     }
 
     // Adicione mais rotas conforme suas páginas HTML

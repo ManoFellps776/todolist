@@ -24,13 +24,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // útil para API REST ou SPA frontend
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/home", "/", "/index",
                     "/css/**", "/js/**", "/images/**", "/webjars/**",
-                    "/login/cadastro",  // 🔓 Permite cadastro público via POST
-                    "/login/**"         // 🔓 Permite outras chamadas relacionadas ao login
+                    "/login/cadastro",
+                    "/login/**",
+                    "/verificacao",          // ✅ libera acesso ao endpoint de verificação
+                    "/verificacao/**",       // ✅ garante que query params como ?token=xxx funcionem
+                    "/verificar-email",      // (se usar outro endpoint, libere aqui também)
+                    "/verificar-email/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
@@ -62,7 +66,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // segurança
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

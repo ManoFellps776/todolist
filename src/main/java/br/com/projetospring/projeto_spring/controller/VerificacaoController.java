@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Optional;
+
 @RestController
 @RequestMapping("/verificacao")
 @CrossOrigin(origins = "*")
@@ -17,18 +18,25 @@ public class VerificacaoController {
 
     @GetMapping
     public RedirectView verificarEmail(@RequestParam("token") String token) {
+        System.out.println("🔑 TOKEN recebido: " + token);
+
         Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
 
         if (usuarioOpt.isEmpty()) {
-            return new RedirectView("/erro"); // deve existir no backend
+            System.out.println("❌ Token inválido ou expirado.");
+            return new RedirectView("/erro.html");
         }
 
         Users user = usuarioOpt.get();
+        System.out.println("✅ Usuário encontrado: " + user.getEmail());
+
         user.setVerificado(true);
         user.setAtivo(true);
         user.setTokenVerificacao(null);
-        usersRepository.save(user);
 
-        return new RedirectView("/verificado"); // deve existir no backend
+        usersRepository.save(user);
+        System.out.println("✅ Usuário ativado e verificado com sucesso.");
+
+        return new RedirectView("/verificado.html"); // Certifique-se de que este arquivo existe no front-end
     }
 }

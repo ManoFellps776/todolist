@@ -32,9 +32,11 @@ public class EmailVerificationService {
         users.setAtivo(false);
         usersRepository.save(users);
 
-        // Usa URL do backend, pois quem vai responder à verificação é o backend
-        String baseUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
-        String link = baseUrl + "/verificacao?token=" + token;
+        // Pega a URL do backend
+        String backendUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
+
+        // Gera link com token
+        String link = backendUrl + "/verificacao?token=" + token;
 
         String assunto = "Confirmação de e-mail";
         String conteudo = "<h2>Olá, " + users.getUsers() + "</h2>"
@@ -51,9 +53,11 @@ public class EmailVerificationService {
     private void enviarEmail(String para, String assunto, String conteudoHtml) throws MessagingException {
         MimeMessage mensagem = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8");
+
         helper.setTo(para);
         helper.setSubject(assunto);
         helper.setText(conteudoHtml, true);
+
         mailSender.send(mensagem);
     }
 
