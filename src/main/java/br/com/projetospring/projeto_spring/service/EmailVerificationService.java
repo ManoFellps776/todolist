@@ -25,26 +25,27 @@ public class EmailVerificationService {
     @Autowired
     private Environment environment;
 
-    public void enviarTokenConfirmacao(Users users) {
-        String token = UUID.randomUUID().toString();
-        users.setTokenVerificacao(token);
-        users.setVerificado(false); // Marcar como não verificado
-        usersRepository.save(users); // Salva com o token
+   public void enviarTokenConfirmacao(Users users) {
+    String token = UUID.randomUUID().toString();
+    users.setTokenVerificacao(token);
+    users.setVerificado(false);
+    users.setAtivo(false);
+    usersRepository.save(users);
 
-        String baseUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
-        String link = baseUrl + "/verificacao?token=" + token;
+    String baseUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
+    String link = baseUrl + "/verificacao?token=" + token;
 
-        String assunto = "Confirmação de e-mail";
-        String conteudo = "<h2>Olá, " + users.getUsers() + "</h2>"
-                + "<p>Por favor, clique no link abaixo para verificar seu e-mail:</p>"
-                + "<a href=\"" + link + "\">Verificar E-mail</a>";
+    String assunto = "Confirmação de e-mail";
+    String conteudo = "<h2>Olá, " + users.getUsers() + "</h2>"
+        + "<p>Por favor, clique no link abaixo para verificar seu e-mail:</p>"
+        + "<a href=\"" + link + "\">Verificar E-mail</a>";
 
-        try {
-            enviarEmail(users.getEmail(), assunto, conteudo);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erro ao enviar e-mail de verificação", e);
-        }
+    try {
+        enviarEmail(users.getEmail(), assunto, conteudo);
+    } catch (MessagingException e) {
+        throw new RuntimeException("Erro ao enviar e-mail de verificação", e);
     }
+}
 
     private void enviarEmail(String para, String assunto, String conteudoHtml) throws MessagingException {
         MimeMessage mensagem = mailSender.createMimeMessage();

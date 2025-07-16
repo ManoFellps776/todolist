@@ -26,7 +26,7 @@ public class VerificacaoController {
         Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
 
         if (usuarioOpt.isEmpty()) {
-            return new RedirectView(baseUrl + "/erro");
+            return new RedirectView(baseUrl + "/erro.html");
         }
 
         Users user = usuarioOpt.get();
@@ -35,6 +35,6 @@ public class VerificacaoController {
         user.setTokenVerificacao(null);
         usersRepository.save(user);
 
-        return new RedirectView(baseUrl + "/verificado");
+        return new RedirectView(baseUrl + "/verificado.html");
     }
 }
