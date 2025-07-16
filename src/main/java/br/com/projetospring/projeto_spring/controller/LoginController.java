@@ -93,25 +93,6 @@ public ResponseEntity<String> cadastrar(@RequestBody Users novoUsuario) {
         usersRepository.save(usuarioAtual);
         return ResponseEntity.ok("Usuário atualizado com sucesso.");
     }
-    // ---------- VERIFICAÇÃO POR TOKEN ----------
-    
-   @GetMapping("/verificacao")
-public ResponseEntity<String> verificarEmail(@RequestParam String token) {
-    Optional<Users> usuarioOpt = emailVerificationService.validarToken(token);
-
-    if (usuarioOpt.isEmpty()) {
-        return ResponseEntity.badRequest().body("Token inválido ou expirado.");
-    }
-
-    Users users = usuarioOpt.get();
-    users.setVerificado(true);           // ✅ marca como verificado
-    users.setAtivo(true);                // ✅ ativa o usuário
-    users.setTokenVerificacao(null);     // ✅ remove o token para não reutilizar
-
-    usersRepository.save(users);
-
-    return ResponseEntity.ok("E-mail verificado com sucesso! Você já pode fazer login.");
-}
 
     // ---------- RETORNAR USUÁRIO LOGADO ----------
     @GetMapping("/logado")
