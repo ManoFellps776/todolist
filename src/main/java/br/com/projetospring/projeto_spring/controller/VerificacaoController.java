@@ -21,8 +21,7 @@ public class VerificacaoController {
 
     @GetMapping
     public RedirectView verificarEmail(@RequestParam("token") String token) {
-        String baseUrl = environment.getProperty("app.url.frontend", "https://minha-agencia.onrender.com");
-
+        String baseUrl = environment.getProperty("app.url.frontend");
         Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
 
         if (usuarioOpt.isEmpty()) {
