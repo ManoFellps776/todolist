@@ -3,11 +3,8 @@ package br.com.projetospring.projeto_spring.controller;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Optional;
 @RestController
@@ -19,11 +16,11 @@ public class VerificacaoController {
     private UsersRepository usersRepository;
 
     @GetMapping
-    public ResponseEntity<String> verificarEmail(@RequestParam("token") String token) {
+    public RedirectView verificarEmail(@RequestParam("token") String token) {
         Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
 
         if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Token inválido ou expirado.");
+            return new RedirectView("/erro"); // deve existir no backend
         }
 
         Users user = usuarioOpt.get();
@@ -32,6 +29,6 @@ public class VerificacaoController {
         user.setTokenVerificacao(null);
         usersRepository.save(user);
 
-        return ResponseEntity.ok("✅ E-mail verificado com sucesso. Agora você pode fazer login.");
+        return new RedirectView("/verificado"); // deve existir no backend
     }
 }
