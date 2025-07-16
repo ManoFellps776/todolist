@@ -32,7 +32,7 @@ public class EmailVerificationService {
     users.setAtivo(false);
     usersRepository.save(users);
 
-    String baseUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
+    String baseUrl = environment.getProperty("app.url.backend");
     String link = baseUrl + "/verificacao?token=" + token;
 
     String assunto = "Confirmação de e-mail";
