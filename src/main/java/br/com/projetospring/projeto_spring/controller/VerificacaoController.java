@@ -24,7 +24,7 @@ public class VerificacaoController {
 
         if (usuarioOpt.isEmpty()) {
             System.out.println("❌ Token inválido ou expirado.");
-            return new RedirectView("/erro.html");
+            return new RedirectView("/erro");
         }
 
         Users user = usuarioOpt.get();
@@ -37,6 +37,6 @@ public class VerificacaoController {
         usersRepository.save(user);
         System.out.println("✅ Usuário ativado e verificado com sucesso.");
 
-        return new RedirectView("/verificado.html"); // Certifique-se de que este arquivo existe no front-end
+        return new RedirectView("/verificado"); // Certifique-se de que este arquivo existe no front-end
     }
 }

@@ -35,6 +35,8 @@ public class SecurityConfig {
                     "/verificacao/**",       // ✅ garante que query params como ?token=xxx funcionem
                     "/verificar-email",      // (se usar outro endpoint, libere aqui também)
                     "/verificar-email/**"
+                    ,"verificado",
+                    "erro"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
