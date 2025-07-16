@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Optional;
-
 @RestController
 @RequestMapping("/verificacao")
 @CrossOrigin(origins = "*")
@@ -21,21 +20,21 @@ public class VerificacaoController {
     private Environment environment;
 
     @GetMapping
-public RedirectView verificarEmail(@RequestParam("token") String token) {
-    String baseUrl = environment.getProperty("app.url.frontend", "https://minha-agencia.onrender.com");
+    public RedirectView verificarEmail(@RequestParam("token") String token) {
+        String baseUrl = environment.getProperty("app.url.frontend", "https://minha-agencia.onrender.com");
 
-    Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
+        Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
 
-    if (usuarioOpt.isEmpty()) {
-        return new RedirectView(baseUrl + "/erro");
+        if (usuarioOpt.isEmpty()) {
+            return new RedirectView(baseUrl + "/erro");
+        }
+
+        Users user = usuarioOpt.get();
+        user.setVerificado(true);
+        user.setAtivo(true);
+        user.setTokenVerificacao(null);
+        usersRepository.save(user);
+
+        return new RedirectView(baseUrl + "/verificado");
     }
-
-    Users user = usuarioOpt.get();
-    user.setVerificado(true);
-    user.setAtivo(true);
-    user.setTokenVerificacao(null);
-    usersRepository.save(user);
-
-    return new RedirectView(baseUrl + "/verificado");
-}
 }
