@@ -26,10 +26,10 @@ public class Users {
     private String plano;
 
     @Column(nullable = false)
-    private boolean verificado = false;
+private boolean verificado = false;
 
-    @Column(nullable = false)
-    private boolean ativo = false;
+@Column(name = "ativo", nullable = false)
+private boolean ativo = false;
 
     @Column(name = "token_verificacao", length = 100)
     private String tokenVerificacao;
@@ -37,11 +37,14 @@ public class Users {
     // Construtores
     public Users() {}
 
-    public Users(String users, String senha, String email, String plano) {
+    public Users(String users, String senha, String email, String plano, Boolean verificado, Boolean ativo, String tokenVerificacao) {
         this.users = users;
         this.senha = senha;
         this.email = email;
         this.plano = plano;
+        this.verificado = verificado;
+        this.ativo = ativo;
+        this.tokenVerificacao = tokenVerificacao;
     }
 
     // Getters e Setters

@@ -22,30 +22,30 @@ public class VerificacaoController {
 
     @GetMapping
     public RedirectView verificarEmail(@RequestParam("token") String token) {
-        Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
-
         String baseUrl = environment.getProperty("app.url.frontend", "https://minha-agencia.onrender.com");
 
+        System.out.println("🔍 Recebido token de verificação: " + token);
+
+        Optional<Users> usuarioOpt = usersRepository.findByTokenVerificacao(token);
+
         if (usuarioOpt.isEmpty()) {
-            // 🔴 Redireciona para a página de erro no front-end
+            System.out.println("❌ Token inválido: " + token);
             return new RedirectView(baseUrl + "/erro-verificacao.html");
         }
-        System.out.println("Recebido token de verificação: " + token);
 
         Users user = usuarioOpt.get();
         user.setVerificado(true);
         user.setAtivo(true);
         user.setTokenVerificacao(null);
-        usersRepository.save(user);
-        System.out.println("Verificando usuário: " + user.getEmail());
-System.out.println("Antes => verificado: " + user.isVerificado() + ", ativo: " + user.isAtivo());
-user.setVerificado(true);
-user.setAtivo(true);
-user.setTokenVerificacao(null);
-usersRepository.save(user);
-System.out.println("Depois => verificado: " + user.isVerificado() + ", ativo: " + user.isAtivo());
-        
-        // ✅ Redireciona para a página de sucesso no front-end
+
+        try {
+            usersRepository.save(user);
+            System.out.println("✅ Usuário verificado e salvo: " + user.getEmail());
+        } catch (Exception e) {
+            System.out.println("❗ Erro ao salvar usuário: " + e.getMessage());
+            return new RedirectView(baseUrl + "/erro-verificacao.html");
+        }
+
         return new RedirectView(baseUrl + "/verificado.html");
     }
 }

@@ -31,7 +31,7 @@ public class EmailVerificationService {
         usuario.setVerificado(false); // Marcar como não verificado
         usersRepository.save(usuario); // Salva com o token
 
-        String baseUrl = environment.getProperty("app.url.backend", "https://minha-agencia-backend.onrender.com");
+        String baseUrl = environment.getProperty("app.url.frontend", "https://minha-agencia.onrender.com");
         String link = baseUrl + "/verificacao?token=" + token;
 
         String assunto = "Confirmação de e-mail";
