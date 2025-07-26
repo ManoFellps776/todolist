@@ -112,4 +112,15 @@ public class Users {
     public void setTokenVerificacao(String tokenVerificacao) {
         this.tokenVerificacao = tokenVerificacao;
     }
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+private Dados dados;
+
+public Dados getDados() {
+    return dados;
+}
+
+public void setDados(Dados dados) {
+    this.dados = dados;
+}
+
 }

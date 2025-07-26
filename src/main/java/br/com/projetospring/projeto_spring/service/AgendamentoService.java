@@ -1,7 +1,7 @@
 package br.com.projetospring.projeto_spring.service;
 
+import br.com.projetospring.projeto_spring.DTO.AgendamentoDTO;
 import br.com.projetospring.projeto_spring.entity.Agendamento;
-import br.com.projetospring.projeto_spring.entity.AgendamentoDTO;
 import br.com.projetospring.projeto_spring.entity.Paciente;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.AgendamentoRepository;
@@ -22,67 +22,62 @@ public class AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
     private final PacienteRepository pacienteRepository;
-    private final UsersRepository     usersRepository;
+    private final UsersRepository usersRepository;
 
     public AgendamentoService(AgendamentoRepository agendamentoRepository,
-                              PacienteRepository pacienteRepository,
-                              UsersRepository usersRepository) {
+                               PacienteRepository pacienteRepository,
+                               UsersRepository usersRepository) {
         this.agendamentoRepository = agendamentoRepository;
-        this.pacienteRepository    = pacienteRepository;
-        this.usersRepository       = usersRepository;
+        this.pacienteRepository = pacienteRepository;
+        this.usersRepository = usersRepository;
     }
 
     /* ╔════════════════════════════════════════════════════════╗
-       ║ 1.  CRIAR AGENDAMENTO (usuario vem da sessão segura)   ║
+       ║ 1. CRIAR AGENDAMENTO                                   ║
        ╚════════════════════════════════════════════════════════╝ */
-   public Agendamento criar(AgendamentoDTO dto, Long usuarioId) {
-    Users usuario = usersRepository.findById(usuarioId)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public Agendamento criar(AgendamentoDTO dto, Long usuarioId) {
+        Users usuario = usersRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-    Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-        .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
-    Agendamento agendamento = new Agendamento();
-    agendamento.setData(dto.getData());
-    agendamento.setHora(dto.getHora());
-    agendamento.setDescricao(dto.getDescricao());
-    agendamento.setCor(dto.getCor());
-    agendamento.setPaciente(paciente);
-    agendamento.setUsuario(usuario);
+        Agendamento agendamento = new Agendamento();
+        agendamento.setData(dto.getData());
+        agendamento.setHora(dto.getHora());
+        agendamento.setDescricao(dto.getDescricao());
+        agendamento.setCor(dto.getCor());
+        agendamento.setPaciente(paciente);
+        agendamento.setUsuario(usuario);
 
-    return agendamentoRepository.save(agendamento);
-}
-
-
-    /* ╔════════════════════════════════════════════════════════╗
-       ║ 2.  ATUALIZAR (só permite se pertencer ao usuário)     ║
-       ╚════════════════════════════════════════════════════════╝ */
-    @Transactional
-public Agendamento atualizar(Long id, AgendamentoDTO dto, Long usuarioId) {
-    Agendamento ag = agendamentoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
-
-    // Verifica se o agendamento pertence ao usuário logado
-    if (!ag.getUsuario().getId().equals(usuarioId)) {
-        throw new RuntimeException("Agendamento não pertence ao usuário autenticado");
+        return agendamentoRepository.save(agendamento);
     }
 
-    // Busca e atualiza o paciente
-    Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+    /* ╔════════════════════════════════════════════════════════╗
+       ║ 2. ATUALIZAR AGENDAMENTO                               ║
+       ╚════════════════════════════════════════════════════════╝ */
+    public Agendamento atualizar(Long id, AgendamentoDTO dto, Long usuarioId) {
+        Agendamento ag = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
 
-    ag.setPaciente(paciente);
-    ag.setData(dto.getData());
-    ag.setHora(dto.getHora());
-    ag.setDescricao(dto.getDescricao());
-    ag.setCor(dto.getCor());
+        if (!ag.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("Agendamento não pertence ao usuário autenticado");
+        }
 
-    return agendamentoRepository.save(ag);
-}
+        Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
+        ag.setPaciente(paciente);
+        ag.setData(dto.getData());
+        ag.setHora(dto.getHora());
+        ag.setDescricao(dto.getDescricao());
+        ag.setCor(dto.getCor());
+
+        return agendamentoRepository.save(ag);
+    }
 
     /* ╔════════════════════════════════════════════════════════╗
-       ║ 3.  BUSCAR POR DATA (só do usuário)                    ║
+       ║ 3. BUSCAR AGENDAMENTOS POR DATA DO USUÁRIO AUTENTICADO║
        ╚════════════════════════════════════════════════════════╝ */
     public List<Agendamento> buscarPorData(LocalDate data) {
         Users usuario = getUsuarioAutenticado();
@@ -90,7 +85,7 @@ public Agendamento atualizar(Long id, AgendamentoDTO dto, Long usuarioId) {
     }
 
     /* ╔════════════════════════════════════════════════════════╗
-       ║ 4.  DELETAR                                            ║
+       ║ 4. DELETAR AGENDAMENTO                                 ║
        ╚════════════════════════════════════════════════════════╝ */
     public void deletar(Long id) {
         Agendamento ag = agendamentoRepository.findById(id)
@@ -105,15 +100,13 @@ public Agendamento atualizar(Long id, AgendamentoDTO dto, Long usuarioId) {
     }
 
     /* ╔════════════════════════════════════════════════════════╗
-       ║ 5.  UTIL — usuário da sessão                           ║
+       ║ 5. OBTÉM USUÁRIO DA SESSÃO ATUAL                       ║
        ╚════════════════════════════════════════════════════════╝ */
     private Users getUsuarioAutenticado() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String username = auth.getName();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
 
-    Users user = usersRepository.findByUsersOrEmail(username, username)
-        .orElseThrow(() -> new RuntimeException("Usuário ou email autenticado não encontrado"));
-return user;
-
-}
+        return usersRepository.findByUsersOrEmail(username, username)
+                .orElseThrow(() -> new RuntimeException("Usuário autenticado não encontrado"));
+    }
 }

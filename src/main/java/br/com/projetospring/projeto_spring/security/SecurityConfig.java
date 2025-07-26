@@ -24,36 +24,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/home", "/", "/index",
-                    "/css/**", "/js/**", "/images/**", "/webjars/**",
-                    "/login/cadastro",
-                    "/login/**",
-                    "/verificacao",          // ✅ libera acesso ao endpoint de verificação
-                    "/verificacao/**",       // ✅ garante que query params como ?token=xxx funcionem
-                    "/verificar-email",      // (se usar outro endpoint, libere aqui também)
-                    "/verificar-email/**"
-                    ,"verificado",
-                    "erro"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(login -> login
-                .loginPage("/home")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/inicio", true)
-                .failureUrl("/home?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/home")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            );
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/home", "/", "/index",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**",
+                                "/login/cadastro",
+                                "/login/**",
+                                "/verificacao", "/verificacao/**",
+                                "/verificar-email", "/verificar-email/**",
+                                "/verificado", "/erro",
+                                "/dados/completar", "/dados/foto", "/dados/existe", "/dados/**",
+                                "/foto",
+                                "/pacientes", "/pacientes/**",
+                                "/anamnese", "/anamnese**",
+                                "/lixeira", "/lixeira/**"
+                                )
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(login -> login
+                        .loginPage("/home")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/inicio", true)
+                        .failureUrl("/home?error=true")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/home")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll());
 
         return http.build();
     }

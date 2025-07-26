@@ -3,6 +3,8 @@ package br.com.projetospring.projeto_spring.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,6 +42,7 @@ public class Paciente {
     private String descricao;
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnore
     private Users usuario;
 
     

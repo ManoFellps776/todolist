@@ -1,31 +1,74 @@
 //Carregar dados do perfil
 async function carregarPerfil() {
   try {
-    const resposta = await fetch("/login/logado", {
-      credentials: "include"
-    });
-
+    const resposta = await fetch("/login/logado", { credentials: "include" });
     const texto = await resposta.text();
 
-    // ⚠️ Verifica se retornou HTML em vez de JSON → significa que NÃO está logado
     if (texto.startsWith("<!DOCTYPE")) {
-      console.warn("Usuário não autenticado. Ignorando carregamento de perfil.");
-      return; // Evita erro e alerta desnecessário
+      console.warn("Usuário não autenticado");
+      return;
     }
 
     const usuario = JSON.parse(texto);
+    console.log("Usuário logado:", usuario);
 
-    document.getElementById("nomeUsuario").innerText = usuario.users;
-    document.getElementById("emailUsuario").innerText = usuario.email;
-    document.getElementById("planoUsuario").innerText = usuario.plano;
+    const dados = usuario.dados || {};
 
-    document.getElementById("novoNome").value = usuario.users;
-    document.getElementById("novoEmail").value = usuario.email;
+    // 🖼️ Atualiza imagens
+    if (usuario.foto) {
+      const imgPerfil = document.getElementById("fotoPerfil");
+      if (imgPerfil) imgPerfil.src = usuario.foto;
+
+      const imgAvatar = document.getElementById("userAvatar");
+      if (imgAvatar) imgAvatar.src = usuario.foto;
+    }
+
+    // 🧾 Preenchimento dos dados
+    document.getElementById("nomeUsuario").innerText = usuario.users || "Não informado";
+    document.getElementById("emailUsuario").innerText = usuario.email || "Não informado";
+    document.getElementById("planoUsuario").innerText = usuario.plano || "Não informado";
+    document.getElementById("NomeConcluaCadastro").innerText = usuario.users || "";
+
+    // Inputs (caso você use um formulário de edição)
+    document.getElementById("novoNome").value = usuario.users || "";
+    document.getElementById("novoEmail").value = usuario.email || "";
+    document.getElementById("novoNascimento").value = dados.dataNascimento || "";
+    document.getElementById("novoCpfCnpj").value = dados.cpfCnpj || "";
+    document.getElementById("novoTelefone").value = dados.telefone || "";
+
+    // Texto visível no perfil
+    document.getElementById("nascimentoUsuario").innerText = dados.dataNascimento || "Não informado";
+    document.getElementById("cpfCnpjUsuario").innerText = dados.cpfCnpj ? formatarCpfCnpj(dados.cpfCnpj) : "Não informado";
+    document.getElementById("telefoneUsuario").innerText = dados.telefone ? formatarTelefone(dados.telefone) : "Não informado";
 
   } catch (erro) {
     console.error("Erro ao carregar perfil:", erro);
-    // Só mostra alerta se quiser depurar
-    // alert("Erro ao carregar o perfil do usuário.");
+  }
+}
+
+
+// Formatadores
+function formatarCpfCnpj(valor) {
+  if (!valor) return "Não informado";
+  const v = valor.replace(/\D/g, '');
+  if (v.length === 11) {
+    return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  } else if (v.length === 14) {
+    return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  } else {
+    return valor;
+  }
+}
+
+function formatarTelefone(valor) {
+  if (!valor) return "Não informado";
+  const v = valor.replace(/\D/g, '');
+  if (v.length === 11) {
+    return v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  } else if (v.length === 10) {
+    return v.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  } else {
+    return valor;
   }
 }
 
@@ -44,34 +87,56 @@ function mostrarFormularioEdicao() {
 function cancelarEdicao() {
   document.getElementById("formEditarUsuario").style.display = "none";
 }
-
 async function editarUsuario(event) {
   event.preventDefault();
 
   const nome = document.getElementById("novoNome").value.trim();
   const email = document.getElementById("novoEmail").value.trim();
+  const nascimento = document.getElementById("novoNascimento").value.trim();
+  const cpfCnpj = document.getElementById("novoCpfCnpj").value.trim();
+  const telefone = document.getElementById("novoTelefone").value.trim();
+  const foto = document.getElementById("novaFoto").files[0];
 
   if (!nome || !email) {
-    alert("Preencha todos os campos.");
+    alert("Preencha todos os campos obrigatórios.");
     return;
   }
 
   try {
+    const formData = new FormData();
+    formData.append("nome", nome);
+    formData.append("email", email);
+    formData.append("dataNascimento", nascimento);
+    formData.append("cpfCnpj", cpfCnpj);
+    formData.append("telefone", telefone);
+    if (foto) {
+      formData.append("foto", foto);
+    }
+
     const response = await fetch("/login/usuarios", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include", // ← mantém a sessão do usuário logado
-      body: JSON.stringify({ nome, email })
+      body: formData,
+      credentials: "include"
     });
 
     const texto = await response.text();
-
     if (!response.ok) throw new Error(texto);
 
+    // Atualiza os dados visíveis no perfil
     document.getElementById("nomeUsuario").textContent = nome;
     document.getElementById("emailUsuario").textContent = email;
+    document.getElementById("nascimentoUsuario").textContent = nascimento || "Não informado";
+    document.getElementById("cpfCnpjUsuario").textContent = formatarCpfCnpj(cpfCnpj);
+    document.getElementById("telefoneUsuario").textContent = formatarTelefone(telefone);
+
+    if (foto) {
+      const novaUrl = URL.createObjectURL(foto);
+      document.getElementById("userAvatar").src = novaUrl;
+      const fotoPerfil = document.getElementById("fotoPerfil");
+      if (fotoPerfil) {
+        fotoPerfil.src = novaUrl;
+      }
+    }
 
     alert("✅ Dados atualizados com sucesso!");
     cancelarEdicao();
@@ -83,104 +148,105 @@ async function editarUsuario(event) {
 }
 
 
-//Mostrar Menu
-function mostrar(id) {
-    const sections = document.querySelectorAll('.conteudo');
-    sections.forEach(sec => sec.classList.remove('ativo'));
-    document.getElementById(id).classList.add('ativo');
 
-    //Desmarcar o paciente selecionado
-    if (id !== 'editarPaciente') {
+//Mostra  r Menu
+function mostrar(id) {
+  const sections = document.querySelectorAll('.conteudo');
+  sections.forEach(sec => sec.classList.remove('ativo'));
+  document.getElementById(id).classList.add('ativo');
+
+  //Desmarcar o paciente selecionado
+  if (id !== 'editarPaciente') {
     const select = document.getElementById('selectPaciente');
     if (select) {
       select.value = '';
       pacienteSelecionadoId = null;
-      
+
       document.getElementById('editForm').style.display = 'none';
-     
+
     }
   }
-    // 🟨 NOVO: salvar aba ativa
-    localStorage.setItem("abaAtiva", id);
+  // 🟨 NOVO: salvar aba ativa
+  localStorage.setItem("abaAtiva", id);
 }
 //Menu Ativar/desativar
 function toggleMenu() {
-    const sidebar = document.getElementById("sidebar");
-    const main = document.getElementById("main");
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main");
 
-    const isActive = sidebar.classList.toggle("mostrar");
-    main.classList.toggle("com-menu", isActive);
+  const isActive = sidebar.classList.toggle("mostrar");
+  main.classList.toggle("com-menu", isActive);
 
-    // 🟨 NOVO: salvar estado do menu
-    localStorage.setItem("menuAberto", isActive ? "1" : "0");
+  // 🟨 NOVO: salvar estado do menu
+  localStorage.setItem("menuAberto", isActive ? "1" : "0");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  
 
-     const sidebar = document.getElementById("sidebar");
-    const main = document.getElementById("main");
 
-    // 🟨 NOVO: restaurar estado do menu salvo
-    const menuAberto = localStorage.getItem("menuAberto") === "1";
-    if (menuAberto) {
-        sidebar.classList.add("mostrar");
-        main.classList.add("com-menu");
-    }
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main");
 
-    // 🟨 NOVO: restaurar aba ativa salva
-    const abaSalva = localStorage.getItem("abaAtiva");
-    if (abaSalva) {
+  // 🟨 NOVO: restaurar estado do menu salvo
+  const menuAberto = localStorage.getItem("menuAberto") === "1";
+  if (menuAberto) {
+    sidebar.classList.add("mostrar");
+    main.classList.add("com-menu");
+  }
+
+  // 🟨 NOVO: restaurar aba ativa salva
+  const abaSalva = localStorage.getItem("abaAtiva");
+  if (abaSalva) {
     mostrar(abaSalva);
-} else {
+  } else {
     mostrar("agenda"); // Coloque aqui a aba padrão que você quer mostrar
-}
+  }
 
 
-    // Financeiro
-    const financeiroBtn = document.querySelector("#financeiro button");
-    financeiroBtn.addEventListener("click", () => {
-        const valor = document.querySelector("#financeiro input[type='number']").value;
-        const tipo = document.querySelector("#financeiro select").value;
-        alert(`${tipo} registrada: R$ ${valor}`);
-    });
+  // Financeiro
+  const financeiroBtn = document.querySelector("#financeiro button");
+  financeiroBtn.addEventListener("click", () => {
+    const valor = document.querySelector("#financeiro input[type='number']").value;
+    const tipo = document.querySelector("#financeiro select").value;
+    alert(`${tipo} registrada: R$ ${valor}`);
+  });
 
-    
+
 });
 // View Login admin Ativa/desativar
 function mostrarLogin() {
-      document.getElementById('form-cadastro').style.display = 'none';
-    document.getElementById('form-admin').style.display = 'block';
-    }
+  document.getElementById('form-cadastro').style.display = 'none';
+  document.getElementById('form-admin').style.display = 'block';
+}
 
 
 //Validação de login
 function validarLogin(event) {
-      event.preventDefault();
-      const usuario = document.getElementById('usuario').value;
-      const senha = document.getElementById('senhaCadastro').value;
+  event.preventDefault();
+  const usuario = document.getElementById('usuario').value;
+  const senha = document.getElementById('senhaCadastro').value;
 
-      fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ users: usuario, senha: senha })
-      })
-      .then(response => response.text())
-      .then(data => {
-        if (data.includes("bem-sucedido")) {
-          window.location.href = "page_adm.html";
-        } else{
-          alert("Usuário ou senha incorretos!");
-        }return;
-      })
-      .catch(error => {
-        console.error("Erro ao tentar login:", error);
-        alert("Erro ao conectar com o servidor.");
-      });
-      
-    } 
+  fetch("/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ users: usuario, senha: senha })
+  })
+    .then(response => response.text())
+    .then(data => {
+      if (data.includes("bem-sucedido")) {
+        window.location.href = "page_adm.html";
+      } else {
+        alert("Usuário ou senha incorretos!");
+      } return;
+    })
+    .catch(error => {
+      console.error("Erro ao tentar login:", error);
+      alert("Erro ao conectar com o servidor.");
+    });
+
+}
 //Validação de cadastro
 async function validarCadastro(event) {
   event.preventDefault();
@@ -227,23 +293,15 @@ async function validarCadastro(event) {
 
 localStorage.removeItem("abaAtiva");
 
-// Simulando um objeto de usuário recuperado do back-end
-  const usuarioLogado = {
-    nome: "Felipe Rezende",
-    foto: "https://i.pravatar.cc/150?u=felipe@example.com" // pode substituir por path real
-  };
 
-  window.onload = function () {
-    document.getElementById("userAvatar").src = usuarioLogado.foto;
-  };
 
-  function toggleUserDropdown() {
+function toggleUserDropdown() {
   const dropdown = document.getElementById('userDropdown');
   dropdown.classList.toggle('show');
 }
 
 // Fecha o dropdown ao clicar fora dele
-window.addEventListener('click', function(event) {
+window.addEventListener('click', function (event) {
   if (!event.target.matches('.user-avatar')) {
     const dropdown = document.getElementById('userDropdown');
     if (dropdown.classList.contains('show')) {
@@ -254,7 +312,7 @@ window.addEventListener('click', function(event) {
 
 
 
- function sairLogin() {
+function sairLogin() {
   const confirmar = confirm("Deseja realmente sair?");
   if (confirmar) {
     localStorage.clear();
@@ -291,7 +349,7 @@ document.querySelectorAll('.sidebar ul li').forEach(item => {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  
+
   const sidebar = document.getElementById("sidebar");
   const main = document.getElementById("main");
 
@@ -385,7 +443,7 @@ async function carregarPacientesAnamnese() {
     });
   } catch (err) {
     console.error("Erro ao carregar pacientes:", err);
-    
+
   }
 }
 function mostrarBotoesAnamnese() {
@@ -489,7 +547,7 @@ async function preencherPaciente() {
     f.pesoIdeal.value = "";
 
     // (Opcional) Se quiser salvar o ID do usuário ocultamente:
-    
+
   } catch (err) {
     console.error("Erro ao preencher dados do paciente:", err);
   }
@@ -569,7 +627,6 @@ async function deletarAnamnese(id) {
     });
 
     if (res.ok) {
-      alert("✅ Anamnese excluída com sucesso.");
       await exibirRegistrosAnamnese(); // Atualiza a lista
     } else {
       alert("❌ Erro ao excluir anamnese.");
@@ -855,138 +912,138 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('editForm').style.display = 'none';
 
   document.getElementById('selectPaciente').addEventListener('change', async () => {
-  const id = document.getElementById('selectPaciente').value;
+    const id = document.getElementById('selectPaciente').value;
 
-  if (id) {
-    pacienteSelecionadoId = Number(id);
-    try {
-      const response = await fetch(`/pacientes/${pacienteSelecionadoId}`, {
-        credentials: "include"
-      });
+    if (id) {
+      pacienteSelecionadoId = Number(id);
+      try {
+        const response = await fetch(`/pacientes/${pacienteSelecionadoId}`, {
+          credentials: "include"
+        });
 
-      if (!response.ok) {
-        const erroTexto = await response.text();
-        console.error("Erro ao buscar paciente:", erroTexto);
-        alert("Paciente não encontrado ou você não tem permissão.");
-        return;
-      }
+        if (!response.ok) {
+          const erroTexto = await response.text();
+          console.error("Erro ao buscar paciente:", erroTexto);
+          alert("Paciente não encontrado ou você não tem permissão.");
+          return;
+        }
 
-      const paciente = await response.json();
-      preencherFormulario(paciente);
-      document.getElementById('selectPaciente').disabled = false;
-
-    } catch (err) {
-      console.error("Erro na requisição:", err);
-      alert("Erro ao buscar paciente.");
-    }
-  } else {
-    pacienteSelecionadoId = null;
-    document.getElementById('editForm').style.display = 'none';
-  }
-});
-
-
- document.getElementById('btnListar').addEventListener('click', async () => {
-
-  const listaContainer = document.getElementById('listaPacientes');
-  const botaoListar = document.getElementById('btnListar');
-  const form = document.getElementById('editForm');
-
-  if (mostrandoLista) {
-    listaContainer.style.display = 'none';
-    botaoListar.textContent = 'Listar Pacientes';
-    mostrandoLista = false;
-    return;
-  }
-
-  if (form.style.display === 'block') {
-    form.style.display = 'none';
-  }
-
-  try {
-    const response = await fetch(`/pacientes`);
-    if (!response.ok) throw new Error('Erro ao carregar pacientes');
-
-    const pacientes = await response.json();
-    listaContainer.innerHTML = '';
-
-    pacientes.forEach(paciente => {
-      const item = document.createElement('div');
-      item.classList.add('paciente-lista-item');
-
-      const nome = document.createElement('span');
-      nome.textContent = paciente.nome;
-
-      const btnEditar = document.createElement('button');
-      btnEditar.textContent = 'Editar';
-      btnEditar.className = 'btn-editar';
-      btnEditar.onclick = async () => {
-        pacienteSelecionadoId = paciente.id;
-        const res = await fetch(`/pacientes/${paciente.id}`);
-        if (!res.ok) return alert('Erro ao buscar paciente');
-        const p = await res.json();
-        preencherFormulario(p);
-        document.getElementById('selectPaciente').value = paciente.id;
+        const paciente = await response.json();
+        preencherFormulario(paciente);
         document.getElementById('selectPaciente').disabled = false;
-        form.style.display = 'block';
-        listaContainer.style.display = 'none';
-        botaoListar.textContent = 'Listar Pacientes';
-        mostrandoLista = false;
-      };
 
-      const btnDeletar = document.createElement('button');
-btnDeletar.textContent = 'Deletar';
-btnDeletar.className = 'btn-deletar';
+      } catch (err) {
+        console.error("Erro na requisição:", err);
+        alert("Erro ao buscar paciente.");
+      }
+    } else {
+      pacienteSelecionadoId = null;
+      document.getElementById('editForm').style.display = 'none';
+    }
+  });
 
-btnDeletar.onclick = async () => {
-  const confirmar = confirm(`❗ Deseja realmente deletar o paciente "${paciente.nome}"?`);
-  if (!confirmar) return;
 
-  try {
-    const resp = await fetch(`/pacientes/${paciente.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include' // ✅ mantém sessão se usar Spring Security
-    });
+  document.getElementById('btnListar').addEventListener('click', async () => {
 
-    if (resp.ok) {
-      alert(`✅ Paciente "${paciente.nome}" deletado com sucesso.`);
-      await carregarPacientes();
+    const listaContainer = document.getElementById('listaPacientes');
+    const botaoListar = document.getElementById('btnListar');
+    const form = document.getElementById('editForm');
 
-      // ✅ Atualiza a interface após deletar
+    if (mostrandoLista) {
       listaContainer.style.display = 'none';
       botaoListar.textContent = 'Listar Pacientes';
       mostrandoLista = false;
-    } else {
-      // 🔴 Se a API retornar erro, captura mensagem detalhada
-      const erro = await resp.text();
-      console.error('❌ Erro ao deletar paciente:', erro);
-      alert('❌ Erro ao deletar paciente: ' + erro);
+      return;
     }
 
-  } catch (err) {
-    console.error('❌ Erro na requisição DELETE:', err);
-    alert('❌ Erro ao conectar ao servidor ao deletar paciente.');
-  }
-};
+    if (form.style.display === 'block') {
+      form.style.display = 'none';
+    }
 
-// ✅ Adiciona o botão ao item
-item.appendChild(nome);
-item.appendChild(btnEditar);
-item.appendChild(btnDeletar);
-listaContainer.appendChild(item);
-    });
+    try {
+      const response = await fetch(`/pacientes`);
+      if (!response.ok) throw new Error('Erro ao carregar pacientes');
 
-    listaContainer.style.display = 'block';
-    botaoListar.textContent = 'Ocultar Lista';
-    mostrandoLista = true;
-  } catch (error) {
-    console.error(error);
-    alert('Erro ao listar pacientes');
-  }
-});
+      const pacientes = await response.json();
+      listaContainer.innerHTML = '';
+
+      pacientes.forEach(paciente => {
+        const item = document.createElement('div');
+        item.classList.add('paciente-lista-item');
+
+        const nome = document.createElement('span');
+        nome.textContent = paciente.nome;
+
+        const btnEditar = document.createElement('button');
+        btnEditar.textContent = 'Editar';
+        btnEditar.className = 'btn-editar';
+        btnEditar.onclick = async () => {
+          pacienteSelecionadoId = paciente.id;
+          const res = await fetch(`/pacientes/${paciente.id}`);
+          if (!res.ok) return alert('Erro ao buscar paciente');
+          const p = await res.json();
+          preencherFormulario(p);
+          document.getElementById('selectPaciente').value = paciente.id;
+          document.getElementById('selectPaciente').disabled = false;
+          form.style.display = 'block';
+          listaContainer.style.display = 'none';
+          botaoListar.textContent = 'Listar Pacientes';
+          mostrandoLista = false;
+        };
+
+        const btnDeletar = document.createElement('button');
+        btnDeletar.textContent = 'Deletar';
+        btnDeletar.className = 'btn-deletar';
+
+        btnDeletar.onclick = async () => {
+          const confirmar = confirm(`❗ Deseja realmente deletar o paciente "${paciente.nome}"?`);
+          if (!confirmar) return;
+
+          try {
+            const resp = await fetch(`/pacientes/${paciente.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              credentials: 'include' // ✅ mantém sessão se usar Spring Security
+            });
+
+            if (resp.ok) {
+              alert(`✅ Paciente "${paciente.nome}" deletado com sucesso.`);
+              await carregarPacientes();
+
+              // ✅ Atualiza a interface após deletar
+              listaContainer.style.display = 'none';
+              botaoListar.textContent = 'Listar Pacientes';
+              mostrandoLista = false;
+            } else {
+              // 🔴 Se a API retornar erro, captura mensagem detalhada
+              const erro = await resp.text();
+              console.error('❌ Erro ao deletar paciente:', erro);
+              alert('❌ Erro ao deletar paciente: ' + erro);
+            }
+
+          } catch (err) {
+            console.error('❌ Erro na requisição DELETE:', err);
+            alert('❌ Erro ao conectar ao servidor ao deletar paciente.');
+          }
+        };
+
+        // ✅ Adiciona o botão ao item
+        item.appendChild(nome);
+        item.appendChild(btnEditar);
+        item.appendChild(btnDeletar);
+        listaContainer.appendChild(item);
+      });
+
+      listaContainer.style.display = 'block';
+      botaoListar.textContent = 'Ocultar Lista';
+      mostrandoLista = true;
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao listar pacientes');
+    }
+  });
 });
 async function carregarPacientes() {
 
@@ -1010,7 +1067,7 @@ async function carregarPacientes() {
     }
   } catch (error) {
     console.error(error);
-    
+
   }
 }
 
@@ -1109,9 +1166,9 @@ async function salvarPaciente(event) {
     // ❌ Removido: usuario: { id: usuarioId }
   };
 
-  const url = pacienteSelecionadoId 
-      ? `/pacientes/${pacienteSelecionadoId}` 
-      : `/pacientes`;
+  const url = pacienteSelecionadoId
+    ? `/pacientes/${pacienteSelecionadoId}`
+    : `/pacientes`;
 
   const method = pacienteSelecionadoId ? 'PUT' : 'POST';
 
@@ -1141,7 +1198,7 @@ function voltarEdicao() {
   document.getElementById('selectPaciente').value = '';
   document.getElementById('selectPaciente').disabled = false; // ← Reativar select
   pacienteSelecionadoId = null;
-  
+
 }
 document.getElementById('btnEditar').addEventListener('click', async () => {
 
@@ -1261,12 +1318,14 @@ function generateCalendar(date) {
       alert('Erro ao carregar agendamentos');
     });
 }
-
 async function carregarAgendamentosDoMes(anoMes) {
   try {
     const url = `/agendamentos/mes/${anoMes}`;
 
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      credentials: 'include'  // <- mantém o cookie da sessão
+    });
+
     if (!res.ok) throw new Error('Erro ao carregar agendamentos');
 
     const agendamentos = await res.json();
@@ -1319,7 +1378,7 @@ async function salvarCadastroSimplificado(event) {
     document.getElementById('cadastroSimplificadoContainer').style.display = 'none';
 
     if (typeof carregarPacientes === 'function') {
-      
+
       await carregarPacientes();
     }
 
@@ -1357,23 +1416,23 @@ function showDayView() {
       texto.innerHTML = `<strong>${horaFormatada}</strong> - (${nomePaciente}) ➔ ${t.descricao}`;
 
       const actionsDiv = document.createElement('div');
-actionsDiv.className = 'task-actions';
+      actionsDiv.className = 'task-actions';
 
-const btnEditar = document.createElement('button');
-btnEditar.textContent = 'Editar';
-btnEditar.className = 'btn-editar';
-btnEditar.onclick = () => editarAgendamento(t);
+      const btnEditar = document.createElement('button');
+      btnEditar.textContent = 'Editar';
+      btnEditar.className = 'btn-editar';
+      btnEditar.onclick = () => editarAgendamento(t);
 
-const btnDeletar = document.createElement('button');
-btnDeletar.textContent = 'Deletar';
-btnDeletar.className = 'btn-deletar';
-btnDeletar.onclick = () => deletarAgendamento(t.id);
+      const btnDeletar = document.createElement('button');
+      btnDeletar.textContent = 'Deletar';
+      btnDeletar.className = 'btn-deletar';
+      btnDeletar.onclick = () => deletarAgendamento(t.id);
 
-actionsDiv.appendChild(btnEditar);
-actionsDiv.appendChild(btnDeletar);
+      actionsDiv.appendChild(btnEditar);
+      actionsDiv.appendChild(btnDeletar);
 
-item.appendChild(texto);
-item.appendChild(actionsDiv);
+      item.appendChild(texto);
+      item.appendChild(actionsDiv);
 
       lista.appendChild(item);
     });
@@ -1381,8 +1440,8 @@ item.appendChild(actionsDiv);
   view.appendChild(lista);
 
   const form = document.createElement('div');
-form.className = 'add-task-form';
-form.innerHTML = `
+  form.className = 'add-task-form';
+  form.innerHTML = `
 
   <button class="btnSimplificado" onclick="mostrarCadastroSimplificado()">Criar um cadastro simplificado</button>
   
@@ -1434,29 +1493,29 @@ form.innerHTML = `
   </div>
 `;
 
-view.appendChild(form);
-container.appendChild(view);
+  view.appendChild(form);
+  container.appendChild(view);
 
-// Carrega pacientes com filtro por usuário, se necessário
-fetch("/pacientes")
-  .then(res => {
-    if (!res.ok) throw new Error("Erro ao buscar pacientes");
-    return res.json();
-  })
-  .then(pacientes => {
-    const select = document.getElementById('pacienteSelect');
-    pacientes.sort((a, b) => a.nome.localeCompare(b.nome));
-    pacientes.forEach(p => {
-      const option = document.createElement('option');
-      option.value = p.id;
-      option.textContent = p.nome;
-      select.appendChild(option);
+  // Carrega pacientes com filtro por usuário, se necessário
+  fetch("/pacientes")
+    .then(res => {
+      if (!res.ok) throw new Error("Erro ao buscar pacientes");
+      return res.json();
+    })
+    .then(pacientes => {
+      const select = document.getElementById('pacienteSelect');
+      pacientes.sort((a, b) => a.nome.localeCompare(b.nome));
+      pacientes.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = p.nome;
+        select.appendChild(option);
+      });
+    })
+    .catch(err => {
+      console.error("Erro ao carregar pacientes:", err);
+      alert("Erro ao carregar pacientes");
     });
-  })
-  .catch(err => {
-    console.error("Erro ao carregar pacientes:", err);
-    alert("Erro ao carregar pacientes");
-  });
 
 
 }
@@ -1489,7 +1548,7 @@ function saveTask() {
   })
     .then(res => {
       if (!res.ok) throw new Error('Erro ao salvar agendamento');
-      return res.json();
+      return; // <- ✅ Corrigido aqui
     })
     .then(() => {
       carregarAgendamentosDoMes(selectedDate.slice(0, 7))
@@ -1511,7 +1570,6 @@ function editarAgendamento(agendamento) {
   salvarBtn.textContent = "Atualizar";
   salvarBtn.onclick = () => atualizarAgendamento(agendamento.id);
 }
-
 function atualizarAgendamento(id) {
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
@@ -1539,7 +1597,7 @@ function atualizarAgendamento(id) {
   })
     .then(res => {
       if (!res.ok) throw new Error('Erro ao atualizar agendamento');
-      return res.json();
+      return; // ✅ resposta sem corpo, não tenta converter
     })
     .then(() => {
       carregarAgendamentosDoMes(selectedDate.slice(0, 7))
@@ -1558,15 +1616,26 @@ function deletarAgendamento(id) {
   fetch(`/agendamentos/${id}`, {
     method: 'DELETE'
   })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Falha na exclusão");
+      }
+      return res; // continua o encadeamento
+    })
     .then(() => {
-      carregarAgendamentosDoMes(selectedDate.slice(0, 7))
-        .then(() => showDayView());
+      alert("✅ Agendamento excluído com sucesso!");
+      return carregarAgendamentosDoMes(selectedDate.slice(0, 7));
+    })
+    .then(() => {
+      showDayView();
     })
     .catch(err => {
       console.error('Erro ao deletar agendamento:', err);
-      alert("Erro ao deletar agendamento.");
+      alert("❌ Erro ao deletar agendamento.");
     });
 }
+
+
 function changeMonth(offset) {
   currentDate.setMonth(currentDate.getMonth() + offset);
   generateCalendar(currentDate);
@@ -1661,13 +1730,13 @@ document.getElementById('cpfCnpj').addEventListener('input', function () {
   let v = this.value.replace(/\D/g, '');
   if (v.length <= 11) {
     v = v.replace(/(\d{3})(\d)/, '$1.$2')
-         .replace(/(\d{3})(\d)/, '$1.$2')
-         .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
   } else {
     v = v.replace(/(\d{2})(\d)/, '$1.$2')
-         .replace(/(\d{3})(\d)/, '$1.$2')
-         .replace(/(\d{3})(\d)/, '$1/$2')
-         .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1/$2')
+      .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
   }
   this.value = v;
 });
@@ -1848,3 +1917,89 @@ document.getElementById('cep').addEventListener('blur', function () {
     })
     .catch(() => alert("Erro ao buscar o CEP. Tente novamente."));
 });
+
+
+// ➕ Formata CPF ou CNPJ automaticamente
+function formatarCpfCnpj(valor) {
+  valor = valor.replace(/\D/g, "");
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  } else {
+    valor = valor.replace(/^(\d{2})(\d)/, "$1.$2");
+    valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    valor = valor.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    valor = valor.replace(/(\d{4})(\d)/, "$1-$2");
+  }
+  return valor;
+}
+
+// ➕ Formata número de telefone
+function formatarTelefone(valor) {
+  valor = valor.replace(/\D/g, "");
+  if (valor.length > 10) {
+    return valor.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  } else {
+    return valor.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+  }
+}
+
+// ✅ Aguarda DOM carregar
+document.addEventListener("DOMContentLoaded", () => {
+  const cpfCnpjInput = document.getElementById("dados_cpfCnpj");
+  const telefoneInput = document.getElementById("dados_telefone");
+
+  // ➕ Ativa formatação dinâmica enquanto digita
+  cpfCnpjInput.addEventListener("input", () => {
+    cpfCnpjInput.value = formatarCpfCnpj(cpfCnpjInput.value);
+  });
+
+  telefoneInput.addEventListener("input", () => {
+    telefoneInput.value = formatarTelefone(telefoneInput.value);
+  });
+
+  // ➕ Submissão do formulário
+  document.getElementById("formDados").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    console.log("Submetendo formulário via fetch...");
+
+    const dataNascimento = document.getElementById("dados_dataNascimento").value;
+    const foto = document.getElementById("dados_foto").files[0];
+    const cpfCnpj = cpfCnpjInput.value.trim();
+    const telefone = telefoneInput.value.trim();
+
+    const formData = new FormData();
+    formData.append("cpfCnpj", cpfCnpj);
+    formData.append("telefone", telefone);
+    formData.append("dataNascimento", dataNascimento);
+    if (foto) formData.append("foto", foto);
+
+    try {
+      const res = await fetch("/dados/completar", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+
+      const txt = await res.text();
+      console.log("Resposta do servidor:", txt);
+
+      if (res.ok) {
+        setTimeout(() => {
+          carregarPerfil(); // ✅ Força recarregar dados com atraso leve
+        }, 200);
+        alert("✅ Dados salvos com sucesso!");
+        document.getElementById("popupCadastro").style.display = "none";
+        document.body.style.overflow = "auto";
+      } else {
+        alert("❌ Erro: " + txt);
+      }
+    } catch (err) {
+      alert("Erro ao enviar dados: " + err.message);
+    }
+  });
+});
+
+
+
