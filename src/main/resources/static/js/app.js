@@ -1567,11 +1567,11 @@ function saveTask() {
 }
 //EDITAR AGENDAMENTO
 function editarAgendamento(agendamento) {
-  if (!agendamento.paciente || !agendamento.paciente.id) {
+  if (!agendamento.pacienteId) {
     alert('⚠️ Paciente não encontrado neste agendamento.');
     return;
   }
-  document.getElementById('pacienteSelect').value = agendamento.paciente.id;
+  document.getElementById('pacienteSelect').value = agendamento.pacienteId;
   document.getElementById('taskTime').value = agendamento.hora;
   document.getElementById('taskDesc').value = agendamento.descricao;
   document.getElementById('taskColor').value = agendamento.cor;
@@ -1585,8 +1585,9 @@ function atualizarAgendamento(id) {
   const time = document.getElementById('taskTime').value.trim();
   const desc = document.getElementById('taskDesc').value.trim();
   const color = document.getElementById('taskColor').value;
-  const data = selectedDate;
+  const data = selectedDate; // Certifique-se de que selectedDate está em formato YYYY-MM-DD
 
+  // ✅ Validação
   if (!pacienteId || !time || !desc || !data) {
     alert('⚠️ Preencha todos os campos antes de atualizar.');
     return;
@@ -1600,26 +1601,31 @@ function atualizarAgendamento(id) {
     data: data
   };
 
+  // ✅ Requisição PUT
   fetch(`/agendamentos/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include', // garante que a sessão seja mantida se necessário
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
     body: JSON.stringify(agendamentoAtualizado)
   })
-    .then(res => res.text().then(txt => {
+    .then(async res => {
+      const txt = await res.text();
       console.log('🟢 Resposta do back-end:', txt);
       if (!res.ok) throw new Error(txt || 'Erro ao atualizar agendamento');
-    }))
+    })
     .then(() => {
       alert('✅ Agendamento atualizado com sucesso!');
-      return carregarAgendamentosDoMes(selectedDate.slice(0, 7));
+      return carregarAgendamentosDoMes(selectedDate.slice(0, 7)); // Recarrega mês atual
     })
-    .then(() => showDayView())
+    .then(() => showDayView()) // Reexibe tela do dia
     .catch(err => {
       console.error('❌ Erro ao atualizar agendamento:', err);
       alert(`❌ Erro: ${err.message}`);
     });
 }
+
 
 
 //DELETAR AGENDAMENTO
