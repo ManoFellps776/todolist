@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/foto",
                                 "/pacientes", "/pacientes/**",
                                 "/anamnese", "/anamnese**",
-                                "/lixeira", "/lixeira/**"
+                                "/lixeira", "/lixeira/**",
+                                "/agendamentos","/agendamentos/**"
                                 )
                         .permitAll()
                         .anyRequest().authenticated())

@@ -4,6 +4,7 @@ import br.com.projetospring.projeto_spring.DTO.AgendamentoDTO;
 import br.com.projetospring.projeto_spring.DTO.AgendamentoResponseDTO;
 import br.com.projetospring.projeto_spring.entity.Agendamento;
 import br.com.projetospring.projeto_spring.entity.LixeiraPacienteCompleta;
+import br.com.projetospring.projeto_spring.entity.Paciente;
 import br.com.projetospring.projeto_spring.repository.AgendamentoRepository;
 import br.com.projetospring.projeto_spring.repository.LixeiraPacienteCompletaRepository;
 import br.com.projetospring.projeto_spring.security.UsersDetails;
@@ -141,8 +142,28 @@ public ResponseEntity<List<AgendamentoResponseDTO>> listarPorMes(
 
     // 🔸 Buscar agendamentos por paciente
     @GetMapping("/paciente/{id}")
-    public ResponseEntity<List<Agendamento>> listarPorPaciente(@PathVariable Long id) {
-        List<Agendamento> lista = agendamentoRepository.findByPacienteId(id);
-        return ResponseEntity.ok(lista);
-    }
+public ResponseEntity<List<AgendamentoResponseDTO>> listarPorPaciente(@PathVariable Long id) {
+    List<Agendamento> agendamentos = agendamentoRepository.findByPacienteId(id);
+
+    List<AgendamentoResponseDTO> dtos = agendamentos.stream().map(ag -> {
+        AgendamentoResponseDTO dto = new AgendamentoResponseDTO();
+        dto.setId(ag.getId());
+        dto.setDescricao(ag.getDescricao());
+        dto.setCor(ag.getCor());
+        dto.setData(ag.getData());
+        dto.setHora(ag.getHora());
+
+        Paciente paciente = ag.getPaciente();
+        if (paciente != null) {
+            dto.setPacienteId(paciente.getId());
+            dto.setPacienteNome(paciente.getNome() != null ? paciente.getNome() : "Paciente");
+        } else {
+            dto.setPacienteNome("Paciente");
+        }
+
+        return dto;
+    }).toList();
+
+    return ResponseEntity.ok(dtos);
+}
 }

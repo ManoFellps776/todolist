@@ -17,7 +17,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     List<Agendamento> findByDataBetween(LocalDate inicio, LocalDate fim);
 
     // Busca todos os agendamentos de um paciente
-    List<Agendamento> findByPacienteId(Long pacienteId);
+    List<Agendamento> findByPacienteId(Long paciente);
 
     // Busca agendamentos por intervalo de datas e por usuário (ideal para segurança por sessão)
     List<Agendamento> findByDataBetweenAndUsuario_Id(LocalDate dataInicio, LocalDate dataFim, Long usuarioId);

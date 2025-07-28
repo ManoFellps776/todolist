@@ -1046,11 +1046,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 });
 async function carregarPacientes() {
-
   try {
-    const response = await fetch(`/pacientes`);
+    const response = await fetch('/pacientes');
     if (!response.ok) throw new Error('Erro ao carregar pacientes');
-    pacientes = await response.json();
+
+    const pacientes = await response.json(); // 👈 usar `const` evita sobrescrever variáveis globais indevidamente
 
     const select = document.getElementById('selectPaciente');
     select.innerHTML = '<option value="">Selecione um paciente</option>';
@@ -1062,14 +1062,19 @@ async function carregarPacientes() {
       select.appendChild(option);
     });
 
-    if (pacienteSelecionadoId === null) {
-      select.disabled = false;
-    }
-  } catch (error) {
-    console.error(error);
+    // 👇 Garantir que o select esteja habilitado após carregamento
+    select.disabled = false;
 
+    // ✅ Se quiser manter o paciente selecionado (opcional)
+    if (typeof pacienteSelecionadoId !== "undefined" && pacienteSelecionadoId) {
+      select.value = pacienteSelecionadoId;
+    }
+
+  } catch (error) {
+    console.error('Erro ao carregar pacientes:', error);
   }
 }
+
 
 
 function preencherFormulario(p) {
@@ -1297,7 +1302,7 @@ function generateCalendar(date) {
             const taskEl = document.createElement('div');
             taskEl.className = 'task-item ' + (task.cor || 'verde');
             const horaFormatada = task.hora?.substring(0, 5) || "00:00";
-            const nomePaciente = task.paciente?.nome?.split(" ")[0] || "Paciente";
+            const nomePaciente = task.pacienteNome?.split(" ")[0] || "Paciente";
             taskEl.textContent = `${horaFormatada} ➔ ${nomePaciente} `;
             scrollContainer.appendChild(taskEl);
           });
@@ -1410,7 +1415,7 @@ function showDayView() {
       const item = document.createElement('div');
       item.className = 'task-item ' + (t.cor || 'verde');
       const horaFormatada = t.hora?.substring(0, 5) || "00:00";
-      const nomePaciente = t.paciente?.nome?.split(' ')[0] || "Paciente";
+      const nomePaciente = t.pacienteNome?.split(' ')[0] || "Paciente";
 
       const texto = document.createElement('span');
       texto.innerHTML = `<strong>${horaFormatada}</strong> - (${nomePaciente}) ➔ ${t.descricao}`;
@@ -1519,6 +1524,7 @@ function showDayView() {
 
 
 }
+//SALVAR AGENDAMENTO
 function saveTask() {
   const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
@@ -1559,8 +1565,12 @@ function saveTask() {
       alert('Erro ao salvar agendamento');
     });
 }
-
+//EDITAR AGENDAMENTO
 function editarAgendamento(agendamento) {
+  if (!agendamento.paciente || !agendamento.paciente.id) {
+    alert('⚠️ Paciente não encontrado neste agendamento.');
+    return;
+  }
   document.getElementById('pacienteSelect').value = agendamento.paciente.id;
   document.getElementById('taskTime').value = agendamento.hora;
   document.getElementById('taskDesc').value = agendamento.descricao;
@@ -1572,13 +1582,13 @@ function editarAgendamento(agendamento) {
 }
 function atualizarAgendamento(id) {
   const pacienteId = document.getElementById('pacienteSelect').value;
-  const time = document.getElementById('taskTime').value;
-  const desc = document.getElementById('taskDesc').value;
+  const time = document.getElementById('taskTime').value.trim();
+  const desc = document.getElementById('taskDesc').value.trim();
   const color = document.getElementById('taskColor').value;
   const data = selectedDate;
 
   if (!pacienteId || !time || !desc || !data) {
-    alert('Preencha todos os campos antes de atualizar.');
+    alert('⚠️ Preencha todos os campos antes de atualizar.');
     return;
   }
 
@@ -1593,23 +1603,26 @@ function atualizarAgendamento(id) {
   fetch(`/agendamentos/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // garante que a sessão seja mantida se necessário
     body: JSON.stringify(agendamentoAtualizado)
   })
-    .then(res => {
-      if (!res.ok) throw new Error('Erro ao atualizar agendamento');
-      return; // ✅ resposta sem corpo, não tenta converter
-    })
+    .then(res => res.text().then(txt => {
+      console.log('🟢 Resposta do back-end:', txt);
+      if (!res.ok) throw new Error(txt || 'Erro ao atualizar agendamento');
+    }))
     .then(() => {
-      carregarAgendamentosDoMes(selectedDate.slice(0, 7))
-        .then(() => showDayView());
+      alert('✅ Agendamento atualizado com sucesso!');
+      return carregarAgendamentosDoMes(selectedDate.slice(0, 7));
     })
+    .then(() => showDayView())
     .catch(err => {
-      console.error('Erro ao atualizar agendamento:', err);
-      alert('Erro ao atualizar agendamento');
+      console.error('❌ Erro ao atualizar agendamento:', err);
+      alert(`❌ Erro: ${err.message}`);
     });
 }
 
 
+//DELETAR AGENDAMENTO
 function deletarAgendamento(id) {
   if (!confirm("Deseja realmente excluir este agendamento?")) return;
 
