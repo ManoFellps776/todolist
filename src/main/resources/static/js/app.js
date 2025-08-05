@@ -14,6 +14,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
   //CARREGA O POPUP COMPLETAR CADASTRO
+  document.querySelector("form[action='/login']").addEventListener("submit", function(e) {
+    const checkbox = document.getElementById("lembrarLogin");
+    if (!checkbox.checked) {
+      checkbox.removeAttribute("name"); // Impede o envio do campo se desmarcado
+    }
+  });
   verificarPopupCadastro();
   atualizarDashboard();
 
@@ -449,32 +455,7 @@ function mostrarLogin() {
 
 
 //Validação de login
-function validarLogin(event) {
-  event.preventDefault();
-  const usuario = document.getElementById('usuario').value;
-  const senha = document.getElementById('senhaCadastro').value;
 
-  fetch("/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ users: usuario, senha: senha })
-  })
-    .then(response => response.text())
-    .then(data => {
-      if (data.includes("bem-sucedido")) {
-        window.location.href = "page_adm.html";
-      } else {
-        alert("Usuário ou senha incorretos!");
-      } return;
-    })
-    .catch(error => {
-      console.error("Erro ao tentar login:", error);
-      alert("Erro ao conectar com o servidor.");
-    });
-
-}
 //Validação de cadastro
 async function validarCadastro(event) {
   event.preventDefault();

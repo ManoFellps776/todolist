@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agência de Controle</title>
   <link rel="stylesheet" href="/css/menuinicial.css">
 </head>
+
 <body>
   <div class="topbar">
     <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
@@ -29,9 +31,14 @@
         <div class="card" id="loginCard">
           <h2>Entrar</h2>
           <form method="post" action="/login">
-          <input type="text" name="username" id="usuario" placeholder="Dígite o usuário ou e-mail." required>
-          <input type="password" name="password" id="senhaCadastro" placeholder="Senha" required>
-          <button type="submit" class="btn">Entrar</button>
+            <input type="text" name="username" id="usuario" placeholder="Dígite o usuário ou e-mail." required>
+            <input type="password" name="password" id="senhaCadastro" placeholder="Senha" required>
+            <label>
+              <input type="checkbox" id="lembrarLogin" name="remember-me" />
+              Manter conectado
+            </label>
+
+            <button type="submit" class="btn">Entrar</button>
             <a href="#" class="link">Esqueceu a senha?</a>
             <hr>
             <button type="button" class="btn-outline" onclick="mostrarCadastro()">Criar nova conta</button>
@@ -41,31 +48,31 @@
     </div>
 
     <!-- FORMULÁRIO DE CADASTRO -->
-<div id="clientes" class="conteudo">
-  <div class="container">
-    <div class="card" id="cadastroCard">
-      <h2>Criar conta</h2>
-      <form id="formCadastro" onsubmit="validarCadastro(event)" novalidate>
-        
-        <label for="nome">Nome de usuário</label>
-        <input type="text" id="nome" name="nome" placeholder="Digite seu nome de usuário" required>
+    <div id="clientes" class="conteudo">
+      <div class="container">
+        <div class="card" id="cadastroCard">
+          <h2>Criar conta</h2>
+          <form id="formCadastro" onsubmit="validarCadastro(event)" novalidate>
 
-        <label for="email1">Email</label>
-        <input type="email" id="email1" name="email" placeholder="Digite seu email" required>
+            <label for="nome">Nome de usuário</label>
+            <input type="text" id="nome" name="nome" placeholder="Digite seu nome de usuário" required>
 
-        <label for="senhaCadastro1">Senha</label>
-        <input type="password" id="senhaCadastro1" name="senha" placeholder="Digite sua senha" required>
+            <label for="email1">Email</label>
+            <input type="email" id="email1" name="email" placeholder="Digite seu email" required>
 
-        <label for="confirmarSenha">Confirmar Senha</label>
-        <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" required>
+            <label for="senhaCadastro1">Senha</label>
+            <input type="password" id="senhaCadastro1" name="senha" placeholder="Digite sua senha" required>
 
-        <button type="submit" class="btn">Cadastrar</button>
-        <button type="button" class="btn-outline" onclick="mostrarLogin()">Voltar</button>
-        
-      </form>
+            <label for="confirmarSenha">Confirmar Senha</label>
+            <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" required>
+
+            <button type="submit" class="btn">Cadastrar</button>
+            <button type="button" class="btn-outline" onclick="mostrarLogin()">Voltar</button>
+
+          </form>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
 
 
@@ -125,4 +132,5 @@
 
   <script src="/js/app.js" defer></script>
 </body>
+
 </html>
