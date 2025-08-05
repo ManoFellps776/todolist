@@ -5,6 +5,7 @@ import br.com.projetospring.projeto_spring.entity.Dados;
 import br.com.projetospring.projeto_spring.entity.Users;
 import br.com.projetospring.projeto_spring.repository.DadosRepository;
 import br.com.projetospring.projeto_spring.repository.UsersRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -60,17 +61,26 @@ public class DadosController {
         return ResponseEntity.ok("✅ Dados salvos com sucesso.");
     }
 
-    // ✅ 2. Verificar se já preencheu os dados
-    @GetMapping("/existe")
-    public ResponseEntity<Boolean> verificarSePreencheu() {
-        Users user = getUsuarioAutenticado();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        boolean existe = dadosRepository.existsByUsuarioId(user.getId());
-        return ResponseEntity.ok(existe);
+    // ✅ 2. Novo endpoint: verificar se deve exibir o popup
+  @GetMapping("/completos")
+public ResponseEntity<Boolean> dadosCompletos() {
+    Users user = getUsuarioAutenticado();
+    if (user == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    Optional<Dados> dadosOpt = dadosRepository.findByUsuarioId(user.getId());
+
+    boolean completo = dadosOpt.isPresent()
+            && dadosOpt.get().getCpfCnpj() != null
+            && !dadosOpt.get().getCpfCnpj().isEmpty()
+            && dadosOpt.get().getTelefone() != null
+            && !dadosOpt.get().getTelefone().isEmpty()
+            && dadosOpt.get().getDataNascimento() != null
+            && !dadosOpt.get().getDataNascimento().isEmpty();
+
+    return ResponseEntity.ok(completo);
+}
 
     // ✅ 3. Buscar dados (sem foto)
     @GetMapping
@@ -96,39 +106,30 @@ public class DadosController {
     }
 
     // ✅ 4. Buscar foto do usuário
-@GetMapping("/foto")
-public ResponseEntity<byte[]> getFoto() {
-    Users user = getUsuarioAutenticado();
-    if (user == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    Optional<Dados> dadosOpt = dadosRepository.findByUsuarioId(user.getId());
-    if (dadosOpt.isPresent()) {
-        Dados dados = dadosOpt.get();
-        byte[] imagem = dados.getFoto();
-
-        if (imagem == null || imagem.length == 0) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/foto")
+    public ResponseEntity<byte[]> getFoto() {
+        Users user = getUsuarioAutenticado();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 🔍 Detectar tipo da imagem automaticamente (opcional: melhorar compatibilidade)
-        MediaType mediaType = MediaType.IMAGE_JPEG; // padrão
+        Optional<Dados> dadosOpt = dadosRepository.findByUsuarioId(user.getId());
+        if (dadosOpt.isPresent()) {
+            byte[] imagem = dadosOpt.get().getFoto();
+            if (imagem == null || imagem.length == 0) {
+                return ResponseEntity.notFound().build();
+            }
 
-        // ⚠️ Se você quiser detectar o tipo real:
-        // use Apache Tika ou outra lib para MIME detection (ou salve tipo na entidade)
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            headers.setCacheControl(CacheControl.noCache());
+            return new ResponseEntity<>(imagem, headers, HttpStatus.OK);
+        }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(mediaType);
-        headers.setCacheControl(CacheControl.noCache()); // Evita cache se trocar imagem
-
-        return new ResponseEntity<>(imagem, headers, HttpStatus.OK);
+        return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.notFound().build();
-}
-
-    // 🔐 Helper: obter usuário autenticado via SecurityContext
+    // 🔐 Helper: obter usuário autenticado
     private Users getUsuarioAutenticado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return null;

@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="/css/calendario.css">
   <link rel="stylesheet" href="/css/perfilInterface.css">
   <link rel="stylesheet" href="/css/popup.css">
+  <link rel="stylesheet" href="/css/financeiro.css">
+  <link rel="stylesheet" href="/css/servicos.css">
 
 </head>
 
@@ -27,13 +29,13 @@
   </div>
   </div>
   <div class="sidebar" id="sidebar">
-    <h2>Agência</h2>
+    <h3>Agência</h3>
     <ul>
       <li onclick="mostrar('agenda')">Agenda</li>
       <li onclick="mostrar('editarPaciente')">Portal do Paciente</li>
       <li onclick="mostrar('anamnese')">Registros gerais</li>
       <li onclick="mostrar('financeiro')">Financeiro</li>
-      <li onclick="mostrar('finalizarcadastro')">finalizar Cadastro</li>
+      <li onclick="mostrar('servicos')">Serviços</li>
 
     </ul>
   </div>
@@ -128,13 +130,13 @@
       <div id="agendamentoContainer"></div>
     </div>
     <div id="anamnese" class="conteudo">
-      <h1>Anamnese</h1>
+      <div class="container-box">
+      <h3>Anamnese</h3>
 
       <!-- Selecionar Paciente -->
       <section class="section">
-        <h2>Selecionar Paciente</h2>
         <div class="grid">
-          <label>Paciente
+          <label>Selecionar Paciente
             <select id="pacienteAnamnese"></select>
           </label>
         </div>
@@ -146,7 +148,7 @@
         <button type="button" onclick="exibirSecaoAnamnese('criarAnamnese')">Criar Anamnese</button>
         <button type="button" onclick="exibirSecaoAnamnese('registroAnamnese')">Ver Registro de Anamnese</button>
       </div>
-
+      </div>
       <!-- Agendamentos -->
       <div id="agendamentos" style="display: none;">
         <div id="listaAgendamentos" class="lista-agendamentos"></div>
@@ -229,7 +231,7 @@
     </div>
     <div id="cadastrarPaciente" class="conteudo">
       <div class="container">
-        <h1>Cadastro de Paciente</h1>
+        <h3>Cadastro de Paciente</h3>
         <form id="cadastroForm">
           <div class="form-sections">
             <div class="left-column">
@@ -331,7 +333,7 @@
     </div>
     <div id="editarPaciente" class="conteudo">
       <div class="container">
-        <h2>Área do Paciente</h2>
+        <h3>Área do Paciente</h3>
 
         <select id="selectPaciente" class="selectPaciente">
           <option value="">Selecione um paciente</option>
@@ -384,46 +386,110 @@
         </form>
       </div>
     </div>
-    <div id="financeiro" class="conteudo">
-      <h3>Financeiro</h3>
-      <input type="number" placeholder="Valor (R$)" />
-      <select>
-        <option>Receita</option>
-        <option>Despesa</option>
-      </select>
-      <button>Lançar</button>
-    </div>
-
-
-    <div id="finalizarcadastro" class="conteudo">
-      <div id="popupCadastro" class="popup-overlay">
-        <div class="popup-content">
-          <h2>Conclua seu cadastro</h2>
-          <p><strong>👤 Nome:</strong> <span id="NomeConcluaCadastro"></span></p>
-
-          <form id="formDados" enctype="multipart/form-data">
-            <label for="dados_foto">Foto de Perfil:</label>
-            <input type="file" id="dados_foto" name="foto" accept="image/*" required><br>
-
-            <label for="dados_cpfCnpj">CPF/CNPJ:</label>
-            <input type="text" id="dados_cpfCnpj" name="cpfCnpj" required><br>
-
-            <label for="dados_telefone">Telefone:</label>
-            <input type="text" id="dados_telefone" name="telefone" required><br>
-
-            <label for="dados_dataNascimento">Data de Nascimento:</label>
-            <input type="date" id="dados_dataNascimento" name="dataNascimento" required><br>
-
-            <button type="submit" class="btn"onclick="mostrar('agenda')">Salvar</button>
-          </form>
+    
+  <!-- CONTAINER FINANCEIRO -->
+<div id="financeiro" class="conteudo">
+  <div class="container-box">
+    <!-- DASHBOARD -->
+    <div class="dashboard">
+      <h3>💰 Visão Geral do Mês</h3>
+      <div class="dashboard-cards">
+        <div class="card">
+          <h3>Saldo Total</h3>
+          <p id="saldoTotal">R$ 0,00</p>
+        </div>
+        <div class="card">
+          <h3>Receitas</h3>
+          <p id="totalReceitas">R$ 0,00</p>
+        </div>
+        <div class="card">
+          <h3>Despesas</h3>
+          <p id="totalDespesas">R$ 0,00</p>
         </div>
       </div>
     </div>
 
+    <!-- FORMULÁRIO -->
+    <h3>💳 Lançamento Financeiro</h3>
+    <label for="tipoLancamento">Tipo:</label>
+    <select id="tipoLancamento">
+      <option value="receita">Receita</option>
+      <option value="despesa">Despesa</option>
+    </select>
+
+    <label for="valorLancamento">Valor (R$):</label>
+    <input type="number" id="valorLancamento" placeholder="Valor" step="0.01" />
+
+    <label for="dataLancamento">Data:</label>
+    <input type="date" id="dataLancamento" />
+
+    <label for="descricaoLancamento">Detalhes (opcional):</label>
+    <textarea id="descricaoLancamento" placeholder="Descreva brevemente..."></textarea>
+
+    <button onclick="lancarMovimento()">💵 Lançar Nota</button>
+    <button onclick="abrirHistoricoFinanceiro()">📃 Ver Histórico</button>
+
+    <!-- HISTÓRICO -->
+    <div id="historicoFinanceiro" style="display: none; margin-top: 20px;">
+      <h4>Histórico de Lançamentos:</h4>
+      <ul id="listaHistorico"></ul>
+    </div>
+  </div>
+</div>
+    
+
+    <!-- CONTAINER SERVIÇOS -->
+<div id="servicos" class="conteudo">
+  <div class="container-box"> <!-- CARD CENTRAL -->
+
+    <h3>📋 Serviços Disponíveis</h3>
+
+    <label for="servicoSelect">Selecione um serviço:</label>
+    <select id="servicoSelect">
+      <option value="">Selecione um serviço</option>
+    </select>
+
+    <button onclick="abrirFormularioServico()">➕ Criar novo serviço</button>
+    <button onclick="carregarServicos()">📋 Listar serviços</button>
+
+    <hr />
+
+    <h4>Lista de Serviços:</h4>
+    <ul id="listaServicos" class="lista-servicos"></ul>
+
+  </div> <!-- FECHANDO CARD -->
+
+  <!-- POPUP DE CRIAÇÃO DE SERVIÇO -->
+  <div id="popupServico" class="popup-overlay" style="display: none;">
+    <div class="popup-box">
+      <h3>Novo Serviço</h3>
+      <form id="formServico">
+        <label for="nomeServico">Nome do serviço:</label>
+        <input type="text" id="nomeServico" placeholder="Nome do serviço" required />
+
+        <label for="precoServico">Preço (R$):</label>
+        <input type="number" id="precoServico" placeholder="Preço (R$)" required step="0.01" />
+
+        <label for="duracaoServico">Duração (minutos):</label>
+        <input type="number" id="duracaoServico" placeholder="Duração (minutos)" required />
+
+        <div class="botoes-servico">
+          <button type="submit">Salvar</button>
+          <button type="button" onclick="fecharFormularioServico()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="finalizarcadastro">
+      <div id="popupCadastro" class="popup-overlay"></div>
+    </div>
 
   </div>
   </div>
   <script src="/js/app.js" defer></script>
+  <script src="/js/financeiro.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 </body>

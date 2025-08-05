@@ -1,257 +1,3 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  // 🔹 1. Carregar perfil (caso exista)
-   carregarPerfil();
-   carregarPacientes();
-
-
-  // 🔹 2. Sidebar e abas
-  const sidebar = document.getElementById("sidebar");
-  const main = document.getElementById("main");
-  if (sidebar && main) {
-    if (localStorage.getItem("menuAberto") === "1") {
-      sidebar.classList.add("mostrar");
-      main.classList.add("com-menu");
-    }
-  }
-  //CARREGA O POPUP COMPLETAR CADASTRO
-  verificarPopupCadastro();
-  atualizarDashboard();
-
-  // Mostrar aba salva apenas se a função e o ID existir
-  const abaSalva = localStorage.getItem("abaAtiva");
-  if (typeof mostrar === "function" && document.getElementById(abaSalva || "agenda")) {
-    mostrar(abaSalva || "agenda");
-  }
-
- 
-
-  // 🔹 4. Anamnese
-  if (typeof inicializarEventosAnamnese === 'function') {
-    inicializarEventosAnamnese();
-  }
-
-  // 🔹 5. Pacientes – Calendário
-  const selectPaciente = document.getElementById('selectPaciente');
-  if (selectPaciente) {
-    selectPaciente.addEventListener('click', carregarPacientes);
-  }
-
-  // 🔹 6. Pacientes – Listagem e Edição
-  if (typeof carregarPacientes === 'function') {
-    await carregarPacientes();
-  }
-  const form = document.getElementById('editForm');
-  if (form) form.style.display = 'none';
-
-  const select = document.getElementById('selectPaciente');
-  if (select) {
-    select.addEventListener('change', async () => {
-      const id = select.value;
-      if (id) {
-        try {
-          const response = await fetch(`/pacientes/${id}`, { credentials: "include" });
-          if (!response.ok) return alert("Paciente não encontrado");
-
-          const paciente = await response.json();
-          preencherFormulario(paciente);
-          select.disabled = false;
-        } catch (err) {
-          alert("Erro ao buscar paciente.");
-        }
-      } else {
-        if (form) form.style.display = 'none';
-      }
-    });
-  }
-
-  const btnListar = document.getElementById('btnListar');
-  if (btnListar) {
-    btnListar.addEventListener('click', async () => {
-      const listaContainer = document.getElementById('listaPacientes');
-      const botaoListar = btnListar;
-
-      if (!mostrandoLista) {
-        const response = await fetch(`/pacientes`);
-        if (!response.ok) return alert('Erro ao carregar pacientes');
-
-        const pacientes = await response.json();
-        listaContainer.innerHTML = '';
-
-        pacientes.forEach(paciente => {
-          const item = document.createElement('div');
-          item.classList.add('paciente-lista-item');
-
-          const nome = document.createElement('span');
-          nome.textContent = paciente.nome;
-
-          const btnEditar = document.createElement('button');
-          btnEditar.textContent = 'Editar';
-          btnEditar.className = 'btn-editar';
-          btnEditar.onclick = async () => {
-            const res = await fetch(`/pacientes/${paciente.id}`);
-            if (!res.ok) return alert('Erro ao buscar paciente');
-            const p = await res.json();
-            preencherFormulario(p);
-            document.getElementById('selectPaciente').value = paciente.id;
-            document.getElementById('selectPaciente').disabled = false;
-            form.style.display = 'block';
-            listaContainer.style.display = 'none';
-            botaoListar.textContent = 'Listar Pacientes';
-            mostrandoLista = false;
-          };
-
-          const btnDeletar = document.createElement('button');
-          btnDeletar.textContent = 'Deletar';
-          btnDeletar.className = 'btn-deletar';
-          btnDeletar.onclick = async () => {
-            const confirmar = confirm(`❗ Deseja deletar "${paciente.nome}"?`);
-            if (!confirmar) return;
-            const resp = await fetch(`/pacientes/${paciente.id}`, {
-              method: 'DELETE',
-              credentials: 'include'
-            });
-            if (resp.ok) {
-              alert("Paciente deletado com sucesso.");
-              await carregarPacientes();
-              listaContainer.style.display = 'none';
-              botaoListar.textContent = 'Listar Pacientes';
-              mostrandoLista = false;
-            } else {
-              alert("Erro ao deletar paciente.");
-            }
-          };
-
-          item.appendChild(nome);
-          item.appendChild(btnEditar);
-          item.appendChild(btnDeletar);
-          listaContainer.appendChild(item);
-        });
-
-        listaContainer.style.display = 'block';
-        botaoListar.textContent = 'Ocultar Lista';
-        mostrandoLista = true;
-      } else {
-        document.getElementById('listaPacientes').style.display = 'none';
-        botaoListar.textContent = 'Listar Pacientes';
-        mostrandoLista = false;
-      }
-    });
-  }
-
-});
-//FIM DO DOM
-
-// 🔹 4. Verificação automática de necessidade do popup
-async function verificarPopupCadastro() {
-  try {
-    const res = await fetch("/dados/completos", { credentials: "include" });
-
-    if (!res.ok) {
-      console.warn("⚠️ Não foi possível verificar os dados do usuário.");
-      return;
-    }
-
-    const dadosCompletos = await res.json();
-
-    if (!dadosCompletos) {
-      // 🔹 Injeta o formulário com innerHTML
-      document.getElementById("popupCadastro").innerHTML = `
-        <div class="popup-conteudo">
-    <h2>🔐 Complete seu cadastro</h2>
-    <form id="formDados">
-      <label for="dados_cpfCnpj">CPF/CNPJ:</label>
-      <input type="text" id="dados_cpfCnpj" required>
-
-      <label for="dados_telefone">Telefone:</label>
-      <input type="text" id="dados_telefone" required>
-
-      <label for="dados_dataNascimento">Data de Nascimento:</label>
-      <input type="date" id="dados_dataNascimento" required>
-
-      <label for="dados_foto">Foto (opcional):</label>
-      <input type="file" id="dados_foto">
-
-      <button type="submit">Salvar</button>
-    </form>
-  </div>
-      `;
-
-      document.getElementById("popupCadastro").style.display = "flex";
-      document.body.style.overflow = "hidden";
-
-      configurarEventosFormularioDados(); // 🟢 chama função para ativar comportamento
-    }
-  } catch (err) {
-    console.error("Erro ao verificar dados do usuário:", err);
-  }
-}
-//Configura o popup
-function configurarEventosFormularioDados() {
-  const cpfCnpjInput = document.getElementById("dados_cpfCnpj");
-  const telefoneInput = document.getElementById("dados_telefone");
-  const formDados = document.getElementById("formDados");
-
-  cpfCnpjInput.addEventListener("input", () => {
-    cpfCnpjInput.value = formatarCpfCnpj(cpfCnpjInput.value);
-  });
-
-  telefoneInput.addEventListener("input", () => {
-    telefoneInput.value = formatarTelefone(telefoneInput.value);
-  });
-
-  formDados.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const dataNascimento = document.getElementById("dados_dataNascimento")?.value || "";
-    const foto = document.getElementById("dados_foto")?.files[0];
-    const cpfCnpj = cpfCnpjInput?.value.trim() || "";
-    const telefone = telefoneInput?.value.trim() || "";
-
-    if (!cpfCnpj || !telefone || !dataNascimento) {
-      alert("⚠️ Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("cpfCnpj", cpfCnpj);
-    formData.append("telefone", telefone);
-    formData.append("dataNascimento", dataNascimento);
-    if (foto) formData.append("foto", foto);
-
-    try {
-      const res = await fetch("/dados/completar", {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      });
-
-      const txt = await res.text();
-
-      if (res.ok) {
-        document.getElementById("popupCadastro").innerHTML = `
-          <div style="text-align: center; padding: 30px;">
-            <h2>✅ Cadastro concluído!</h2>
-            <p>Bem-vindo(a) ao sistema.</p>
-            <button onclick="fecharPopupCadastro()">OK</button>
-          </div>
-        `;
-      } else {
-        alert("❌ Erro ao salvar: " + txt);
-      }
-    } catch (err) {
-      alert("❌ Erro ao enviar dados: " + err.message);
-    }
-  });
-}
-//Fecha o popup
-function fecharPopupCadastro() {
-  document.getElementById("popupCadastro").style.display = "none";
-  document.body.style.overflow = "auto";
-  carregarPerfil(); // se necessário
-}
-
-
-
 //Carregar dados do perfil
 async function carregarPerfil() {
   try {
@@ -264,46 +10,41 @@ async function carregarPerfil() {
     }
 
     const usuario = JSON.parse(texto);
+    console.log("Usuário logado:", usuario);
+
     const dados = usuario.dados || {};
 
-    // Imagem de perfil
-    const imgPerfil = document.getElementById("fotoPerfil");
-    if (imgPerfil && usuario.foto) imgPerfil.src = usuario.foto;
+    // 🖼️ Atualiza imagens
+    if (usuario.foto) {
+      const imgPerfil = document.getElementById("fotoPerfil");
+      if (imgPerfil) imgPerfil.src = usuario.foto;
 
-    const imgAvatar = document.getElementById("userAvatar");
-    if (imgAvatar && usuario.foto) imgAvatar.src = usuario.foto;
+      const imgAvatar = document.getElementById("userAvatar");
+      if (imgAvatar) imgAvatar.src = usuario.foto;
+    }
 
-    // Texto de perfil
-    const setText = (id, texto) => {
-      const el = document.getElementById(id);
-      if (el) el.innerText = texto;
-    };
+    // 🧾 Preenchimento dos dados
+    document.getElementById("nomeUsuario").innerText = usuario.users || "Não informado";
+    document.getElementById("emailUsuario").innerText = usuario.email || "Não informado";
+    document.getElementById("planoUsuario").innerText = usuario.plano || "Não informado";
+    document.getElementById("NomeConcluaCadastro").innerText = usuario.users || "";
 
-    const setValue = (id, valor) => {
-      const el = document.getElementById(id);
-      if (el) el.value = valor;
-    };
+    // Inputs (caso você use um formulário de edição)
+    document.getElementById("novoNome").value = usuario.users || "";
+    document.getElementById("novoEmail").value = usuario.email || "";
+    document.getElementById("novoNascimento").value = dados.dataNascimento || "";
+    document.getElementById("novoCpfCnpj").value = dados.cpfCnpj || "";
+    document.getElementById("novoTelefone").value = dados.telefone || "";
 
-    setText("nomeUsuario", usuario.users || "Não informado");
-    setText("emailUsuario", usuario.email || "Não informado");
-    setText("planoUsuario", usuario.plano || "Não informado");
-    setText("NomeConcluaCadastro", usuario.users || "");
-
-    setValue("novoNome", usuario.users || "");
-    setValue("novoEmail", usuario.email || "");
-    setValue("novoNascimento", dados.dataNascimento || "");
-    setValue("novoCpfCnpj", dados.cpfCnpj || "");
-    setValue("novoTelefone", dados.telefone || "");
-
-    setText("nascimentoUsuario", dados.dataNascimento || "Não informado");
-    setText("cpfCnpjUsuario", dados.cpfCnpj ? formatarCpfCnpj(dados.cpfCnpj) : "Não informado");
-    setText("telefoneUsuario", dados.telefone ? formatarTelefone(dados.telefone) : "Não informado");
+    // Texto visível no perfil
+    document.getElementById("nascimentoUsuario").innerText = dados.dataNascimento || "Não informado";
+    document.getElementById("cpfCnpjUsuario").innerText = dados.cpfCnpj ? formatarCpfCnpj(dados.cpfCnpj) : "Não informado";
+    document.getElementById("telefoneUsuario").innerText = dados.telefone ? formatarTelefone(dados.telefone) : "Não informado";
 
   } catch (erro) {
     console.error("Erro ao carregar perfil:", erro);
   }
 }
-
 
 
 // Formatadores
@@ -333,7 +74,7 @@ function formatarTelefone(valor) {
 
 
 //Funções do Perfil editar dados do usuario.
-
+document.addEventListener("DOMContentLoaded", carregarPerfil);
 function mostrarFormularioEdicao() {
   const nome = document.getElementById("nomeUsuario").textContent;
   const email = document.getElementById("emailUsuario").textContent;
@@ -440,7 +181,38 @@ function toggleMenu() {
   localStorage.setItem("menuAberto", isActive ? "1" : "0");
 }
 
+document.addEventListener("DOMContentLoaded", function () {
 
+
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main");
+
+  // 🟨 NOVO: restaurar estado do menu salvo
+  const menuAberto = localStorage.getItem("menuAberto") === "1";
+  if (menuAberto) {
+    sidebar.classList.add("mostrar");
+    main.classList.add("com-menu");
+  }
+
+  // 🟨 NOVO: restaurar aba ativa salva
+  const abaSalva = localStorage.getItem("abaAtiva");
+  if (abaSalva) {
+    mostrar(abaSalva);
+  } else {
+    mostrar("agenda"); // Coloque aqui a aba padrão que você quer mostrar
+  }
+
+
+  // Financeiro
+  const financeiroBtn = document.querySelector("#financeiro button");
+  financeiroBtn.addEventListener("click", () => {
+    const valor = document.querySelector("#financeiro input[type='number']").value;
+    const tipo = document.querySelector("#financeiro select").value;
+    alert(`${tipo} registrada: R$ ${valor}`);
+  });
+
+
+});
 // View Login admin Ativa/desativar
 function mostrarLogin() {
   document.getElementById('form-cadastro').style.display = 'none';
@@ -576,7 +348,19 @@ document.querySelectorAll('.sidebar ul li').forEach(item => {
 });
 
 
+document.addEventListener("DOMContentLoaded", function () {
 
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main");
+
+  if (localStorage.getItem("menuAberto") === "1") {
+    sidebar.classList.add("mostrar");
+    main.classList.add("com-menu");
+  }
+
+  const abaSalva = localStorage.getItem("abaAtiva");
+  mostrar(abaSalva || "admin");
+});
 
 // ✅ Corrigido: agora só alterna as seções já existentes
 function mostrarCadastro() {
@@ -593,7 +377,9 @@ function mostrarLogin() {
 
 
 localStorage.removeItem("abaAtiva");
-
+document.addEventListener("DOMContentLoaded", () => {
+  inicializarEventosAnamnese();
+});
 
 function inicializarEventosAnamnese() {
   const select = document.getElementById("pacienteAnamnese");
@@ -922,7 +708,13 @@ document.getElementById("formAnamnese")?.addEventListener("submit", async functi
   }
 });
 // Carregar paciente Calendario
+document.addEventListener('DOMContentLoaded', () => {
+  const selectPaciente = document.getElementById('pacienteSelect');
 
+  selectPaciente.addEventListener('click', () => {
+    carregarPacientes();
+  });
+});
 // Gerar PDF
 async function gerarPDF(id) {
   try {
@@ -1109,12 +901,150 @@ function fecharVisualizacaoAnamnese() {
   container.style.display = "none";
   document.getElementById("conteudoVisualizacao").innerHTML = "";
 }
-
+document.addEventListener("DOMContentLoaded", () => {
+});
 let pacientes = [];
 let mostrandoLista = false;
 let pacienteSelecionadoId = null;
 
+window.addEventListener('DOMContentLoaded', async () => {
+  await carregarPacientes();
+  document.getElementById('editForm').style.display = 'none';
 
+  document.getElementById('selectPaciente').addEventListener('change', async () => {
+    const id = document.getElementById('selectPaciente').value;
+
+    if (id) {
+      pacienteSelecionadoId = Number(id);
+      try {
+        const response = await fetch(`/pacientes/${pacienteSelecionadoId}`, {
+          credentials: "include"
+        });
+
+        if (!response.ok) {
+          const erroTexto = await response.text();
+          console.error("Erro ao buscar paciente:", erroTexto);
+          alert("Paciente não encontrado ou você não tem permissão.");
+          return;
+        }
+
+        const paciente = await response.json();
+        preencherFormulario(paciente);
+        document.getElementById('selectPaciente').disabled = false;
+
+      } catch (err) {
+        console.error("Erro na requisição:", err);
+        alert("Erro ao buscar paciente.");
+      }
+    } else {
+      pacienteSelecionadoId = null;
+      document.getElementById('editForm').style.display = 'none';
+    }
+  });
+
+
+  document.getElementById('btnListar').addEventListener('click', async () => {
+
+    const listaContainer = document.getElementById('listaPacientes');
+    const botaoListar = document.getElementById('btnListar');
+    const form = document.getElementById('editForm');
+
+    if (mostrandoLista) {
+      listaContainer.style.display = 'none';
+      botaoListar.textContent = 'Listar Pacientes';
+      mostrandoLista = false;
+      return;
+    }
+
+    if (form.style.display === 'block') {
+      form.style.display = 'none';
+    }
+
+    try {
+      const response = await fetch(`/pacientes`);
+      if (!response.ok) throw new Error('Erro ao carregar pacientes');
+
+      const pacientes = await response.json();
+      listaContainer.innerHTML = '';
+
+      pacientes.forEach(paciente => {
+        const item = document.createElement('div');
+        item.classList.add('paciente-lista-item');
+
+        const nome = document.createElement('span');
+        nome.textContent = paciente.nome;
+
+        const btnEditar = document.createElement('button');
+        btnEditar.textContent = 'Editar';
+        btnEditar.className = 'btn-editar';
+        btnEditar.onclick = async () => {
+          pacienteSelecionadoId = paciente.id;
+          const res = await fetch(`/pacientes/${paciente.id}`);
+          if (!res.ok) return alert('Erro ao buscar paciente');
+          const p = await res.json();
+          preencherFormulario(p);
+          document.getElementById('selectPaciente').value = paciente.id;
+          document.getElementById('selectPaciente').disabled = false;
+          form.style.display = 'block';
+          listaContainer.style.display = 'none';
+          botaoListar.textContent = 'Listar Pacientes';
+          mostrandoLista = false;
+        };
+
+        const btnDeletar = document.createElement('button');
+        btnDeletar.textContent = 'Deletar';
+        btnDeletar.className = 'btn-deletar';
+
+        btnDeletar.onclick = async () => {
+          const confirmar = confirm(`❗ Deseja realmente deletar o paciente "${paciente.nome}"?`);
+          if (!confirmar) return;
+
+          try {
+            const resp = await fetch(`/pacientes/${paciente.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              credentials: 'include' // ✅ mantém sessão se usar Spring Security
+            });
+
+            if (resp.ok) {
+              alert(`✅ Paciente "${paciente.nome}" deletado com sucesso.`);
+              await carregarPacientes();
+
+              // ✅ Atualiza a interface após deletar
+              listaContainer.style.display = 'none';
+              botaoListar.textContent = 'Listar Pacientes';
+              mostrandoLista = false;
+            } else {
+              // 🔴 Se a API retornar erro, captura mensagem detalhada
+              const erro = await resp.text();
+              console.error('❌ Erro ao deletar paciente:', erro);
+              alert('❌ Erro ao deletar paciente: ' + erro);
+            }
+
+          } catch (err) {
+            console.error('❌ Erro na requisição DELETE:', err);
+            alert('❌ Erro ao conectar ao servidor ao deletar paciente.');
+          }
+        };
+
+        // ✅ Adiciona o botão ao item
+        item.appendChild(nome);
+        item.appendChild(btnEditar);
+        item.appendChild(btnDeletar);
+        listaContainer.appendChild(item);
+      });
+
+      listaContainer.style.display = 'block';
+      botaoListar.textContent = 'Ocultar Lista';
+      mostrandoLista = true;
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao listar pacientes');
+    }
+  });
+});
 async function carregarPacientes() {
   try {
     const response = await fetch('/pacientes');
@@ -1131,7 +1061,6 @@ async function carregarPacientes() {
       option.textContent = p.nome;
       select.appendChild(option);
     });
-    select.value = "";
 
     // 👇 Garantir que o select esteja habilitado após carregamento
     select.disabled = false;
@@ -1538,8 +1467,8 @@ function showDayView() {
   </form>
 </div>
   <div class="form-group">
-    <label for="selectPaciente">Paciente:</label>
-    <select id="selectPaciente">
+    <label for="pacienteSelect">Paciente:</label>
+    <select id="pacienteSelect">
       <option value="">Selecione o paciente</option>
     </select>
   </div>
@@ -1579,7 +1508,7 @@ function showDayView() {
       return res.json();
     })
     .then(pacientes => {
-      const select = document.getElementById('selectPaciente');
+      const select = document.getElementById('pacienteSelect');
       pacientes.sort((a, b) => a.nome.localeCompare(b.nome));
       pacientes.forEach(p => {
         const option = document.createElement('option');
@@ -1597,7 +1526,7 @@ function showDayView() {
 }
 //SALVAR AGENDAMENTO
 function saveTask() {
-  const pacienteId = document.getElementById('selectPaciente').value;
+  const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value;
   const desc = document.getElementById('taskDesc').value;
   const color = document.getElementById('taskColor').value;
@@ -1642,7 +1571,7 @@ function editarAgendamento(agendamento) {
     alert('⚠️ Paciente não encontrado neste agendamento.');
     return;
   }
-  document.getElementById('selectPaciente').value = agendamento.pacienteId;
+  document.getElementById('pacienteSelect').value = agendamento.pacienteId;
   document.getElementById('taskTime').value = agendamento.hora;
   document.getElementById('taskDesc').value = agendamento.descricao;
   document.getElementById('taskColor').value = agendamento.cor;
@@ -1652,7 +1581,7 @@ function editarAgendamento(agendamento) {
   salvarBtn.onclick = () => atualizarAgendamento(agendamento.id);
 }
 function atualizarAgendamento(id) {
-  const pacienteId = document.getElementById('selectPaciente').value;
+  const pacienteId = document.getElementById('pacienteSelect').value;
   const time = document.getElementById('taskTime').value.trim();
   const desc = document.getElementById('taskDesc').value.trim();
   const color = document.getElementById('taskColor').value;
@@ -2035,7 +1964,73 @@ function formatarTelefone(valor) {
   }
 }
 
+// ✅ Aguarda DOM carregar
+document.addEventListener("DOMContentLoaded", () => {
+  const cpfCnpjInput = document.getElementById("dados_cpfCnpj");
+  const telefoneInput = document.getElementById("dados_telefone");
 
+  // ➕ Ativa formatação dinâmica enquanto digita
+  cpfCnpjInput.addEventListener("input", () => {
+    cpfCnpjInput.value = formatarCpfCnpj(cpfCnpjInput.value);
+  });
+
+  telefoneInput.addEventListener("input", () => {
+    telefoneInput.value = formatarTelefone(telefoneInput.value);
+  });
+
+  // ➕ Submissão do formulário
+  document.getElementById("formDados").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    console.log("Submetendo formulário via fetch...");
+
+    const dataNascimento = document.getElementById("dados_dataNascimento").value;
+    const foto = document.getElementById("dados_foto").files[0];
+    const cpfCnpj = cpfCnpjInput.value.trim();
+    const telefone = telefoneInput.value.trim();
+
+    const formData = new FormData();
+    formData.append("cpfCnpj", cpfCnpj);
+    formData.append("telefone", telefone);
+    formData.append("dataNascimento", dataNascimento);
+    if (foto) formData.append("foto", foto);
+
+    try {
+      const res = await fetch("/dados/completar", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+
+      const txt = await res.text();
+      console.log("Resposta do servidor:", txt);
+
+      if (res.ok) {
+        setTimeout(() => {
+          carregarPerfil(); // ✅ Força recarregar dados com atraso leve
+        }, 200);
+        alert("✅ Dados salvos com sucesso!");
+        document.getElementById("popupCadastro").style.display = "none";
+        document.body.style.overflow = "auto";
+      } else {
+        alert("❌ Erro: " + txt);
+      }
+    } catch (err) {
+      alert("Erro ao enviar dados: " + err.message);
+    }
+  });
+});
+//Bloqueio de botão 
+// 🧠 Evita múltiplos cliques em qualquer botão
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('button');
+  if (!btn || btn.disabled) return;
+
+  // Desativa o botão por 1 segundo
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.disabled = false;
+  }, 1000); // 1000ms = 1 segundo
+});
 
 
 

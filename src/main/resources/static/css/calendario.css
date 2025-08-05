@@ -6,9 +6,12 @@ body {
 }
 
 .calendar-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 10px;
+  background: #fff;
+  padding: 30px;
+  margin: 40px auto;
+  border-radius: 12px;
+  max-width: 850px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .controls {

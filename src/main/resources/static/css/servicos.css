@@ -1,0 +1,94 @@
+/* CONTAINER CENTRAL COM VISUAL DE CARD */
+#servicos .container-box {
+  background: #fff;
+  padding: 30px;
+  margin: 40px auto;
+  border-radius: 12px;
+  max-width: 850px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+#servicos h4 {
+  margin-top: 10px;
+  color: #333;
+}
+
+#servicos label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+#servicos select,
+#servicos input,
+#servicos button {
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+#servicos button {
+  background-color: #2d89ef;
+  color: white;
+  font-weight: bold;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#servicos button:hover {
+  background-color: #1b5fbd;
+}
+
+.lista-servicos {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 15px;
+}
+
+.lista-servicos li {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* POPUP */
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-box {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.botoes-servico {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.botoes-servico button {
+  flex: 1;
+}
+
+@media screen and (max-width: 600px) {
+  .botoes-servico {
+    flex-direction: column;
+  }
+}

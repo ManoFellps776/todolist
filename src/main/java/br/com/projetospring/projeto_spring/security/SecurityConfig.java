@@ -40,6 +40,8 @@ public class SecurityConfig {
                                 "/anamnese", "/anamnese**",
                                 "/lixeira", "/lixeira/**",
                                 "/agendamentos","/agendamentos/**"
+                                ,"/servicos", "/servicos/**"
+                                ,"/financeiro","/financeiro/**"
                                 )
                         .permitAll()
                         .anyRequest().authenticated())

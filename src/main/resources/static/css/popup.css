@@ -1,21 +1,129 @@
-.popup-overlay {
+/* Fundo escurecido (popup) */
+#popupCadastro {
+  display: none; /* altere para 'flex' ao exibir */
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
 }
 
-.popup-content {
+/* Conteúdo central */
+.popup-conteudo {
   background: white;
-  padding: 30px;
+  padding: 30px 25px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Título */
+.popup-conteudo h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 22px;
+  text-align: center;
+  color: #333;
+}
+
+/* Formulário */
+.popup-conteudo label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #555;
+}
+
+.popup-conteudo input[type="text"],
+.popup-conteudo input[type="date"],
+.popup-conteudo input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  font-size: 15px;
+}
+
+/* Botão */
+/* Estilo base do botão */
+#popupCadastro button {
+  background-color: #6a0dad; /* Roxo moderno */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  max-width: 200px;
+  margin: 20px auto 0;
+  display: block;
+}
+
+/* Efeito de hover */
+#popupCadastro button:hover {
+  background-color: #530f9a;
+  transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  #popupCadastro button {
+    font-size: 14px;
+    padding: 10px 20px;
+    max-width: 100%;
+  }
+}
+
+.popup-conteudo button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.popup-conteudo button[type="submit"]:hover {
+  background-color: #256728;
+}
+
+/* Animação */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsividade para iPhone 12 e menores */
+@media (max-width: 480px) {
+  .popup-conteudo {
+    padding: 20px 15px;
+  }
+
+  .popup-conteudo h2 {
+    font-size: 20px;
+  }
+
+  .popup-conteudo input,
+  .popup-conteudo button[type="submit"] {
+    font-size: 14px;
+    padding: 10px;
+  }
 }
